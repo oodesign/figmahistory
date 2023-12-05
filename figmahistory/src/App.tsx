@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import logo from './logo.svg';
 import { Routes, HashRouter, Route } from 'react-router-dom';
 import axios from 'axios';
+import ImageDiff from 'react-image-diff';
+import ReactCompareImage from 'react-compare-image';
+
 import './App.css';
 
 
@@ -11,6 +14,9 @@ const Start = () => {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [popupWindow, setPopupWindow] = useState<Window | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  const [version1PageThumbnail, setVersion1PageThumbnail] = useState(null);
+  const [version2PageThumbnail, setVersion2PageThumbnail] = useState(null);
 
 
   const FigmaAPIKey = "figd_RRFsYn0yPhRclt5nVvlfYPEdyazwfwlyPulZQBqc"
@@ -103,6 +109,8 @@ const Start = () => {
       if (getPagesVersion1Image.ok) {
         const responseJson = await getPagesVersion1Image.json();
         console.log(responseJson.images["10163:65721"]);
+        if (responseJson.images["10163:65721"])
+          setVersion1PageThumbnail(responseJson.images["10163:65721"]);
       }
     }
 
@@ -127,10 +135,13 @@ const Start = () => {
         }
       })
 
-      
+
       if (getPagesVersion2Image.ok) {
         const responseJson = await getPagesVersion2Image.json();
         console.log(responseJson.images["10163:65721"]);
+
+        if (responseJson.images["10163:65721"])
+          setVersion2PageThumbnail(responseJson.images["10163:65721"]);
       }
     }
 
@@ -245,6 +256,20 @@ const Start = () => {
   return <div>
     <input id="figmaFileURL" type='text' placeholder='Paste your Figma URL here' defaultValue="https://www.figma.com/file/58J9lvktDn7tFZu16UDJHl/Dolby-pHRTF---Capture-app---No-Cloud?type=design&node-id=10163%3A65721&mode=design&t=6n0ZrLO9YyM2lHjb-1" />
     <button onClick={getData}>Auth Figma</button>
+
+    {/* {version2PageThumbnail !== null && version1PageThumbnail !== null && (
+      <ImageDiff before={version2PageThumbnail} after={version1PageThumbnail} type="fade" value={.5} />
+    )} */}
+
+    {version2PageThumbnail !== null && version1PageThumbnail !== null && (
+      <ReactCompareImage leftImage={version2PageThumbnail} rightImage={version1PageThumbnail} />
+    )}
+
+    {/* <ImageDiff before="https://figma-alpha-api.s3.us-west-2.amazonaws.com/images/e80faf70-c2a0-49ac-af53-3c572f883854" after="https://figma-alpha-api.s3.us-west-2.amazonaws.com/images/778a83cc-5573-4179-8554-c2ce97b549fa" type="fade" value={.5} /> */}
+
+
+
+
 
   </div>;
 };
