@@ -23,7 +23,7 @@ const Start = () => {
     const versions: any[] = [];
 
     async function fetchPage(url: string | undefined): Promise<void> {
-      console.log("Fetching url: "+url);
+      //console.log("Fetching url: "+url);
       if (url) {
         const response = await fetch(url, {
           method: 'GET',
@@ -38,7 +38,7 @@ const Start = () => {
           versions.push(...data.versions);
 
           // Continue fetching if there is a previous page
-          console.log("-- Has more pages? NextPage is:"+data.pagination.next_page)
+          console.log("-- Has more pages? NextPage is:" + data.pagination.next_page)
           if (data.pagination && data.pagination.next_page) {
             await fetchPage(data.pagination.next_page);
           }
@@ -70,14 +70,69 @@ const Start = () => {
     let figmaFileStruct = await result.json()
 
     console.log(figmaFileStruct);
-    const allVersions = await fetchAllVersions(documentIDReceived, accessTokenReceived);
+    //const allVersions = await fetchAllVersions(documentIDReceived, accessTokenReceived);
 
 
-    console.log(allVersions);
+    console.log(figmaFileStruct.versions);
 
     let file1Id = figmaFileStruct.versions[0].id;
     let file2Id = figmaFileStruct.versions[3].id;
     console.log("Comparing " + file1Id + " vs. " + file2Id);
+
+
+    let getPagesVersion1 = await fetch('https://api.figma.com/v1/files/' + documentIDReceived + "?version=" + file1Id + "&depth=1", {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${accessTokenReceived}` // Replace FigmaAPIKey with your actual access token
+      }
+    })
+
+    if (getPagesVersion1.ok) {
+      // If the response is successful, parse the JSON
+      console.log("getPagesVersion1");
+      const responseJson = await getPagesVersion1.json();
+      // console.log(responseJson);
+
+      let getPagesVersion1Image = await fetch('https://api.figma.com/v1/images/' + documentIDReceived + "?ids=10163:65721&version=" + file1Id, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${accessTokenReceived}` // Replace FigmaAPIKey with your actual access token
+        }
+      })
+
+      if (getPagesVersion1Image.ok) {
+        const responseJson = await getPagesVersion1Image.json();
+        console.log(responseJson.images["10163:65721"]);
+      }
+    }
+
+
+    let getPagesVersion2 = await fetch('https://api.figma.com/v1/files/' + documentIDReceived + "?version=" + file2Id + "&depth=1", {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${accessTokenReceived}` // Replace FigmaAPIKey with your actual access token
+      }
+    })
+
+    if (getPagesVersion2.ok) {
+      // If the response is successful, parse the JSON
+      console.log("getPagesVersion2");
+      const responseJson = await getPagesVersion2.json();
+      // console.log(responseJson);
+
+      let getPagesVersion2Image = await fetch('https://api.figma.com/v1/images/' + documentIDReceived + "?ids=10163:65721&version=" + file2Id, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${accessTokenReceived}` // Replace FigmaAPIKey with your actual access token
+        }
+      })
+
+      
+      if (getPagesVersion2Image.ok) {
+        const responseJson = await getPagesVersion2Image.json();
+        console.log(responseJson.images["10163:65721"]);
+      }
+    }
 
 
 
