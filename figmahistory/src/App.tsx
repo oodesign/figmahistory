@@ -75,11 +75,11 @@ const Start = () => {
 
     let figmaFileStruct = await result.json()
 
-    console.log(figmaFileStruct);
+    //console.log(figmaFileStruct);
     //const allVersions = await fetchAllVersions(documentIDReceived, accessTokenReceived);
 
 
-    console.log(figmaFileStruct.versions);
+    //console.log(figmaFileStruct.versions);
 
     let file1Id = figmaFileStruct.versions[0].id;
     let file2Id = figmaFileStruct.versions[3].id;
@@ -213,7 +213,7 @@ const Start = () => {
   };
 
   const getData = () => {
-    const token = "figu_aHdxX0k17O-wXPovNOqY85Tw-aFPpSQQrsxIoEiz";
+    const token = "figu_c3F858MxN07ZBhWSXewYZglB_c_hGa4l0tx_MLrb";
 
     let figmaDocumentID = getFigmaDocumentID();
     console.log("Document IDs is:" + figmaDocumentID);
