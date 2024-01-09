@@ -1,11 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import logo from './logo.svg';
 import { Routes, HashRouter, Route } from 'react-router-dom';
 import axios from 'axios';
 import ImageDiff from 'react-image-diff';
 import ReactCompareImage from 'react-compare-image';
+import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slider';
+import { TransformWrapper, TransformComponent, ReactZoomPanPinchRef } from "react-zoom-pan-pinch";
+
 
 import './App.css';
+
 
 
 const Start = () => {
@@ -14,6 +18,9 @@ const Start = () => {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [popupWindow, setPopupWindow] = useState<Window | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  const firstImage = useRef<ReactZoomPanPinchRef>(null);
+  const secondImage = useRef<ReactZoomPanPinchRef>(null);
 
   const [version1PageThumbnail, setVersion1PageThumbnail] = useState(null);
   const [version2PageThumbnail, setVersion2PageThumbnail] = useState(null);
@@ -82,9 +89,13 @@ const Start = () => {
     //console.log(figmaFileStruct.versions);
 
     let file1Id = figmaFileStruct.versions[0].id;
-    let file2Id = figmaFileStruct.versions[3].id;
+    let file2Id = figmaFileStruct.versions[1].id;
     console.log("Comparing " + file1Id + " vs. " + file2Id);
 
+
+
+
+    // https://www.figma.com/file/EAoZFsVr3EHX164663s6bE/Bring-back-use-case-selection-%2B-Unify-settings-links-style?type=design&node-id=10163-65721&mode=design
 
     let getPagesVersion1 = await fetch('https://api.figma.com/v1/files/' + documentIDReceived + "?version=" + file1Id + "&depth=1", {
       method: 'GET',
@@ -97,9 +108,14 @@ const Start = () => {
       // If the response is successful, parse the JSON
       console.log("getPagesVersion1");
       const responseJson = await getPagesVersion1.json();
-      // console.log(responseJson);
+      console.log(responseJson);
 
-      let getPagesVersion1Image = await fetch('https://api.figma.com/v1/images/' + documentIDReceived + "?ids=10163:65721&version=" + file1Id, {
+      let pages = responseJson.document.children.filter((child: any) => child.type === 'CANVAS');
+      console.log(pages);
+
+      let file1Page1Id = pages[0].id;
+
+      let getPagesVersion1Image = await fetch('https://api.figma.com/v1/images/' + documentIDReceived + "?ids=" + file1Page1Id + "&version=" + file1Id, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${accessTokenReceived}` // Replace FigmaAPIKey with your actual access token
@@ -108,9 +124,9 @@ const Start = () => {
 
       if (getPagesVersion1Image.ok) {
         const responseJson = await getPagesVersion1Image.json();
-        console.log(responseJson.images["10163:65721"]);
-        if (responseJson.images["10163:65721"])
-          setVersion1PageThumbnail(responseJson.images["10163:65721"]);
+        console.log(responseJson.images[file1Page1Id]);
+        if (responseJson.images[file1Page1Id])
+          setVersion1PageThumbnail(responseJson.images[file1Page1Id]);
       }
     }
 
@@ -128,7 +144,12 @@ const Start = () => {
       const responseJson = await getPagesVersion2.json();
       // console.log(responseJson);
 
-      let getPagesVersion2Image = await fetch('https://api.figma.com/v1/images/' + documentIDReceived + "?ids=10163:65721&version=" + file2Id, {
+      let pages = responseJson.document.children.filter((child: any) => child.type === 'CANVAS');
+      console.log(pages);
+
+      let file2Page1Id = pages[0].id;
+
+      let getPagesVersion2Image = await fetch('https://api.figma.com/v1/images/' + documentIDReceived + "?ids=" + file2Page1Id + "&version=" + file2Id, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${accessTokenReceived}` // Replace FigmaAPIKey with your actual access token
@@ -138,10 +159,10 @@ const Start = () => {
 
       if (getPagesVersion2Image.ok) {
         const responseJson = await getPagesVersion2Image.json();
-        console.log(responseJson.images["10163:65721"]);
+        console.log(responseJson.images[file2Page1Id]);
 
-        if (responseJson.images["10163:65721"])
-          setVersion2PageThumbnail(responseJson.images["10163:65721"]);
+        if (responseJson.images[file2Page1Id])
+          setVersion2PageThumbnail(responseJson.images[file2Page1Id]);
       }
     }
 
@@ -253,8 +274,24 @@ const Start = () => {
   }, [popupWindow]);
 
 
+
+  function handleTransform(ref: ReactZoomPanPinchRef, state: { scale: number; positionX: number; positionY: number; }): void {
+
+    if (secondImage.current) {
+      if (!(secondImage.current.instance.transformState.positionX == ref.state.positionX && secondImage.current.instance.transformState.positionY == ref.state.positionY && secondImage.current.instance.transformState.scale == ref.state.scale))
+        (secondImage.current as any).setTransform(ref.state.positionX, ref.state.positionY, ref.state.scale, 0);
+    }
+
+    if (firstImage.current) {
+      if (!(firstImage.current.instance.transformState.positionX == ref.state.positionX && firstImage.current.instance.transformState.positionY == ref.state.positionY && firstImage.current.instance.transformState.scale == ref.state.scale))
+        (firstImage.current as any).setTransform(ref.state.positionX, ref.state.positionY, ref.state.scale, 0);
+    }
+  }
+
+
   return <div>
-    <input id="figmaFileURL" type='text' placeholder='Paste your Figma URL here' defaultValue="https://www.figma.com/file/58J9lvktDn7tFZu16UDJHl/Dolby-pHRTF---Capture-app---No-Cloud?type=design&node-id=10163%3A65721&mode=design&t=6n0ZrLO9YyM2lHjb-1" />
+    {/* <input id="figmaFileURL" type='text' placeholder='Paste your Figma URL here' defaultValue="https://www.figma.com/file/58J9lvktDn7tFZu16UDJHl/Dolby-pHRTF---Capture-app---No-Cloud?type=design&node-id=10163%3A65721&mode=design&t=6n0ZrLO9YyM2lHjb-1" /> */}
+    <input id="figmaFileURL" type='text' placeholder='Paste your Figma URL here' defaultValue="https://www.figma.com/file/HTUxsQSO4pR1GCvv8Nvqd5/HistoryChecker?type=design&node-id=1%3A2&mode=design&t=ffdrgnmtJ92dZgeQ-1" />
     <button onClick={getData}>Auth Figma</button>
 
     {/* {version2PageThumbnail !== null && version1PageThumbnail !== null && (
@@ -262,7 +299,32 @@ const Start = () => {
     )} */}
 
     {version2PageThumbnail !== null && version1PageThumbnail !== null && (
-      <ReactCompareImage leftImage={version2PageThumbnail} rightImage={version1PageThumbnail} />
+      // <ReactCompareImage leftImage={version2PageThumbnail} rightImage={version1PageThumbnail} />
+
+      // <ReactCompareSlider
+      //   itemOne={<ReactCompareSliderImage src={version2PageThumbnail} alt="Image two" />}
+      //   itemTwo={<ReactCompareSliderImage src={version1PageThumbnail} alt="Image one" />}
+      // />
+
+      <ReactCompareSlider
+        onlyHandleDraggable={true}
+        itemOne={
+          <TransformWrapper ref={secondImage} onTransformed={handleTransform}>
+            <TransformComponent>
+              <img src={version2PageThumbnail} alt="Image two" />
+            </TransformComponent>
+          </TransformWrapper>
+        }
+        itemTwo={
+          <TransformWrapper ref={firstImage} onTransformed={handleTransform}>
+            <TransformComponent>
+              <img src={version1PageThumbnail} alt="Image on" />
+            </TransformComponent>
+          </TransformWrapper>
+        }
+      />
+
+
     )}
 
     {/* <ImageDiff before="https://figma-alpha-api.s3.us-west-2.amazonaws.com/images/e80faf70-c2a0-49ac-af53-3c572f883854" after="https://figma-alpha-api.s3.us-west-2.amazonaws.com/images/778a83cc-5573-4179-8554-c2ce97b549fa" type="fade" value={.5} /> */}
