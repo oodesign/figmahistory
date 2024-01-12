@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { SetStateAction, useEffect, useRef, useState } from 'react';
 import logo from './logo.svg';
 import { Routes, HashRouter, Route } from 'react-router-dom';
 import axios from 'axios';
@@ -10,6 +10,21 @@ import { TransformWrapper, TransformComponent, ReactZoomPanPinchRef } from "reac
 
 import './App.css';
 
+
+type User = {
+  id: string;
+  handle: string;
+  img_url: string;
+  email: string;
+};
+
+type Version = {
+  id: string;
+  created_at: string;
+  label: string;
+  description: string;
+  user: User;
+};
 
 
 const Start = () => {
@@ -25,6 +40,8 @@ const Start = () => {
   const [version1PageThumbnail, setVersion1PageThumbnail] = useState(null);
   const [version2PageThumbnail, setVersion2PageThumbnail] = useState(null);
 
+  const [fileVersions, setFileVersions] = useState<Version[]>([]);
+
 
   const FigmaAPIKey = "figd_RRFsYn0yPhRclt5nVvlfYPEdyazwfwlyPulZQBqc"
 
@@ -32,8 +49,8 @@ const Start = () => {
 
   }
 
-  async function fetchAllVersions(documentIDReceived: string, accessTokenReceived: string): Promise<any[]> {
-    const versions: any[] = [];
+  async function fetchAllVersions(documentIDReceived: string, accessTokenReceived: string): Promise<Version[]> {
+    const versions: Version[] = [];
 
     async function fetchPage(url: string | undefined): Promise<void> {
       //console.log("Fetching url: "+url);
@@ -47,7 +64,7 @@ const Start = () => {
 
         if (response.ok) {
           const data = await response.json();
-          console.log(data)
+          // console.log(data)
           versions.push(...data.versions);
 
           // Continue fetching if there is a previous page
@@ -83,13 +100,20 @@ const Start = () => {
     let figmaFileStruct = await result.json()
 
     //console.log(figmaFileStruct);
-    //const allVersions = await fetchAllVersions(documentIDReceived, accessTokenReceived);
+    const allVersions: Version[] = await fetchAllVersions(documentIDReceived, accessTokenReceived);
 
 
-    //console.log(figmaFileStruct.versions);
+    console.log("allVersions:");
+    console.log(allVersions);
 
-    let file1Id = figmaFileStruct.versions[0].id;
-    let file2Id = figmaFileStruct.versions[1].id;
+
+    const selectVersion2 = document.getElementById("selectVersion2") as HTMLSelectElement;
+    const selectVersion1 = document.getElementById("selectVersion1") as HTMLSelectElement;
+
+    setFileVersions(allVersions);
+
+    let file1Id = allVersions[0].id;
+    let file2Id = allVersions[1].id;
     console.log("Comparing " + file1Id + " vs. " + file2Id);
 
 
@@ -288,24 +312,32 @@ const Start = () => {
     }
   }
 
+  const renderOptions = () => {
+    return fileVersions.map((fileVersion) => (
+      <option key={fileVersion.id} value={fileVersion.id}>
+        {fileVersion.label} - {fileVersion.user.handle}
+      </option>
+    ));
+  };
+
 
   return <div>
     {/* <input id="figmaFileURL" type='text' placeholder='Paste your Figma URL here' defaultValue="https://www.figma.com/file/58J9lvktDn7tFZu16UDJHl/Dolby-pHRTF---Capture-app---No-Cloud?type=design&node-id=10163%3A65721&mode=design&t=6n0ZrLO9YyM2lHjb-1" /> */}
     <input id="figmaFileURL" type='text' placeholder='Paste your Figma URL here' defaultValue="https://www.figma.com/file/HTUxsQSO4pR1GCvv8Nvqd5/HistoryChecker?type=design&node-id=1%3A2&mode=design&t=ffdrgnmtJ92dZgeQ-1" />
     <button onClick={getData}>Auth Figma</button>
-
-    {/* {version2PageThumbnail !== null && version1PageThumbnail !== null && (
+    <select id="selectVersion1" placeholder='version to compare (1)'>
+      {renderOptions()}
+    </select>
+    <select id="selectVersion2" placeholder='version to compare (2)'>
+    {renderOptions()}
+    </select>
+{/* 
+    {version2PageThumbnail !== null && version1PageThumbnail !== null && (
       <ImageDiff before={version2PageThumbnail} after={version1PageThumbnail} type="fade" value={.5} />
     )} */}
 
     {version2PageThumbnail !== null && version1PageThumbnail !== null && (
-      // <ReactCompareImage leftImage={version2PageThumbnail} rightImage={version1PageThumbnail} />
-
-      // <ReactCompareSlider
-      //   itemOne={<ReactCompareSliderImage src={version2PageThumbnail} alt="Image two" />}
-      //   itemTwo={<ReactCompareSliderImage src={version1PageThumbnail} alt="Image one" />}
-      // />
-
+      
       <ReactCompareSlider
         onlyHandleDraggable={true}
         itemOne={
@@ -324,13 +356,7 @@ const Start = () => {
         }
       />
 
-
     )}
-
-    {/* <ImageDiff before="https://figma-alpha-api.s3.us-west-2.amazonaws.com/images/e80faf70-c2a0-49ac-af53-3c572f883854" after="https://figma-alpha-api.s3.us-west-2.amazonaws.com/images/778a83cc-5573-4179-8554-c2ce97b549fa" type="fade" value={.5} /> */}
-
-
-
 
 
   </div>;
