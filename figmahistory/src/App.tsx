@@ -40,14 +40,16 @@ const Start = () => {
   const [version1PageThumbnail, setVersion1PageThumbnail] = useState(null);
   const [version2PageThumbnail, setVersion2PageThumbnail] = useState(null);
 
+
+  const [file1SelectedOption, setFile1SelectedOption] = useState<string>("");
+  const [file2SelectedOption, setFile2SelectedOption] = useState<string>("");
+
   const [fileVersions, setFileVersions] = useState<Version[]>([]);
 
 
   const FigmaAPIKey = "figd_RRFsYn0yPhRclt5nVvlfYPEdyazwfwlyPulZQBqc"
 
-  async function figmaFileFetch(fileId: string) {
-
-  }
+  
 
   async function fetchAllVersions(documentIDReceived: string, accessTokenReceived: string): Promise<Version[]> {
     const versions: Version[] = [];
@@ -84,47 +86,21 @@ const Start = () => {
     return versions;
   }
 
-  // Usage in a React component or elsewhere in your TypeScript code
-  const fetchFigmaFiles = async (documentIDReceived: string, accessTokenReceived: string) => {
-
-    console.log("Document ID is:" + documentIDReceived);
-    console.log("accessToken is:" + accessTokenReceived);
-
-    let result = await fetch('https://api.figma.com/v1/files/' + documentIDReceived + "/versions", {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${accessTokenReceived}` // Replace FigmaAPIKey with your actual access token
-      }
-    })
-
-    let figmaFileStruct = await result.json()
-
-    //console.log(figmaFileStruct);
-    const allVersions: Version[] = await fetchAllVersions(documentIDReceived, accessTokenReceived);
+  async function fetchBothVersions(accessTokenReceived: string, documentIDReceived: string, file1Id: string, file2Id: string) {
 
 
-    console.log("allVersions:");
-    console.log(allVersions);
-
-
-    const selectVersion2 = document.getElementById("selectVersion2") as HTMLSelectElement;
-    const selectVersion1 = document.getElementById("selectVersion1") as HTMLSelectElement;
-
-    setFileVersions(allVersions);
-
-    let file1Id = allVersions[0].id;
-    let file2Id = allVersions[1].id;
     console.log("Comparing " + file1Id + " vs. " + file2Id);
 
+    // const selectVersion1 = document.getElementById("selectVersion1") as HTMLSelectElement;
+    // const selectVersion2 = document.getElementById("selectVersion2") as HTMLSelectElement;
 
-
-
-    // https://www.figma.com/file/EAoZFsVr3EHX164663s6bE/Bring-back-use-case-selection-%2B-Unify-settings-links-style?type=design&node-id=10163-65721&mode=design
+    setFile1SelectedOption(file1Id);
+    setFile2SelectedOption(file2Id);
 
     let getPagesVersion1 = await fetch('https://api.figma.com/v1/files/' + documentIDReceived + "?version=" + file1Id + "&depth=1", {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${accessTokenReceived}` // Replace FigmaAPIKey with your actual access token
+        'Authorization': `Bearer ${accessTokenReceived}` 
       }
     })
 
@@ -190,9 +166,36 @@ const Start = () => {
       }
     }
 
+  }
+
+  // Usage in a React component or elsewhere in your TypeScript code
+  const fetchFigmaFiles = async (documentIDReceived: string, accessTokenReceived: string) => {
+
+    console.log("Document ID is:" + documentIDReceived);
+    console.log("accessToken is:" + accessTokenReceived);
+
+    // let result = await fetch('https://api.figma.com/v1/files/' + documentIDReceived + "/versions", {
+    //   method: 'GET',
+    //   headers: {
+    //     'Authorization': `Bearer ${accessTokenReceived}` // Replace FigmaAPIKey with your actual access token
+    //   }
+    // })
+
+    // let figmaFileStruct = await result.json()
+
+    //console.log(figmaFileStruct);
+
+    const allVersions: Version[] = await fetchAllVersions(documentIDReceived, accessTokenReceived);
 
 
-    return figmaFileStruct
+    console.log("allVersions:");
+    console.log(allVersions);
+
+
+
+    setFileVersions(allVersions);
+
+    fetchBothVersions(accessTokenReceived, documentIDReceived, allVersions[0].id, allVersions[1].id)
   };
 
   const handleFigmaAuthentication = async (code: string) => {
@@ -325,10 +328,10 @@ const Start = () => {
     {/* <input id="figmaFileURL" type='text' placeholder='Paste your Figma URL here' defaultValue="https://www.figma.com/file/58J9lvktDn7tFZu16UDJHl/Dolby-pHRTF---Capture-app---No-Cloud?type=design&node-id=10163%3A65721&mode=design&t=6n0ZrLO9YyM2lHjb-1" /> */}
     <input id="figmaFileURL" type='text' placeholder='Paste your Figma URL here' defaultValue="https://www.figma.com/file/HTUxsQSO4pR1GCvv8Nvqd5/HistoryChecker?type=design&node-id=1%3A2&mode=design&t=ffdrgnmtJ92dZgeQ-1" />
     <button onClick={getData}>Auth Figma</button>
-    <select id="selectVersion1" placeholder='version to compare (1)'>
+    <select id="selectVersion1" placeholder='version to compare (1)' value={file1SelectedOption}>
       {renderOptions()}
     </select>
-    <select id="selectVersion2" placeholder='version to compare (2)'>
+    <select id="selectVersion2" placeholder='version to compare (2)' value={file2SelectedOption}>
     {renderOptions()}
     </select>
 {/* 
