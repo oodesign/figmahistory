@@ -117,7 +117,7 @@ const Start = () => {
 
       let fileFirstPageId = pages[0].id;
 
-      let getPagesVersion1Image = await fetch('https://api.figma.com/v1/images/' + documentIDReceived + "?ids=" + fileFirstPageId + "&version=" + fileId, {
+      let getPagesVersion1Image = await fetch('https://api.figma.com/v1/images/' + documentIDReceived + "?ids=" + fileFirstPageId + "&format=svg&svg_simplify_stroke=false" + "&version=" + fileId, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${accessTokenReceived}` // Replace FigmaAPIKey with your actual access token
@@ -293,44 +293,44 @@ const Start = () => {
     if (documentID && accessToken) fetchVersion(event.target.value, Side.RIGHT, documentID, accessToken);
   }
 
-  return <div>
-    {/* <input id="figmaFileURL" type='text' placeholder='Paste your Figma URL here' defaultValue="https://www.figma.com/file/58J9lvktDn7tFZu16UDJHl/Dolby-pHRTF---Capture-app---No-Cloud?type=design&node-id=10163%3A65721&mode=design&t=6n0ZrLO9YyM2lHjb-1" /> */}
-    <input id="figmaFileURL" type='text' placeholder='Paste your Figma URL here' defaultValue="https://www.figma.com/file/HTUxsQSO4pR1GCvv8Nvqd5/HistoryChecker?type=design&node-id=1%3A2&mode=design&t=ffdrgnmtJ92dZgeQ-1" />
-    <button onClick={getData}>Auth Figma</button>
-    <select id="selectVersion1" value={file1SelectedOption} onChange={onVersion1Changed}>
-      {renderOptions()}
-    </select>
-    <select id="selectVersion2" value={file2SelectedOption} onChange={onVersion2Changed}>
-      {renderOptions()}
-    </select>
-    {/* 
-    {versionRightPageThumbnail !== null && versionLeftPageThumbnail !== null && (
-      <ImageDiff before={versionRightPageThumbnail} after={versionLeftPageThumbnail} type="fade" value={.5} />
-    )} */}
+  return <div className='rowAvailable'>
+    <div className='rowAuto'>
+      {/* <input id="figmaFileURL" type='text' placeholder='Paste your Figma URL here' defaultValue="https://www.figma.com/file/58J9lvktDn7tFZu16UDJHl/Dolby-pHRTF---Capture-app---No-Cloud?type=design&node-id=10163%3A65721&mode=design&t=6n0ZrLO9YyM2lHjb-1" /> */}
+      <input id="figmaFileURL" type='text' placeholder='Paste your Figma URL here' defaultValue="https://www.figma.com/file/HTUxsQSO4pR1GCvv8Nvqd5/HistoryChecker?type=design&node-id=1%3A2&mode=design&t=ffdrgnmtJ92dZgeQ-1" />
+      <button onClick={getData}>Auth Figma</button>
+      <select id="selectVersion1" value={file1SelectedOption} onChange={onVersion1Changed}>
+        {renderOptions()}
+      </select>
+      <select id="selectVersion2" value={file2SelectedOption} onChange={onVersion2Changed}>
+        {renderOptions()}
+      </select>
 
-    {versionRightPageThumbnail !== null && versionLeftPageThumbnail !== null && (
+    </div>
+    <div className='rowAvailable verticalLayout'>
 
-      <ReactCompareSlider
-        onlyHandleDraggable={true}
-        itemOne={
-          <TransformWrapper ref={secondImage} onTransformed={handleTransform}>
-            <TransformComponent>
-              <img src={versionLeftPageThumbnail} alt="Image two" />
-            </TransformComponent>
-          </TransformWrapper>
-        }
-        itemTwo={
-          <TransformWrapper ref={firstImage} onTransformed={handleTransform}>
-            <TransformComponent>
-              <img src={versionRightPageThumbnail} alt="Image on" />
-            </TransformComponent>
-          </TransformWrapper>
-        }
-      />
+      {versionRightPageThumbnail !== null && versionLeftPageThumbnail !== null && (
 
-    )}
+        <ReactCompareSlider
+          onlyHandleDraggable={true} className='verticalLayout'
+          itemOne={
+            <TransformWrapper ref={secondImage} onTransformed={handleTransform}>
+              <TransformComponent >
+                <img src={versionLeftPageThumbnail} alt="Image two" />
+              </TransformComponent>
+            </TransformWrapper>
+          }
+          itemTwo={
+            <TransformWrapper ref={firstImage} onTransformed={handleTransform}>
+              <TransformComponent >
+                <img src={versionRightPageThumbnail} alt="Image on" />
+              </TransformComponent>
+            </TransformWrapper>
+          }
+        />
 
+      )}
 
+    </div>
   </div>;
 };
 

@@ -1,38 +1,2285 @@
-.App {
+.notDisplayed {
+  display: none !important;
+}
+
+.notVisible {
+  visibility: hidden !important;
+}
+
+.displayFlex {
+  display: flex;
+}
+
+.flexDirectionRow {
+  flex-direction: row;
+}
+
+.flexDirectionColumn, .verticalLayout {
+  display: flex;
+  flex-direction: column;
+}
+
+.horizontalLayout {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+}
+
+.verticalLayout {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+}
+
+.colAuto {
+  flex: 0 0 auto;
+  position: relative;
+}
+
+.colAvailable {
+  flex: 1 1;
+  position: relative;
+}
+
+.rowAuto {
+  flex: 0 0 auto;
+  position: relative;
+  width: 100%;
+}
+
+.rowAvailable {
+  flex: 1 1;
+  width: 100%;
+  overflow-y: hidden;
+  overflow-x: hidden;
+}
+
+.alignVerticalCenter {
+  display: flex;
+  align-content: center;
+  align-items: center;
+}
+
+.alignHorizontalCenter {
+  margin: 0 auto;
+}
+
+.alignFullCenter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.alignFlexHorizontalCenter {
+  justify-content: center;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+.scrollable {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.wrapPanel {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.extendHeight {
+  height: 100%;
+}
+
+.noScroll {
+  overflow: hidden !important;
+}
+
+.fullWidth {
+  width: 100%;
+}
+
+.flexGhostElement {
+  display: flex;
+  flex: 1 1 250px;
+  height: 0;
+  opacity: 0;
+  margin-right: 10px;
+  background-color: red;
+}
+
+.scrollXVisible {
+  overflow-x: visible !important;
+}
+
+.relativePos {
+  position: relative;
+}
+
+.singleArea {
+  padding: 5px 10px 0 10px;
+}
+
+@font-face {
+  font-family: AvenirNextLTPro-Medium;
+  src: url(./fonts/AvenirNextLTPro-Medium.ttf) format("truetype");
+}
+@font-face {
+  font-family: AvenirNextLTPro-Bold;
+  src: url(./fonts/AvenirNextLTPro-Bold.ttf) format("truetype");
+}
+@font-face {
+  font-family: AvenirNextLTPro-Demi;
+  src: url(./fonts/AvenirNextLTPro-Demi.ttf) format("truetype");
+}
+html {
+  box-sizing: border-box;
+  background: transparent;
+  overflow: hidden;
+  cursor: default;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+@media (prefers-color-scheme: light) {
+  html,
+  body {
+    background-color: #F9F9F9;
+    color: #323232;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  html,
+  body {
+    background-color: #212123;
+    color: #ffffff;
   }
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+#root {
+  width: 100%;
+  height: 100%;
   display: flex;
-  flex-direction: column;
+}
+
+.react-transform-wrapper {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  /* Prevent the content from being selectionable */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+       user-select: none;
+}
+
+.heroHeaderText {
+  margin: 50px 0 0 24px;
+  font-family: AvenirNextLTPro-Demi, -apple-system, BlinkMacSystemFont, sans-serif;
+  letter-spacing: 0.3px;
+  font-size: 22px;
+}
+@media (prefers-color-scheme: light) {
+  .heroHeaderText {
+    color: #646464;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .heroHeaderText {
+    color: #ffffff;
+  }
+}
+
+.primaryText {
+  font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+}
+@media (prefers-color-scheme: light) {
+  .primaryText {
+    color: #323232;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .primaryText {
+    color: #ffffff;
+  }
+}
+
+.primaryBoldText {
+  font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+}
+@media (prefers-color-scheme: light) {
+  .primaryBoldText {
+    color: #323232;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .primaryBoldText {
+    color: #ffffff;
+  }
+}
+
+.primaryMediumText {
+  font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  font-size: 15px;
+}
+@media (prefers-color-scheme: light) {
+  .primaryMediumText {
+    color: #323232;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .primaryMediumText {
+    color: #ffffff;
+  }
+}
+
+.primaryBigText {
+  font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  font-size: 25px;
+  margin-bottom: 10px;
+}
+@media (prefers-color-scheme: light) {
+  .primaryBigText {
+    color: #323232;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .primaryBigText {
+    color: #ffffff;
+  }
+}
+
+.secondaryText {
+  font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px;
+}
+@media (prefers-color-scheme: light) {
+  .secondaryText {
+    color: #868688;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .secondaryText {
+    color: #949494;
+  }
+}
+
+.draggableArea {
+  position: absolute;
+  width: 100vw;
+  height: 30px;
+  background-color: transparent;
+  z-index: 1;
+}
+.draggableArea span {
+  font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px;
+}
+@media (prefers-color-scheme: light) {
+  .draggableArea span {
+    color: #868688;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .draggableArea span {
+    color: #949494;
+  }
+}
+
+.dotted {
+  background: transparent;
+  background-size: 20px 20px;
+  background-position: -19px -19px;
+}
+@media (prefers-color-scheme: light) {
+  .dotted {
+    background-image: radial-gradient(#DFDFDF 1px, transparent 0);
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .dotted {
+    background-image: radial-gradient(#37373A 1px, transparent 0);
+  }
+}
+
+.layoutPanel {
+  overflow: hidden;
+  border-radius: 10px;
+  box-shadow: rgba(0, 0, 0, 0.15) 0 2px 16px 0;
+}
+@media (prefers-color-scheme: light) {
+  .layoutPanel {
+    background-color: #F9F9F9;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .layoutPanel {
+    background-color: #28282A;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  .bottomBar {
+    background-color: #F0F0F0;
+    border-top: 1px solid #DDDDDD;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .bottomBar {
+    background-color: #28282D;
+    border-top: 1px solid #4D4D4D;
+  }
+}
+
+.actionsRow {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  display: flex;
+  align-content: center;
+  align-items: center;
+  padding: 10px 10px 10px 20px;
+}
+
+.btnPrimary {
+  border: none;
+  width: 150px;
+  height: 34px;
+  border-radius: 17px;
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+  margin: 0 auto;
+  outline: none;
+  font-family: AvenirNextLTPro-Demi, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px;
+  background-color: #235FFF;
+  transition: all 0.1s ease-out;
+  color: #ffffff;
+  margin-left: 5px;
+  line-height: 38px;
+}
+.btnPrimary:hover {
+  background-color: #4274ff;
+  outline: none;
+}
+.btnPrimary:active {
+  background-color: #1b4edb;
+  border-color: #1b4edb;
+  outline: none;
+}
+.btnPrimary:disabled {
+  background-color: #235FFF;
+  border-color: #235FFF;
+  outline: none;
+  opacity: 0.3;
+}
+.btnPrimary.xl {
+  width: 170px;
+}
+.btnPrimary.xxl {
+  width: 210px;
+}
+
+.btnSecondary {
+  background-color: transparent;
+  width: 100px;
+  height: 34px;
+  border-radius: 17px;
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+  margin: 0 auto;
+  outline: none;
+  font-family: AvenirNextLTPro-Demi, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px;
+  transition: all 0.1s ease-out;
+  line-height: 34px;
+}
+@media (prefers-color-scheme: light) {
+  .btnSecondary {
+    border: 1px solid #9797A9;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .btnSecondary {
+    border: 1px solid #9595A8;
+  }
+}
+@media (prefers-color-scheme: light) {
+  .btnSecondary {
+    color: #323232;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .btnSecondary {
+    color: #ffffff;
+  }
+}
+.btnSecondary:hover {
+  outline: none;
+}
+@media (prefers-color-scheme: light) {
+  .btnSecondary:hover {
+    background-color: rgba(35, 95, 255, 0.1);
+    border-color: #4274ff;
+    color: #1b52e9;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .btnSecondary:hover {
+    background-color: rgba(35, 95, 255, 0.1);
+    border-color: #4274ff;
+  }
+}
+.btnSecondary:active {
+  outline: none;
+}
+@media (prefers-color-scheme: light) {
+  .btnSecondary:active {
+    background-color: rgba(35, 95, 255, 0.2);
+    border-color: #1b4edb;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .btnSecondary:active {
+    background-color: rgba(35, 95, 255, 0.2);
+    border-color: #1b4edb;
+  }
+}
+.btnSecondary.xl {
+  width: 200px;
+}
+.btnSecondary.xxl {
+  width: 260px;
+}
+
+.btnTertiary {
+  border: 1px solid transparent;
+  background-color: transparent;
+  width: 100px;
+  height: 34px;
+  border-radius: 17px;
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+  margin: 0 auto;
+  outline: none;
+  font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px;
+  transition: all 0.1s ease-out;
+}
+@media (prefers-color-scheme: light) {
+  .btnTertiary {
+    color: #868688;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .btnTertiary {
+    color: #949494;
+  }
+}
+.btnTertiary:hover {
+  outline: none;
+}
+@media (prefers-color-scheme: light) {
+  .btnTertiary:hover {
+    border-color: #4274ff;
+    color: #1b52e9;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .btnTertiary:hover {
+    border-color: #4274ff;
+    color: #ffffff;
+  }
+}
+.btnTertiary:active {
+  outline: none;
+}
+@media (prefers-color-scheme: light) {
+  .btnTertiary:active {
+    border-color: #1b4edb;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .btnTertiary:active {
+    border-color: #1b4edb;
+  }
+}
+
+.btnPrimaryRegular {
+  border: none;
+  width: 100%;
+  height: 24px;
+  border-radius: 4px;
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+  outline: none;
+  font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px;
+  transition: all 0.1s ease-out;
+  background-color: #235FFF;
+  color: #ffffff;
+}
+.btnPrimaryRegular svg #bg {
+  fill: #ffffff;
+}
+.btnPrimaryRegular svg #lines,
+.btnPrimaryRegular svg #dots {
+  stroke: #ffffff;
+}
+.btnPrimaryRegular:hover {
+  background-color: #4274ff;
+  outline: none;
+}
+.btnPrimaryRegular:active {
+  background-color: #1b4edb;
+  outline: none;
+}
+
+.btnSecondaryRegular {
+  border: none;
+  width: 100%;
+  height: 24px;
+  border-radius: 4px;
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+  outline: none;
+  font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px;
+  transition: all 0.1s ease-out;
+}
+@media (prefers-color-scheme: light) {
+  .btnSecondaryRegular {
+    background-color: rgba(187, 187, 187, 0);
+    border: 1px solid #BBBBBB;
+    color: #323232;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .btnSecondaryRegular {
+    background-color: #454649;
+    color: #ffffff;
+  }
+}
+.btnSecondaryRegular:hover {
+  outline: none;
+}
+@media (prefers-color-scheme: light) {
+  .btnSecondaryRegular:hover {
+    background-color: rgba(204, 204, 204, 0.2);
+    border: 1px solid #CCCCCC;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .btnSecondaryRegular:hover {
+    background-color: #545558;
+  }
+}
+.btnSecondaryRegular:active {
+  outline: none;
+}
+@media (prefers-color-scheme: light) {
+  .btnSecondaryRegular:active {
+    background-color: rgba(170, 170, 170, 0.1);
+    border: 1px solid #AAAAAA;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .btnSecondaryRegular:active {
+    background-color: #35363a;
+  }
+}
+
+.btnTertiaryRegular {
+  border: none;
+  width: 100%;
+  height: 24px;
+  border-radius: 4px;
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+  outline: none;
+  font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px;
+  transition: all 0.1s ease-out;
+}
+@media (prefers-color-scheme: light) {
+  .btnTertiaryRegular svg #bg {
+    fill: #727272;
+  }
+  .btnTertiaryRegular svg #lines,
+  .btnTertiaryRegular svg #dots {
+    stroke: #727272;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .btnTertiaryRegular svg #bg {
+    fill: #ffffff;
+  }
+  .btnTertiaryRegular svg #lines,
+  .btnTertiaryRegular svg #dots {
+    stroke: #ffffff;
+  }
+}
+@media (prefers-color-scheme: light) {
+  .btnTertiaryRegular {
+    background-color: rgba(187, 187, 187, 0);
+    border: 1px solid #BBBBBB;
+    color: #323232;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .btnTertiaryRegular {
+    background-color: rgba(69, 70, 73, 0);
+    border: 1px solid #454649;
+    color: #ffffff;
+  }
+}
+.btnTertiaryRegular:hover {
+  outline: none;
+}
+@media (prefers-color-scheme: light) {
+  .btnTertiaryRegular:hover {
+    background-color: rgba(204, 204, 204, 0.2);
+    border: 1px solid #CCCCCC;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .btnTertiaryRegular:hover {
+    background-color: rgba(84, 85, 88, 0.2);
+    border: 1px solid #545558;
+  }
+}
+.btnTertiaryRegular:active {
+  outline: none;
+}
+@media (prefers-color-scheme: light) {
+  .btnTertiaryRegular:active {
+    background-color: rgba(170, 170, 170, 0.1);
+    border: 1px solid #AAAAAA;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .btnTertiaryRegular:active {
+    background-color: rgba(53, 54, 58, 0.1);
+    border: 1px solid #35363a;
+  }
+}
+
+.btnMesh {
+  border: none;
+  width: 100%;
+  height: 24px;
+  border-radius: 4px;
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+  outline: none;
+  font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px;
+  transition: all 0.1s ease-out;
+  border-radius: 13px;
+  height: 26px;
+  width: 42px;
+  margin: 0 8px 8px 0;
+}
+@media (prefers-color-scheme: light) {
+  .btnMesh svg #bg {
+    fill: #727272;
+  }
+  .btnMesh svg #lines,
+  .btnMesh svg #dots {
+    stroke: #727272;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .btnMesh svg #bg {
+    fill: #ffffff;
+  }
+  .btnMesh svg #lines,
+  .btnMesh svg #dots {
+    stroke: #ffffff;
+  }
+}
+@media (prefers-color-scheme: light) {
+  .btnMesh {
+    background-color: rgba(187, 187, 187, 0);
+    border: 1px solid #BBBBBB;
+    color: #323232;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .btnMesh {
+    background-color: rgba(69, 70, 73, 0);
+    border: 1px solid #454649;
+    color: #ffffff;
+  }
+}
+.btnMesh:hover {
+  outline: none;
+}
+@media (prefers-color-scheme: light) {
+  .btnMesh:hover {
+    background-color: rgba(204, 204, 204, 0.2);
+    border: 1px solid #CCCCCC;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .btnMesh:hover {
+    background-color: rgba(84, 85, 88, 0.2);
+    border: 1px solid #545558;
+  }
+}
+.btnMesh:active {
+  outline: none;
+}
+@media (prefers-color-scheme: light) {
+  .btnMesh:active {
+    background-color: rgba(170, 170, 170, 0.1);
+    border: 1px solid #AAAAAA;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .btnMesh:active {
+    background-color: rgba(53, 54, 58, 0.1);
+    border: 1px solid #35363a;
+  }
+}
+.btnMesh.selected {
+  border: 1px solid #235FFF;
+  background: rgba(35, 95, 255, 0.2);
+}
+
+.btnMessaging {
+  margin-top: 30px;
+}
+
+.registerHeader {
+  font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  font-size: 15px;
+  font-size: 32px;
+  text-align: center;
+}
+@media (prefers-color-scheme: light) {
+  .registerHeader {
+    color: #323232;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .registerHeader {
+    color: #ffffff;
+  }
+}
+
+.registerText {
+  font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px;
+  width: 400px;
+  margin: 30px 0 30px 0;
+  text-align: center;
+}
+@media (prefers-color-scheme: light) {
+  .registerText {
+    color: #868688;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .registerText {
+    color: #949494;
+  }
+}
+
+.awaitingText {
+  font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  width: 400px;
+  margin: 30px 0 30px 0;
+  text-align: center;
+}
+@media (prefers-color-scheme: light) {
+  .awaitingText {
+    color: #323232;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .awaitingText {
+    color: #ffffff;
+  }
+}
+
+.btnStartTrial {
+  background-color: transparent;
+  width: 100px;
+  height: 34px;
+  border-radius: 17px;
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+  margin: 0 auto;
+  outline: none;
+  font-family: AvenirNextLTPro-Demi, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px;
+  transition: all 0.1s ease-out;
+  line-height: 34px;
+  width: 200px;
+}
+@media (prefers-color-scheme: light) {
+  .btnStartTrial {
+    border: 1px solid #9797A9;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .btnStartTrial {
+    border: 1px solid #9595A8;
+  }
+}
+@media (prefers-color-scheme: light) {
+  .btnStartTrial {
+    color: #323232;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .btnStartTrial {
+    color: #ffffff;
+  }
+}
+.btnStartTrial:hover {
+  outline: none;
+}
+@media (prefers-color-scheme: light) {
+  .btnStartTrial:hover {
+    background-color: rgba(35, 95, 255, 0.1);
+    border-color: #4274ff;
+    color: #1b52e9;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .btnStartTrial:hover {
+    background-color: rgba(35, 95, 255, 0.1);
+    border-color: #4274ff;
+  }
+}
+.btnStartTrial:active {
+  outline: none;
+}
+@media (prefers-color-scheme: light) {
+  .btnStartTrial:active {
+    background-color: rgba(35, 95, 255, 0.2);
+    border-color: #1b4edb;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .btnStartTrial:active {
+    background-color: rgba(35, 95, 255, 0.2);
+    border-color: #1b4edb;
+  }
+}
+
+.btnGetItNow {
+  border: none;
+  width: 150px;
+  height: 34px;
+  border-radius: 17px;
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+  margin: 0 auto;
+  outline: none;
+  font-family: AvenirNextLTPro-Demi, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px;
+  background-color: #235FFF;
+  transition: all 0.1s ease-out;
+  color: #ffffff;
+  margin-left: 5px;
+  line-height: 38px;
+  width: 200px;
+}
+.btnGetItNow:hover {
+  background-color: #4274ff;
+  outline: none;
+}
+.btnGetItNow:active {
+  background-color: #1b4edb;
+  border-color: #1b4edb;
+  outline: none;
+}
+.btnGetItNow:disabled {
+  background-color: #235FFF;
+  border-color: #235FFF;
+  outline: none;
+  opacity: 0.3;
+}
+
+.btnAlreadyLicense {
+  border: 1px solid transparent;
+  background-color: transparent;
+  width: 100px;
+  height: 34px;
+  border-radius: 17px;
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+  margin: 0 auto;
+  outline: none;
+  font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px;
+  transition: all 0.1s ease-out;
+  width: 200px;
+  margin-top: 30px;
+}
+@media (prefers-color-scheme: light) {
+  .btnAlreadyLicense {
+    color: #868688;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .btnAlreadyLicense {
+    color: #949494;
+  }
+}
+.btnAlreadyLicense:hover {
+  outline: none;
+}
+@media (prefers-color-scheme: light) {
+  .btnAlreadyLicense:hover {
+    border-color: #4274ff;
+    color: #1b52e9;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .btnAlreadyLicense:hover {
+    border-color: #4274ff;
+    color: #ffffff;
+  }
+}
+.btnAlreadyLicense:active {
+  outline: none;
+}
+@media (prefers-color-scheme: light) {
+  .btnAlreadyLicense:active {
+    border-color: #1b4edb;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .btnAlreadyLicense:active {
+    border-color: #1b4edb;
+  }
+}
+
+.btnBack {
+  border: 1px solid transparent;
+  background-color: transparent;
+  width: 100px;
+  height: 34px;
+  border-radius: 17px;
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+  margin: 0 auto;
+  outline: none;
+  font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px;
+  transition: all 0.1s ease-out;
+  width: 150px;
+  margin-top: 16px;
+}
+@media (prefers-color-scheme: light) {
+  .btnBack {
+    color: #868688;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .btnBack {
+    color: #949494;
+  }
+}
+.btnBack:hover {
+  outline: none;
+}
+@media (prefers-color-scheme: light) {
+  .btnBack:hover {
+    border-color: #4274ff;
+    color: #1b52e9;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .btnBack:hover {
+    border-color: #4274ff;
+    color: #ffffff;
+  }
+}
+.btnBack:active {
+  outline: none;
+}
+@media (prefers-color-scheme: light) {
+  .btnBack:active {
+    border-color: #1b4edb;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .btnBack:active {
+    border-color: #1b4edb;
+  }
+}
+
+.registerLogo {
+  margin-bottom: 20px;
+  width: 128px;
+}
+@media (prefers-color-scheme: light) {
+  .registerLogo path {
+    fill: #323232;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .registerLogo path {
+    fill: #ffffff;
+  }
+}
+
+.loadingIndicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.loadingIndicator.fadeOut {
+  transition: visibility 0.2s, transform 0.3s ease-out, opacity 0.2s ease-out !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+.registerFormWithLogo {
+  height: 510px;
+  visibility: hidden;
+  opacity: 0;
+  transform: translate(0, 50px);
+  transition: all 0.3s ease-out;
+}
+.registerFormWithLogo.fadeIn {
+  transition: visibility 0s, transform 0.3s ease-out, opacity 0.3s ease-out !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  transform: translate(0, 0px) !important;
+}
+
+#ctaForm {
+  opacity: 1;
+  transition: transform 0.3s ease-out, opacity 0.3s 0.1s ease-out;
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, 0);
+  margin-top: 32px;
+}
+
+#registerForm,
+#startTrialForm {
+  width: 400px;
+  position: absolute;
+  left: 50%;
+  visibility: hidden;
+  opacity: 0;
+  transform: translate(-50%, 50px);
+  transition: all 0.3s ease-out;
+}
+#registerForm input,
+#startTrialForm input {
+  width: 100%;
+}
+
+.loginContent {
+  height: 360px;
+}
+
+#awaitingForm,
+#awaitingTrialForm,
+#issueForm,
+#activationTimeout,
+#trialStartedForm,
+#noConnectionForm,
+#confirmationForm {
+  position: absolute;
+  left: 50%;
+  visibility: hidden;
+  opacity: 0;
+  transform: translate(-50%, 50px);
+  transition: all 0.3s ease-out;
+}
+
+.fadeIn {
+  transition: visibility 0s, opacity 0.5s linear;
+  visibility: visible;
+  opacity: 1;
+}
+
+.deferredFadeIn {
+  transition: visibility 0s, opacity 0.2s 0.2s linear;
+  visibility: visible;
+  opacity: 1;
+}
+
+.fadeOut {
+  transition: opacity 0.5s linear, visibility 0s 0.5s;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.quickFadeOut {
+  transition: opacity 0.2s linear, visibility 0s 0.2s;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.movingYFadeInitialState {
+  transition: transform 0.3s ease-out, opacity 0.3s 0.1s ease-out;
+  transform: translateY(30px);
+  opacity: 0;
+}
+
+.movingYFadeIn {
+  transform: translateY(0px);
+  opacity: 1;
+}
+
+.movingYFadeOut {
+  transition: opacity 0.15s ease-out, transform 0s 0.3s ease-out !important;
+  transform: translateY(30px);
+  opacity: 0;
+}
+
+.animatedDiv .yFadeIn {
+  transition: visibility 0s, transform 0.3s ease-out, opacity 0.3s ease-out !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  transform: translate(-50%, 0px) !important;
+}
+.animatedDiv .yFadeUp {
+  transition: transform 0.3s ease-out, opacity 0.3s ease-out, visibility 0s 0.3s !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  transform: translate(-50%, -50px) !important;
+}
+.animatedDiv .yFadeDown {
+  transition: transform 0.3s ease-out, opacity 0.3s ease-out, visibility 0s 0.3s !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  transform: translate(-50%, 50px) !important;
+}
+
+@media (prefers-color-scheme: light) {
+  .separatorBelow {
+    border-bottom: 1px solid #DDDDDD;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .separatorBelow {
+    border-bottom: 1px solid #4D4D4D;
+  }
+}
+
+.tabButton {
+  background-color: transparent;
+  border: none;
+  font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  font-size: 14px;
+  font-weight: 400;
+  width: 100%;
+  height: 52px;
+  transition: background-color 0.1s ease-in-out;
+}
+@media (prefers-color-scheme: light) {
+  .tabButton {
+    color: #323232;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .tabButton {
+    color: #ffffff;
+  }
+}
+@media (prefers-color-scheme: light) {
+  .tabButton:hover {
+    background-color: rgba(35, 95, 255, 0.05);
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .tabButton:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+}
+@media (prefers-color-scheme: light) {
+  .tabButton:active {
+    background-color: rgba(35, 95, 255, 0.1);
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .tabButton:active {
+    background-color: rgba(255, 255, 255, 0.01);
+  }
+}
+
+.tabIndicator {
+  position: absolute;
+  bottom: 0;
+  height: 3px;
+  background-color: #235FFF;
+  width: 50%;
+  left: 0;
+  transition: left 0.1s ease-in-out;
+}
+
+.tabContent {
+  padding: 24px;
+}
+
+.roundCheckbox {
+  position: relative;
+  margin-bottom: 7px;
+}
+.roundCheckbox .padder {
+  width: 160px;
+  height: 100%;
+  background-color: transparent;
+}
+.roundCheckbox label {
+  border-radius: 50%;
+  cursor: pointer;
+  height: 20px;
+  width: 20px;
+  z-index: 30;
+  left: 0;
+  position: absolute;
+  top: 0;
+  background-color: transparent;
+  border: 2px solid;
+  transition: all 0.1s;
+}
+@media (prefers-color-scheme: light) {
+  .roundCheckbox label {
+    border-color: #BBBBBB;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .roundCheckbox label {
+    border-color: #454649;
+  }
+}
+@media (prefers-color-scheme: light) {
+  .roundCheckbox label:hover {
+    border-color: #CCCCCC;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .roundCheckbox label:hover {
+    border-color: #545558;
+  }
+}
+@media (prefers-color-scheme: light) {
+  .roundCheckbox label:active {
+    border-color: #AAAAAA;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .roundCheckbox label:active {
+    border-color: #35363a;
+  }
+}
+.roundCheckbox label span {
+  left: 25px;
+  width: 140px;
+  position: absolute;
+  font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px;
+}
+@media (prefers-color-scheme: light) {
+  .roundCheckbox label span {
+    color: #868688;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .roundCheckbox label span {
+    color: #949494;
+  }
+}
+.roundCheckbox label span.longLabel {
+  width: 500px;
+}
+.roundCheckbox label:after {
+  border: 2px solid white;
+  border-top: none;
+  border-right: none;
+  content: "";
+  height: 6px;
+  left: 3px;
+  opacity: 0;
+  position: absolute;
+  top: 4px;
+  transform: rotate(-45deg);
+  width: 10px;
+}
+.roundCheckbox input[type=checkbox] {
+  visibility: hidden;
+}
+.roundCheckbox input[type=checkbox]:checked + label {
+  background-color: #235FFF;
+  border-color: #235FFF;
+}
+.roundCheckbox input[type=checkbox]:checked + label:after {
+  opacity: 1;
+}
+
+div::-webkit-scrollbar-track {
+  border-radius: 5px;
+  background-color: transparent;
+}
+
+div::-webkit-scrollbar {
+  width: 5px;
+  background-color: transparent;
+}
+
+div::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+}
+@media (prefers-color-scheme: light) {
+  div::-webkit-scrollbar-thumb {
+    background-color: #C9C9C9;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  div::-webkit-scrollbar-thumb {
+    background-color: #424242;
+  }
+}
+@media (prefers-color-scheme: light) {
+  div::-webkit-scrollbar-thumb:hover {
+    background-color: #B9b9b9;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  div::-webkit-scrollbar-thumb:hover {
+    background-color: #606060;
+  }
+}
+@media (prefers-color-scheme: light) {
+  div::-webkit-scrollbar-thumb:active {
+    background-color: #a9a9a9;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  div::-webkit-scrollbar-thumb:active {
+    background-color: #323232;
+  }
+}
+
+input,
+textarea {
+  -webkit-user-select: auto;
+  -moz-user-select: auto;
+       user-select: auto;
+}
+
+.inputLabel {
+  font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px;
+  text-align: left;
+  margin: 0 0 8px 0;
+}
+@media (prefers-color-scheme: light) {
+  .inputLabel {
+    color: #868688;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .inputLabel {
+    color: #949494;
+  }
+}
+
+.inputMessage {
+  font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px;
+  text-align: left;
+  margin: 0 0 24px 0;
+}
+@media (prefers-color-scheme: light) {
+  .inputMessage {
+    color: #868688;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .inputMessage {
+    color: #949494;
+  }
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+  border-bottom: none;
+}
+.tooltip .tooltipText {
+  visibility: hidden;
+  width: 240px;
+  border-radius: 6px;
+  padding: 5px 10px;
+  position: absolute;
+  z-index: 1;
+  bottom: 150%;
+  left: 7px;
+  margin-left: -120px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  box-shadow: 0px 2px 11px rgba(0, 0, 0, 0.2);
+}
+@media (prefers-color-scheme: light) {
+  .tooltip .tooltipText {
+    background-color: #FFFFFF;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .tooltip .tooltipText {
+    background-color: #39393E;
+  }
+}
+.tooltip .tooltipText::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+}
+@media (prefers-color-scheme: light) {
+  .tooltip .tooltipText::after {
+    border-color: #FFFFFF transparent transparent transparent;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .tooltip .tooltipText::after {
+    border-color: #39393E transparent transparent transparent;
+  }
+}
+.tooltip .tooltipText span {
+  font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+}
+@media (prefers-color-scheme: light) {
+  .tooltip .tooltipText span {
+    color: #323232;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .tooltip .tooltipText span {
+    color: #ffffff;
+  }
+}
+.tooltip:hover .tooltipText {
+  visibility: visible;
+  opacity: 1;
+}
+
+.warningText {
+  font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  color: #FF6D6D !important;
+  margin: 20px 0 0 0;
+  height: 0;
+  visibility: hidden;
+  opacity: 0;
+  transition: height 0.3s ease-out, opacity 0.3s ease-out, visibility 0s 0.3s;
+}
+@media (prefers-color-scheme: light) {
+  .warningText {
+    color: #323232;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .warningText {
+    color: #ffffff;
+  }
+}
+
+.warningTextVisible {
+  transition: visibility 0s, height 0.3s ease-out, opacity 0.3s ease-out;
+  visibility: visible;
+  height: 35px;
+  opacity: 1;
+}
+
+input[type=text] {
+  padding: 8px 12px;
+  width: 305px;
+  height: 34px;
+  margin: 0 0 8px 0;
+  box-sizing: border-box;
+  border-radius: 3px;
+  outline: none;
+  font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+}
+@media (prefers-color-scheme: light) {
+  input[type=text] {
+    color: #323232;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  input[type=text] {
+    color: #ffffff;
+  }
+}
+@media (prefers-color-scheme: light) {
+  input[type=text] {
+    background-color: #FFFFFF;
+    border: 1px solid #A9A9A9;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  input[type=text] {
+    background-color: #28282A;
+    border: 1px solid #6A6A6A;
+  }
+}
+input[type=text].hasMessage {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 26px;
+  margin-right: 15px;
+}
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.settingsRow {
+  width: 320px;
+  margin-bottom: 10px;
+}
+
+.detailsRow .detailsTitle {
+  margin-top: 4px;
+  margin-bottom: 5px;
+}
+
+.settingsDescription {
+  padding: 0 50px 15px 50px;
+}
+
+.leftPanel {
+  width: 320px;
+  margin: 20px 0 50px 20px;
+  transition: width 0.3s ease-in-out;
+}
+.leftPanel.collapsed {
+  width: 48px;
+}
+@media (prefers-color-scheme: light) {
+  .leftPanel.collapsed:hover .collapseLeftPanel div {
+    background-color: #DFDFDF;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .leftPanel.collapsed:hover .collapseLeftPanel div {
+    background-color: #434346;
+  }
+}
+
+.collapseLeftPanel {
+  position: absolute;
+  right: -13px;
+  top: 15px;
+  width: 26px;
+  height: 26px;
+  z-index: 1;
+}
+.collapseLeftPanel div {
+  box-shadow: rgba(0, 0, 0, 0.15) 0 2px 16px 0;
+  border-radius: 4px;
+  transform: rotate(45deg);
+  width: 100%;
+  height: 100%;
+}
+@media (prefers-color-scheme: light) {
+  .collapseLeftPanel div {
+    background-color: #ffffff;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .collapseLeftPanel div {
+    background-color: #37373A;
+  }
+}
+@media (prefers-color-scheme: light) {
+  .collapseLeftPanel div:hover {
+    background-color: #DFDFDF;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .collapseLeftPanel div:hover {
+    background-color: #434346;
+  }
+}
+@media (prefers-color-scheme: light) {
+  .collapseLeftPanel div:active {
+    background-color: #E9E9E9;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .collapseLeftPanel div:active {
+    background-color: #303033;
+  }
+}
+.collapseLeftPanel svg {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  pointer-events: none;
+  transition: transform 0.3s ease-in-out;
+}
+.collapseLeftPanel.collapsed {
+  right: 10px;
+}
+.collapseLeftPanel.collapsed svg {
+  transform: rotate(180deg);
+  left: 11px;
+}
+
+.titleText {
+  font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 11px;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 12px;
+  font-weight: 600;
+}
+@media (prefers-color-scheme: light) {
+  .titleText {
+    color: #868688;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .titleText {
+    color: #949494;
+  }
+}
+
+.titleSpacing {
+  margin-bottom: 16px;
+}
+
+.collapsedPanelText {
+  font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 11px;
+  text-transform: uppercase;
+  font-weight: 700;
+  position: absolute;
+  transform: rotate(270deg);
+  transform-origin: 0 0;
+  width: 180px;
+  top: 200px;
+  left: 20px;
+}
+@media (prefers-color-scheme: light) {
+  .collapsedPanelText {
+    color: #868688;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .collapsedPanelText {
+    color: #949494;
+  }
+}
+
+.formColor {
+  margin-bottom: 8px;
+}
+
+.contentSection {
+  margin-bottom: 32px;
+}
+
+.gradientCollectionContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+  -moz-column-gap: 24px;
+       column-gap: 24px;
+  row-gap: 16px;
+  width: 272px;
+}
+
+.gradientThumbnail {
+  height: 60px;
+  border-radius: 4px;
+  padding: 3px;
+}
+@media (prefers-color-scheme: light) {
+  .gradientThumbnail {
+    background-color: #E9E9E9;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .gradientThumbnail {
+    background-color: #515255;
+  }
+}
+@media (prefers-color-scheme: light) {
+  .gradientThumbnail:hover {
+    background-color: #DFDFDF;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .gradientThumbnail:hover {
+    background-color: #6A6A6A;
+  }
+}
+@media (prefers-color-scheme: light) {
+  .gradientThumbnail:active {
+    background-color: rgba(35, 95, 255, 0.3);
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .gradientThumbnail:active {
+    background-color: #454649;
+  }
+}
+.gradientThumbnail img {
+  border: none;
+  width: 100%;
+  height: 100%;
+}
+@media (prefers-color-scheme: light) {
+  .gradientThumbnail.selected {
+    background-color: #235FFF;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .gradientThumbnail.selected {
+    background-color: #ffffff;
+  }
+}
+@media (prefers-color-scheme: light) {
+  .gradientThumbnail.selected img {
+    border: 1px solid #F9F9F9;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .gradientThumbnail.selected img {
+    border: 1px solid #28282A;
+  }
+}
+
+.customColors .label {
+  font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px;
+  font-family: AvenirNextLTPro-Demi, -apple-system, BlinkMacSystemFont, sans-serif;
+  width: 100px;
+}
+@media (prefers-color-scheme: light) {
+  .customColors .label {
+    color: #868688;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .customColors .label {
+    color: #949494;
+  }
+}
+.customColors .colorField {
+  border: none;
+  width: 100%;
+  height: 24px;
+  border-radius: 4px;
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+  outline: none;
+  font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px;
+  transition: all 0.1s ease-out;
+  height: 32px;
+  padding: 2px;
+}
+@media (prefers-color-scheme: light) {
+  .customColors .colorField svg #bg {
+    fill: #727272;
+  }
+  .customColors .colorField svg #lines,
+  .customColors .colorField svg #dots {
+    stroke: #727272;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .customColors .colorField svg #bg {
+    fill: #ffffff;
+  }
+  .customColors .colorField svg #lines,
+  .customColors .colorField svg #dots {
+    stroke: #ffffff;
+  }
+}
+@media (prefers-color-scheme: light) {
+  .customColors .colorField {
+    background-color: rgba(187, 187, 187, 0);
+    border: 1px solid #BBBBBB;
+    color: #323232;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .customColors .colorField {
+    background-color: rgba(69, 70, 73, 0);
+    border: 1px solid #454649;
+    color: #ffffff;
+  }
+}
+.customColors .colorField:hover {
+  outline: none;
+}
+@media (prefers-color-scheme: light) {
+  .customColors .colorField:hover {
+    background-color: rgba(204, 204, 204, 0.2);
+    border: 1px solid #CCCCCC;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .customColors .colorField:hover {
+    background-color: rgba(84, 85, 88, 0.2);
+    border: 1px solid #545558;
+  }
+}
+.customColors .colorField:active {
+  outline: none;
+}
+@media (prefers-color-scheme: light) {
+  .customColors .colorField:active {
+    background-color: rgba(170, 170, 170, 0.1);
+    border: 1px solid #AAAAAA;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .customColors .colorField:active {
+    background-color: rgba(53, 54, 58, 0.1);
+    border: 1px solid #35363a;
+  }
+}
+.customColors .colorField .colorThumbnail {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  background-color: transparent;
+  margin: 0 8px 0 4px;
+}
+
+.customColorPicker {
+  position: absolute;
+  z-index: 40;
+}
+.customColorPicker .a-color-picker {
+  box-shadow: rgba(0, 0, 0, 0.15) 0 2px 16px 0 !important;
+}
+
+.controlPointEmptyState {
+  font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px;
+  left: 50%;
+  margin-top: 150px;
+  width: 200px;
+  text-align: center;
+}
+@media (prefers-color-scheme: light) {
+  .controlPointEmptyState {
+    color: #868688;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .controlPointEmptyState {
+    color: #949494;
+  }
+}
+.controlPointEmptyState span {
+  left: -50%;
+}
+
+.cpActions {
+  margin: 12px 0 16px 0;
+}
+.cpActions .btnPrimaryRegular,
+.cpActions .btnTertiaryRegular {
+  width: 56px;
+  margin-right: 8px;
+}
+
+.rightColorPicker {
+  margin: 20px 20px 0 0;
+  padding: 20px;
+  width: 272px;
+  min-height: 475px;
+}
+
+.colorPicker .a-color-picker {
+  font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px;
+  border-radius: 10px;
+  padding: 0 0 10px 0;
+  box-shadow: none;
+}
+@media (prefers-color-scheme: light) {
+  .colorPicker .a-color-picker {
+    color: #868688;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .colorPicker .a-color-picker {
+    color: #949494;
+  }
+}
+@media (prefers-color-scheme: light) {
+  .colorPicker .a-color-picker {
+    background-color: #F9F9F9;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .colorPicker .a-color-picker {
+    background-color: #2F2F32;
+  }
+}
+.colorPicker .a-color-picker .a-color-picker-row,
+.colorPicker .a-color-picker .a-color-picker-clipbaord,
+.colorPicker .a-color-picker .a-color-picker-circle {
+  border: none;
+}
+.colorPicker .a-color-picker .a-color-picker-sl {
+  border-radius: 10px 10px 0 0;
+}
+.colorPicker .a-color-picker .a-color-picker-row:not(:first-child) {
+  padding: 10px 16px;
+}
+.colorPicker .a-color-picker .a-color-picker-row label {
+  padding: 0 8px 0 0;
+}
+.colorPicker .a-color-picker .a-color-picker-row input {
+  margin: 0 8px 0 0;
+}
+.colorPicker .a-color-picker .a-color-picker-row input:last-child {
+  margin: 0;
+}
+.colorPicker .a-color-picker .a-color-picker-dot {
+  width: 15px;
+  height: 15px;
+  background-color: transparent;
+  box-shadow: rgba(0, 0, 0, 0.5) 0 2px 4px 0;
+  top: 0;
+}
+@media (prefers-color-scheme: light) {
+  .colorPicker .a-color-picker .a-color-picker-dot {
+    border: 2px solid #ffffff;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .colorPicker .a-color-picker .a-color-picker-dot {
+    border: 2px solid #ffffff;
+  }
+}
+.colorPicker .a-color-picker .a-color-picker-h {
+  border-radius: 4px;
+}
+.colorPicker .a-color-picker .a-color-picker-preview {
+  border: none;
+  border-radius: 4px;
+}
+.colorPicker .a-color-picker input {
+  font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  background: transparent;
+  border-radius: 4px;
+}
+@media (prefers-color-scheme: light) {
+  .colorPicker .a-color-picker input {
+    color: #323232;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .colorPicker .a-color-picker input {
+    color: #ffffff;
+  }
+}
+@media (prefers-color-scheme: light) {
+  .colorPicker .a-color-picker input {
+    border: 1px solid #BBBBBB;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .colorPicker .a-color-picker input {
+    border: 1px solid #454649;
+  }
+}
+.colorPicker .a-color-picker-palette::before {
+  content: "Color variables";
+  width: 100%;
+  margin-bottom: 6px;
+}
+
+.overlay {
+  display: flex;
+  display: flex;
+  align-content: center;
+  align-items: center;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.15);
+  z-index: 20;
+}
+
+.warning {
+  width: 470px;
+  height: 260px;
+  padding: 24px;
+  margin: 0 auto;
+  background-color: #212123;
+  border-radius: 8px;
+  box-shadow: 0 5px 10px 3px rgba(0, 0, 0, 0.5);
+}
+.warning .icon {
+  width: 52px;
+  height: 42px;
+  margin: 16px auto 24px auto;
+}
+.warning .icon img {
+  width: 100%;
+  height: 100%;
+}
+.warning .title {
+  font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  text-align: center;
+  margin-bottom: 12px;
+}
+@media (prefers-color-scheme: light) {
+  .warning .title {
+    color: #323232;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .warning .title {
+    color: #ffffff;
+  }
+}
+.warning .description {
+  font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px;
+  text-align: center;
+  margin-bottom: 32px;
+  line-height: 18px;
+}
+@media (prefers-color-scheme: light) {
+  .warning .description {
+    color: #868688;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .warning .description {
+    color: #949494;
+  }
+}
+.warning .roundCheckbox {
+  top: 5px;
+  margin: 0;
+}
+.warning .actions button {
+  width: 90px;
+}
+
+.meshEditor {
+  margin: 20px 20px;
+  overflow: visible !important;
+  width: calc(100% - 40px);
+  height: calc(100% - 70px);
+  z-index: 10;
+}
+
+.gradient-mesh {
+  position: absolute;
+  display: flex;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  box-shadow: none;
+  cursor: pointer;
+}
+.gradient-mesh.editing {
+  cursor: default;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+}
+.gradient-mesh.editing .control-point {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  top: 0;
+  left: 0;
+  background-color: transparent;
+  border: 2px solid white;
+  border-radius: 12px;
+  cursor: grab;
+  transform: translate(-50%, -50%);
+  box-shadow: rgba(0, 0, 0, 0.5) 0 2px 6px 0;
+}
+.gradient-mesh.editing .control-point.highlighted {
+  background-color: #ffffff;
+}
+.gradient-mesh.editing .control-point.moving {
+  cursor: grabbing;
+}
+.gradient-mesh.editing .control-point.active .tangent-point {
+  display: block;
+}
+.gradient-mesh.editing .control-point.active .tangent-point.hidden {
+  display: none;
+}
+.gradient-mesh.editing .control-point.active.noTangents .tangent-point {
+  display: block;
+  opacity: 0.5;
+  pointer-events: none;
+}
+.gradient-mesh.editing .tangent-point {
+  display: none;
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 5px;
+  background-color: white;
+  cursor: grab;
+  box-shadow: rgba(0, 0, 0, 0.3) 0 2px 6px 0;
+}
+.gradient-mesh.editing .tangent-point.moving {
+  cursor: grabbing;
+}
+.gradient-mesh canvas {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  right: 0;
 }
 
-.App-link {
-  color: #61dafb;
+.gradient-lines {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: none;
+  cursor: pointer;
+  pointer-events: none;
+}
+.gradient-lines canvas {
+  position: absolute;
+  width: inherit;
+  height: inherit;
+  left: 0;
+  right: 0;
 }
 
-@keyframes App-logo-spin {
-  from {
+.shortcutHints {
+  position: absolute;
+  bottom: 18px;
+  left: 50%;
+  font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px;
+}
+@media (prefers-color-scheme: light) {
+  .shortcutHints {
+    color: #868688;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .shortcutHints {
+    color: #949494;
+  }
+}
+.shortcutHints .horizontalLayout {
+  position: relative;
+  left: -50%;
+}
+.shortcutHints .horizontalLayout div {
+  width: 140px;
+}
+.shortcutHints .horizontalLayout div:first-child {
+  margin-right: 48px;
+}
+.shortcutHints .shortKey {
+  border-radius: 4px;
+  padding: 2px 4px;
+  margin-right: 4px;
+}
+@media (prefers-color-scheme: light) {
+  .shortcutHints .shortKey {
+    border: 1px solid #868688;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .shortcutHints .shortKey {
+    border: 1px solid #949494;
+  }
+}
+
+.rubberBand {
+  position: absolute;
+  pointer-events: none;
+  background-color: rgba(35, 95, 255, 0.1);
+  border: 1px solid #235fff;
+  width: 100px;
+  height: 100px;
+  z-index: 10;
+}
+
+.lds-dual-ring {
+  display: inline-block;
+  width: 42px;
+  height: 42px;
+}
+
+.lds-dual-ring:after {
+  content: " ";
+  display: block;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 2px solid rgb(105, 105, 105);
+  border-color: rgb(105, 105, 105) transparent rgb(105, 105, 105) transparent;
+  animation: lds-dual-ring 1.2s linear infinite;
+}
+
+@keyframes lds-dual-ring {
+  0% {
     transform: rotate(0deg);
   }
-  to {
+  100% {
     transform: rotate(360deg);
   }
-}
+}/*# sourceMappingURL=App.css.map */
