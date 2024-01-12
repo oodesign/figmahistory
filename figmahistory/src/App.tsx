@@ -1,4 +1,4 @@
-import React, { SetStateAction, useEffect, useRef, useState } from 'react';
+import React, { ChangeEvent, SetStateAction, useEffect, useRef, useState } from 'react';
 import logo from './logo.svg';
 import { Routes, HashRouter, Route } from 'react-router-dom';
 import axios from 'axios';
@@ -9,6 +9,7 @@ import { TransformWrapper, TransformComponent, ReactZoomPanPinchRef } from "reac
 
 
 import './App.css';
+import { access } from 'fs';
 
 
 type User = {
@@ -17,6 +18,11 @@ type User = {
   img_url: string;
   email: string;
 };
+
+enum Side {
+  LEFT = 0,
+  RIGHT = 1
+}
 
 type Version = {
   id: string;
@@ -37,19 +43,23 @@ const Start = () => {
   const firstImage = useRef<ReactZoomPanPinchRef>(null);
   const secondImage = useRef<ReactZoomPanPinchRef>(null);
 
-  const [version1PageThumbnail, setVersion1PageThumbnail] = useState(null);
-  const [version2PageThumbnail, setVersion2PageThumbnail] = useState(null);
+  const [versionLeftPageThumbnail, setVersionLeftPageThumbnail] = useState(null);
+  const [versionRightPageThumbnail, setVersionRightPageThumbnail] = useState(null);
 
 
   const [file1SelectedOption, setFile1SelectedOption] = useState<string>("");
   const [file2SelectedOption, setFile2SelectedOption] = useState<string>("");
+
+
+  const selectVersion1Ref = useRef<HTMLSelectElement | null>(null);
+  const selectVersion2Ref = useRef<HTMLSelectElement | null>(null);
 
   const [fileVersions, setFileVersions] = useState<Version[]>([]);
 
 
   const FigmaAPIKey = "figd_RRFsYn0yPhRclt5nVvlfYPEdyazwfwlyPulZQBqc"
 
-  
+
 
   async function fetchAllVersions(documentIDReceived: string, accessTokenReceived: string): Promise<Version[]> {
     const versions: Version[] = [];
@@ -86,36 +96,28 @@ const Start = () => {
     return versions;
   }
 
-  async function fetchBothVersions(accessTokenReceived: string, documentIDReceived: string, file1Id: string, file2Id: string) {
 
+  async function fetchVersion(fileId: string, side: Side, documentIDReceived: string, accessTokenReceived: string) {
 
-    console.log("Comparing " + file1Id + " vs. " + file2Id);
+    console.log("Fetching version. documentID:" + documentIDReceived + ", accessToken:" + accessTokenReceived)
 
-    // const selectVersion1 = document.getElementById("selectVersion1") as HTMLSelectElement;
-    // const selectVersion2 = document.getElementById("selectVersion2") as HTMLSelectElement;
-
-    setFile1SelectedOption(file1Id);
-    setFile2SelectedOption(file2Id);
-
-    let getPagesVersion1 = await fetch('https://api.figma.com/v1/files/' + documentIDReceived + "?version=" + file1Id + "&depth=1", {
+    let getPagesVersion = await fetch('https://api.figma.com/v1/files/' + documentIDReceived + "?version=" + fileId + "&depth=1", {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${accessTokenReceived}` 
+        'Authorization': `Bearer ${accessTokenReceived}`
       }
     })
 
-    if (getPagesVersion1.ok) {
-      // If the response is successful, parse the JSON
-      console.log("getPagesVersion1");
-      const responseJson = await getPagesVersion1.json();
+    if (getPagesVersion.ok) {
+      const responseJson = await getPagesVersion.json();
       console.log(responseJson);
 
       let pages = responseJson.document.children.filter((child: any) => child.type === 'CANVAS');
       console.log(pages);
 
-      let file1Page1Id = pages[0].id;
+      let fileFirstPageId = pages[0].id;
 
-      let getPagesVersion1Image = await fetch('https://api.figma.com/v1/images/' + documentIDReceived + "?ids=" + file1Page1Id + "&version=" + file1Id, {
+      let getPagesVersion1Image = await fetch('https://api.figma.com/v1/images/' + documentIDReceived + "?ids=" + fileFirstPageId + "&version=" + fileId, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${accessTokenReceived}` // Replace FigmaAPIKey with your actual access token
@@ -124,78 +126,32 @@ const Start = () => {
 
       if (getPagesVersion1Image.ok) {
         const responseJson = await getPagesVersion1Image.json();
-        console.log(responseJson.images[file1Page1Id]);
-        if (responseJson.images[file1Page1Id])
-          setVersion1PageThumbnail(responseJson.images[file1Page1Id]);
-      }
-    }
-
-
-    let getPagesVersion2 = await fetch('https://api.figma.com/v1/files/' + documentIDReceived + "?version=" + file2Id + "&depth=1", {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${accessTokenReceived}` // Replace FigmaAPIKey with your actual access token
-      }
-    })
-
-    if (getPagesVersion2.ok) {
-      // If the response is successful, parse the JSON
-      console.log("getPagesVersion2");
-      const responseJson = await getPagesVersion2.json();
-      // console.log(responseJson);
-
-      let pages = responseJson.document.children.filter((child: any) => child.type === 'CANVAS');
-      console.log(pages);
-
-      let file2Page1Id = pages[0].id;
-
-      let getPagesVersion2Image = await fetch('https://api.figma.com/v1/images/' + documentIDReceived + "?ids=" + file2Page1Id + "&version=" + file2Id, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${accessTokenReceived}` // Replace FigmaAPIKey with your actual access token
+        console.log(responseJson.images[fileFirstPageId]);
+        if (responseJson.images[fileFirstPageId]) {
+          if (side == Side.LEFT) setVersionLeftPageThumbnail(responseJson.images[fileFirstPageId]);
+          else if (side == Side.RIGHT) setVersionRightPageThumbnail(responseJson.images[fileFirstPageId]);
         }
-      })
-
-
-      if (getPagesVersion2Image.ok) {
-        const responseJson = await getPagesVersion2Image.json();
-        console.log(responseJson.images[file2Page1Id]);
-
-        if (responseJson.images[file2Page1Id])
-          setVersion2PageThumbnail(responseJson.images[file2Page1Id]);
       }
     }
-
   }
+
 
   // Usage in a React component or elsewhere in your TypeScript code
   const fetchFigmaFiles = async (documentIDReceived: string, accessTokenReceived: string) => {
 
-    console.log("Document ID is:" + documentIDReceived);
-    console.log("accessToken is:" + accessTokenReceived);
-
-    // let result = await fetch('https://api.figma.com/v1/files/' + documentIDReceived + "/versions", {
-    //   method: 'GET',
-    //   headers: {
-    //     'Authorization': `Bearer ${accessTokenReceived}` // Replace FigmaAPIKey with your actual access token
-    //   }
-    // })
-
-    // let figmaFileStruct = await result.json()
-
-    //console.log(figmaFileStruct);
-
     const allVersions: Version[] = await fetchAllVersions(documentIDReceived, accessTokenReceived);
-
 
     console.log("allVersions:");
     console.log(allVersions);
 
-
-
     setFileVersions(allVersions);
 
-    fetchBothVersions(accessTokenReceived, documentIDReceived, allVersions[0].id, allVersions[1].id)
+    setFile1SelectedOption(allVersions[0].id);
+    setFile2SelectedOption(allVersions[1].id);
+
+    fetchVersion(allVersions[0].id, Side.LEFT, documentIDReceived, accessTokenReceived);
+    fetchVersion(allVersions[1].id, Side.RIGHT, documentIDReceived, accessTokenReceived);
+
   };
 
   const handleFigmaAuthentication = async (code: string) => {
@@ -217,6 +173,7 @@ const Start = () => {
         console.log(responseObject.figmaData)
         console.log("AccessToken returned is:" + responseObject.figmaData.access_token)
         if (responseObject.figmaData.access_token) setAccessToken(responseObject.figmaData.access_token);
+        setDocumentID(figmaDocumentID);
         fetchFigmaFiles(figmaDocumentID, responseObject.figmaData.access_token)
       })
       .then(data => console.log(data))
@@ -270,6 +227,7 @@ const Start = () => {
     if (token && figmaDocumentID) {
       console.log("Token is known")
       setAccessToken(token);
+      setDocumentID(figmaDocumentID);
       fetchFigmaFiles(figmaDocumentID, token)
     }
     else {
@@ -324,36 +282,47 @@ const Start = () => {
   };
 
 
+  function onVersion1Changed(event: ChangeEvent<HTMLSelectElement>): void {
+    console.log("Changed v1 to version:" + event.target.value);
+    setFile1SelectedOption(event.target.value);
+    if (documentID && accessToken) fetchVersion(event.target.value, Side.LEFT, documentID, accessToken);
+  }
+  function onVersion2Changed(event: ChangeEvent<HTMLSelectElement>): void {
+    console.log("Changed v2 to version:" + event.target.value);
+    setFile2SelectedOption(event.target.value);
+    if (documentID && accessToken) fetchVersion(event.target.value, Side.RIGHT, documentID, accessToken);
+  }
+
   return <div>
     {/* <input id="figmaFileURL" type='text' placeholder='Paste your Figma URL here' defaultValue="https://www.figma.com/file/58J9lvktDn7tFZu16UDJHl/Dolby-pHRTF---Capture-app---No-Cloud?type=design&node-id=10163%3A65721&mode=design&t=6n0ZrLO9YyM2lHjb-1" /> */}
     <input id="figmaFileURL" type='text' placeholder='Paste your Figma URL here' defaultValue="https://www.figma.com/file/HTUxsQSO4pR1GCvv8Nvqd5/HistoryChecker?type=design&node-id=1%3A2&mode=design&t=ffdrgnmtJ92dZgeQ-1" />
     <button onClick={getData}>Auth Figma</button>
-    <select id="selectVersion1" placeholder='version to compare (1)' value={file1SelectedOption}>
+    <select id="selectVersion1" value={file1SelectedOption} onChange={onVersion1Changed}>
       {renderOptions()}
     </select>
-    <select id="selectVersion2" placeholder='version to compare (2)' value={file2SelectedOption}>
-    {renderOptions()}
+    <select id="selectVersion2" value={file2SelectedOption} onChange={onVersion2Changed}>
+      {renderOptions()}
     </select>
-{/* 
-    {version2PageThumbnail !== null && version1PageThumbnail !== null && (
-      <ImageDiff before={version2PageThumbnail} after={version1PageThumbnail} type="fade" value={.5} />
+    {/* 
+    {versionRightPageThumbnail !== null && versionLeftPageThumbnail !== null && (
+      <ImageDiff before={versionRightPageThumbnail} after={versionLeftPageThumbnail} type="fade" value={.5} />
     )} */}
 
-    {version2PageThumbnail !== null && version1PageThumbnail !== null && (
-      
+    {versionRightPageThumbnail !== null && versionLeftPageThumbnail !== null && (
+
       <ReactCompareSlider
         onlyHandleDraggable={true}
         itemOne={
           <TransformWrapper ref={secondImage} onTransformed={handleTransform}>
             <TransformComponent>
-              <img src={version2PageThumbnail} alt="Image two" />
+              <img src={versionLeftPageThumbnail} alt="Image two" />
             </TransformComponent>
           </TransformWrapper>
         }
         itemTwo={
           <TransformWrapper ref={firstImage} onTransformed={handleTransform}>
             <TransformComponent>
-              <img src={version1PageThumbnail} alt="Image on" />
+              <img src={versionRightPageThumbnail} alt="Image on" />
             </TransformComponent>
           </TransformWrapper>
         }
