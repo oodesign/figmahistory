@@ -10,6 +10,8 @@ import { TransformWrapper, TransformComponent, ReactZoomPanPinchRef } from "reac
 
 import './App.css';
 import { access } from 'fs';
+import { NodeWithImage } from './NodeWithImage';
+import Canvas from './Canvas';
 
 
 type User = {
@@ -33,6 +35,7 @@ type Version = {
 };
 
 
+
 const Start = () => {
 
   const [documentID, setDocumentID] = useState<string | null>(null);
@@ -43,22 +46,21 @@ const Start = () => {
   const firstImage = useRef<ReactZoomPanPinchRef>(null);
   const secondImage = useRef<ReactZoomPanPinchRef>(null);
 
-  const [versionLeftPageThumbnail, setVersionLeftPageThumbnail] = useState(null);
-  const [versionRightPageThumbnail, setVersionRightPageThumbnail] = useState(null);
-
-
   const [file1SelectedOption, setFile1SelectedOption] = useState<string>("");
   const [file2SelectedOption, setFile2SelectedOption] = useState<string>("");
 
+  const [versionLeftNodesWithImages, setVersionLeftNodesWithImages] = useState<NodeWithImage[]>([]);
+  const [versionRightNodesWithImages, setVersionRightNodesWithImages] = useState<NodeWithImage[]>([]);
 
-  const selectVersion1Ref = useRef<HTMLSelectElement | null>(null);
-  const selectVersion2Ref = useRef<HTMLSelectElement | null>(null);
+
+  const [pageLeftMaxWidth, setPageLeftMaxWidth] = useState(1000);
+  const [pageLeftMaxHeight, setPageLeftMaxHeight] = useState(1000);
+  const [pageRightMaxWidth, setPageRightMaxWidth] = useState(1000);
+  const [pageRightMaxHeight, setPageRightMaxHeight] = useState(1000);
+  const [canvasMaxWidth, setCanvasMaxWidth] = useState(1000);
+  const [canvasMaxHeight, setCanvasMaxHeight] = useState(1000);
 
   const [fileVersions, setFileVersions] = useState<Version[]>([]);
-
-
-  const FigmaAPIKey = "figd_RRFsYn0yPhRclt5nVvlfYPEdyazwfwlyPulZQBqc"
-
 
 
   async function fetchAllVersions(documentIDReceived: string, accessTokenReceived: string): Promise<Version[]> {
@@ -101,7 +103,7 @@ const Start = () => {
 
     console.log("Fetching version. documentID:" + documentIDReceived + ", accessToken:" + accessTokenReceived)
 
-    let getPagesVersion = await fetch('https://api.figma.com/v1/files/' + documentIDReceived + "?version=" + fileId + "&depth=1", {
+    let getPagesVersion = await fetch('https://api.figma.com/v1/files/' + documentIDReceived + "?version=" + fileId + "&depth=2", {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${accessTokenReceived}`
@@ -115,23 +117,79 @@ const Start = () => {
       let pages = responseJson.document.children.filter((child: any) => child.type === 'CANVAS');
       console.log(pages);
 
-      let fileFirstPageId = pages[0].id;
+      let firstPage = pages[0];
+      console.log(firstPage)
+      let allowedTypes = ['FRAME', 'SECTION', 'COMPONENT', 'COMPONENT_SET'];
+      // let firstPageContents = firstPage.children.filter((child: any) => allowedTypes.includes(child.type));
+      // let firstPageContentsIDs = firstPageContents.map((child: any) => child.id).join(',');
 
-      let getPagesVersion1Image = await fetch('https://api.figma.com/v1/images/' + documentIDReceived + "?ids=" + fileFirstPageId + "&format=svg&svg_simplify_stroke=false" + "&version=" + fileId, {
+      let newNodesWithImages = firstPage.children
+        .filter((child: any) => allowedTypes.includes(child.type))
+        .map((child: any) => ({
+          id: child.id,
+          child: child,
+          image: null, // Replace with your actual function to generate thumbnail URL
+        }));
+
+      let firstPageContentsIDs: string = newNodesWithImages.map((node: NodeWithImage) => node.child.id).join(',');
+
+
+      console.log("newNodesWithImages:")
+      console.log(newNodesWithImages)
+
+      let getPagesVersion1Image = await fetch('https://api.figma.com/v1/images/' + documentIDReceived + "?ids=" + firstPageContentsIDs + "&format=png&scale=1&version=" + fileId, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${accessTokenReceived}` // Replace FigmaAPIKey with your actual access token
         }
       })
 
+
       if (getPagesVersion1Image.ok) {
         const responseJson = await getPagesVersion1Image.json();
-        console.log(responseJson.images[fileFirstPageId]);
-        if (responseJson.images[fileFirstPageId]) {
-          if (side == Side.LEFT) setVersionLeftPageThumbnail(responseJson.images[fileFirstPageId]);
-          else if (side == Side.RIGHT) setVersionRightPageThumbnail(responseJson.images[fileFirstPageId]);
+
+        console.log(responseJson.images);
+
+        let mapper = newNodesWithImages.map((node) => {
+          const imageUrl = responseJson.images[node.id] || '';
+
+          return {
+            ...node,
+            imageUrl,
+          };
+        });
+
+
+        console.log("newNodesWithImages (again):")
+        console.log(mapper);
+
+        let boundingBoxMaxX = 0;
+        let boundingBoxMaxY = 0;
+        mapper.forEach((nodeWithImage) => {
+          boundingBoxMaxX = Math.max(boundingBoxMaxX, nodeWithImage.child.absoluteBoundingBox.x + nodeWithImage.child.absoluteBoundingBox.width);
+          boundingBoxMaxY = Math.max(boundingBoxMaxY, nodeWithImage.child.absoluteBoundingBox.y + nodeWithImage.child.absoluteBoundingBox.height);
+        });
+
+        if (side == Side.LEFT) {
+          setVersionLeftNodesWithImages(mapper);
+          setPageLeftMaxWidth(boundingBoxMaxX);
+          setPageLeftMaxHeight(boundingBoxMaxY);
+
+          setCanvasMaxWidth(Math.max(boundingBoxMaxX, pageRightMaxWidth));
+          setCanvasMaxHeight(Math.max(boundingBoxMaxY, pageRightMaxHeight));
         }
+        else if (side == Side.RIGHT) {
+          setVersionRightNodesWithImages(mapper);
+          setPageRightMaxWidth(boundingBoxMaxX);
+          setPageRightMaxHeight(boundingBoxMaxY);
+
+          setCanvasMaxWidth(Math.max(boundingBoxMaxX, pageLeftMaxWidth));
+          setCanvasMaxHeight(Math.max(boundingBoxMaxY, pageLeftMaxHeight));
+        }
+
+
       }
+
     }
   }
 
@@ -293,7 +351,7 @@ const Start = () => {
     if (documentID && accessToken) fetchVersion(event.target.value, Side.RIGHT, documentID, accessToken);
   }
 
-  return <div className='rowAvailable'>
+  return <div className='rowAvailable verticalLayout'>
     <div className='rowAuto'>
       {/* <input id="figmaFileURL" type='text' placeholder='Paste your Figma URL here' defaultValue="https://www.figma.com/file/58J9lvktDn7tFZu16UDJHl/Dolby-pHRTF---Capture-app---No-Cloud?type=design&node-id=10163%3A65721&mode=design&t=6n0ZrLO9YyM2lHjb-1" /> */}
       <input id="figmaFileURL" type='text' placeholder='Paste your Figma URL here' defaultValue="https://www.figma.com/file/HTUxsQSO4pR1GCvv8Nvqd5/HistoryChecker?type=design&node-id=1%3A2&mode=design&t=ffdrgnmtJ92dZgeQ-1" />
@@ -308,30 +366,26 @@ const Start = () => {
     </div>
     <div className='rowAvailable verticalLayout'>
 
-      {versionRightPageThumbnail !== null && versionLeftPageThumbnail !== null && (
-
-        <ReactCompareSlider
-          onlyHandleDraggable={true} className='verticalLayout'
-          itemOne={
-            <TransformWrapper ref={secondImage} onTransformed={handleTransform}>
-              <TransformComponent >
-                <img src={versionLeftPageThumbnail} alt="Image two" />
-              </TransformComponent>
-            </TransformWrapper>
-          }
-          itemTwo={
-            <TransformWrapper ref={firstImage} onTransformed={handleTransform}>
-              <TransformComponent >
-                <img src={versionRightPageThumbnail} alt="Image on" />
-              </TransformComponent>
-            </TransformWrapper>
-          }
-        />
-
-      )}
+      <ReactCompareSlider
+        onlyHandleDraggable={true} className='verticalLayout'
+        itemOne={
+          <TransformWrapper ref={secondImage} onTransformed={handleTransform} minScale={0.01} limitToBounds={false}>
+            <TransformComponent wrapperClass='verticalLayout' contentClass='verticalLayout'>
+              <Canvas nodesWithImages={versionLeftNodesWithImages} canvasWidth={canvasMaxWidth} canvasHeight={canvasMaxHeight} />
+            </TransformComponent>
+          </TransformWrapper>
+        }
+        itemTwo={
+          <TransformWrapper ref={firstImage} onTransformed={handleTransform} minScale={0.01} limitToBounds={false}>
+            <TransformComponent wrapperClass='verticalLayout' contentClass='verticalLayout'>
+              <Canvas nodesWithImages={versionRightNodesWithImages} canvasWidth={canvasMaxWidth} canvasHeight={canvasMaxHeight} />
+            </TransformComponent>
+          </TransformWrapper>
+        }
+      />
 
     </div>
-  </div>;
+  </div>
 };
 
 

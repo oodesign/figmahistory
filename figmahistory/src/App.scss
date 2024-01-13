@@ -58,6 +58,18 @@ body {
   height:100% !important;
 }
 
+canvas{
+  @include for-theme(light) {
+    background-color: $light_backgroundColor;
+    color: $light_primaryColor;
+  }
+
+  @include for-theme(dark) {
+    background-color: $dark_backgroundColor;
+    color: $dark_primaryColor;
+  }
+}
+
 *,
 *:before,
 *:after {
