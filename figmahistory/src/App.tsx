@@ -54,14 +54,10 @@ const Start = () => {
   const [versionRightNodesWithImages, setVersionRightNodesWithImages] = useState<NodeWithImage[]>([]);
 
 
-  const [pageLeftMaxX, setpageLeftMaxX] = useState(0);
-  const [pageLeftMinX, setpageLeftMinX] = useState(0);
-  const [pageLeftMaxY, setpageLeftMaxY] = useState(0);
-  const [pageLeftMinY, setpageLeftMinY] = useState(0);
-  const [pageRightMaxX, setpageRightMaxX] = useState(0);
-  const [pageRightMinX, setpageRightMinX] = useState(0);
-  const [pageRightMaxY, setpageRightMaxY] = useState(0);
-  const [pageRightMinY, setpageRightMinY] = useState(0);
+  const [pageLeftMaxX, setPageLeftMaxX] = useState(0);
+  const [pageLeftMaxY, setPageLeftMaxY] = useState(0);
+  const [pageRightMaxX, setPageRightMaxX] = useState(0);
+  const [pageRightMaxY, setPageRightMaxY] = useState(0);
   const [canvasMaxWidth, setCanvasMaxWidth] = useState(1000);
   const [canvasMaxHeight, setCanvasMaxHeight] = useState(1000);
   const [canvasOffsetX, setCanvasOffsetX] = useState(0);
@@ -109,6 +105,8 @@ const Start = () => {
   async function fetchVersion(fileId: string, side: Side, documentIDReceived: string, accessTokenReceived: string) {
 
     console.log("Fetching version. documentID:" + documentIDReceived + ", accessToken:" + accessTokenReceived)
+
+    console.log("PageLeftMax:" + pageLeftMaxX + "," + pageLeftMaxY + " - PageRightMax:" + pageRightMaxX + "," + pageRightMaxY );
 
     let getPagesVersion = await fetch('https://api.figma.com/v1/files/' + documentIDReceived + "?version=" + fileId + "&depth=2", {
       method: 'GET',
@@ -182,37 +180,52 @@ const Start = () => {
           boundingBoxMinY = Math.min(boundingBoxMinY, nodeWithImage.child.absoluteBoundingBox.y);
         });
 
+        let canvasMaxWidth, canvasMaxHeight = 0
+
+
+        console.log("boundingBoxMinMaxX:" + boundingBoxMinX + "," + boundingBoxMaxX + " - boundingBoxMinMaxY:" + boundingBoxMinY + "," + boundingBoxMaxY );
+        console.log("PageLeftMax:" + pageLeftMaxX + "," + pageLeftMaxY + " - PageRightMax:" + pageRightMaxX + "," + pageRightMaxY );
+
         if (side == Side.LEFT) {
           setVersionLeftNodesWithImages(mapper);
-          setpageLeftMaxX(boundingBoxMaxX);
-          setpageLeftMinX(boundingBoxMinX);
-          setpageLeftMaxY(boundingBoxMaxY);
-          setpageLeftMinY(boundingBoxMinY);
+          setPageLeftMaxX((boundingBoxMaxX + (-boundingBoxMinX)));
+          setPageLeftMaxY((boundingBoxMaxY + (-boundingBoxMinY)));
 
-          setCanvasMaxWidth(Math.max((boundingBoxMaxX + (-boundingBoxMinX)), pageRightMaxX));
-          setCanvasMaxHeight(Math.max((boundingBoxMaxY + (-boundingBoxMinY)), pageRightMaxY));
-
+          canvasMaxWidth = (Math.max((boundingBoxMaxX + (-boundingBoxMinX)), pageRightMaxX));
+          canvasMaxHeight = (Math.max((boundingBoxMaxY + (-boundingBoxMinY)), pageRightMaxY));
 
           console.log("setCanvasMaxWidth(L):" + Math.max((boundingBoxMaxX + (-boundingBoxMinX)), pageRightMaxX));
           console.log("setCanvasMaxHeight(L):" + Math.max((boundingBoxMaxY + (-boundingBoxMinY)), pageRightMaxY));
         }
         else if (side == Side.RIGHT) {
           setVersionRightNodesWithImages(mapper);
-          setpageRightMaxX(boundingBoxMaxX);
-          setpageRightMinX(boundingBoxMinX);
-          setpageRightMaxY(boundingBoxMaxY);
-          setpageRightMinY(boundingBoxMinY);
+          setPageRightMaxX((boundingBoxMaxX + (-boundingBoxMinX)));
+          setPageRightMaxY((boundingBoxMaxY + (-boundingBoxMinY)));
 
-          setCanvasMaxWidth(Math.max((boundingBoxMaxX + (-boundingBoxMinX)), pageLeftMaxX));
-          setCanvasMaxHeight(Math.max((boundingBoxMaxY + (-boundingBoxMinY)), pageLeftMaxY));
+          canvasMaxWidth = (Math.max((boundingBoxMaxX + (-boundingBoxMinX)), pageLeftMaxX));
+          canvasMaxHeight = (Math.max((boundingBoxMaxY + (-boundingBoxMinY)), pageLeftMaxY));
 
           console.log("setCanvasMaxWidth(R):" + Math.max((boundingBoxMaxX + (-boundingBoxMinX)), pageLeftMaxX));
           console.log("setCanvasMaxHeight(R):" + Math.max((boundingBoxMaxY + (-boundingBoxMinY)), pageLeftMaxY));
         }
-        setCanvasOffsetX(boundingBoxMinX);
-        setCanvasOffsetY(boundingBoxMinY);
+
+
+        setCanvasMaxWidth(canvasMaxWidth);
+        setCanvasMaxHeight(canvasMaxHeight);
+
+        setCanvasOffsetX(Math.min(boundingBoxMinX, canvasOffsetX));
+        setCanvasOffsetY(Math.min(boundingBoxMinY, canvasOffsetY));
         console.log("setCanvasOffsetX:" + boundingBoxMinX);
         console.log("setCanvasOffsetY:" + boundingBoxMinY);
+
+        let scaleX = window.innerWidth / canvasMaxWidth;
+        let scaleY = window.innerHeight / canvasMaxHeight;
+
+
+        console.log("Window:" + window.innerWidth + "," + window.innerHeight + " - Canvas:" + canvasMaxWidth + "," + canvasMaxHeight + ". Scale:" + scaleX + "," + scaleY);
+
+        (firstImage.current as any).setTransform(0, 0, Math.min(scaleX, scaleY), 0);
+        (secondImage.current as any).setTransform(0, 0, Math.min(scaleX, scaleY), 0);
 
       }
 
@@ -396,15 +409,15 @@ const Start = () => {
         onlyHandleDraggable={true} className='verticalLayout'
         itemOne={
           <TransformWrapper ref={secondImage} onTransformed={handleTransform} minScale={0.01} limitToBounds={false}>
-            <TransformComponent wrapperClass='verticalLayout' contentClass='verticalLayout'>
-              <Canvas2 name='LEFT' nodesWithImages={versionLeftNodesWithImages} canvasWidth={canvasMaxWidth} canvasHeight={canvasMaxHeight} offsetX={canvasOffsetX} offsetY={canvasOffsetY} containerClass='leftcanvas'/>
+            <TransformComponent wrapperClass='verticalLayout leftcanvas' contentClass='verticalLayout'>
+              <Canvas2 name='LEFT' nodesWithImages={versionLeftNodesWithImages} canvasWidth={canvasMaxWidth} canvasHeight={canvasMaxHeight} offsetX={canvasOffsetX} offsetY={canvasOffsetY} containerClass='' />
             </TransformComponent>
           </TransformWrapper>
         }
         itemTwo={
           <TransformWrapper ref={firstImage} onTransformed={handleTransform} minScale={0.01} limitToBounds={false}>
-            <TransformComponent wrapperClass='verticalLayout' contentClass='verticalLayout'>
-              <Canvas2 name='RIGHT' nodesWithImages={versionRightNodesWithImages} canvasWidth={canvasMaxWidth} canvasHeight={canvasMaxHeight} offsetX={canvasOffsetX} offsetY={canvasOffsetY}  containerClass='rightcanvas'/>
+            <TransformComponent wrapperClass='verticalLayout rightcanvas' contentClass='verticalLayout'>
+              <Canvas2 name='RIGHT' nodesWithImages={versionRightNodesWithImages} canvasWidth={canvasMaxWidth} canvasHeight={canvasMaxHeight} offsetX={canvasOffsetX} offsetY={canvasOffsetY} containerClass='' />
             </TransformComponent>
           </TransformWrapper>
         }
