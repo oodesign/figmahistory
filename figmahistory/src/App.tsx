@@ -53,12 +53,18 @@ const Start = () => {
   const [versionRightNodesWithImages, setVersionRightNodesWithImages] = useState<NodeWithImage[]>([]);
 
 
-  const [pageLeftMaxWidth, setPageLeftMaxWidth] = useState(1000);
-  const [pageLeftMaxHeight, setPageLeftMaxHeight] = useState(1000);
-  const [pageRightMaxWidth, setPageRightMaxWidth] = useState(1000);
-  const [pageRightMaxHeight, setPageRightMaxHeight] = useState(1000);
+  const [pageLeftMaxX, setpageLeftMaxX] = useState(0);
+  const [pageLeftMinX, setpageLeftMinX] = useState(0);
+  const [pageLeftMaxY, setpageLeftMaxY] = useState(0);
+  const [pageLeftMinY, setpageLeftMinY] = useState(0);
+  const [pageRightMaxX, setpageRightMaxX] = useState(0);
+  const [pageRightMinX, setpageRightMinX] = useState(0);
+  const [pageRightMaxY, setpageRightMaxY] = useState(0);
+  const [pageRightMinY, setpageRightMinY] = useState(0);
   const [canvasMaxWidth, setCanvasMaxWidth] = useState(1000);
   const [canvasMaxHeight, setCanvasMaxHeight] = useState(1000);
+  const [canvasOffsetX, setCanvasOffsetX] = useState(0);
+  const [canvasOffsetY, setCanvasOffsetY] = useState(0);
 
   const [fileVersions, setFileVersions] = useState<Version[]>([]);
 
@@ -164,29 +170,48 @@ const Start = () => {
         console.log(mapper);
 
         let boundingBoxMaxX = 0;
+        let boundingBoxMinX = 0;
         let boundingBoxMaxY = 0;
+        let boundingBoxMinY = 0;
+
         mapper.forEach((nodeWithImage) => {
           boundingBoxMaxX = Math.max(boundingBoxMaxX, nodeWithImage.child.absoluteBoundingBox.x + nodeWithImage.child.absoluteBoundingBox.width);
+          boundingBoxMinX = Math.min(boundingBoxMinX, nodeWithImage.child.absoluteBoundingBox.x);
           boundingBoxMaxY = Math.max(boundingBoxMaxY, nodeWithImage.child.absoluteBoundingBox.y + nodeWithImage.child.absoluteBoundingBox.height);
+          boundingBoxMinY = Math.min(boundingBoxMinY, nodeWithImage.child.absoluteBoundingBox.y);
         });
 
         if (side == Side.LEFT) {
           setVersionLeftNodesWithImages(mapper);
-          setPageLeftMaxWidth(boundingBoxMaxX);
-          setPageLeftMaxHeight(boundingBoxMaxY);
+          setpageLeftMaxX(boundingBoxMaxX);
+          setpageLeftMinX(boundingBoxMinX);
+          setpageLeftMaxY(boundingBoxMaxY);
+          setpageLeftMinY(boundingBoxMinY);
 
-          setCanvasMaxWidth(Math.max(boundingBoxMaxX, pageRightMaxWidth));
-          setCanvasMaxHeight(Math.max(boundingBoxMaxY, pageRightMaxHeight));
+          setCanvasMaxWidth(Math.max((boundingBoxMaxX + (-boundingBoxMinX)), pageRightMaxX));
+          setCanvasMaxHeight(Math.max((boundingBoxMaxY + (-boundingBoxMinY)), pageRightMaxY));
+
+
+          console.log("setCanvasMaxWidth(L):" + Math.max((boundingBoxMaxX + (-boundingBoxMinX)), pageRightMaxX));
+          console.log("setCanvasMaxHeight(L):" + Math.max((boundingBoxMaxY + (-boundingBoxMinY)), pageRightMaxY));
         }
         else if (side == Side.RIGHT) {
           setVersionRightNodesWithImages(mapper);
-          setPageRightMaxWidth(boundingBoxMaxX);
-          setPageRightMaxHeight(boundingBoxMaxY);
+          setpageRightMaxX(boundingBoxMaxX);
+          setpageRightMinX(boundingBoxMinX);
+          setpageRightMaxY(boundingBoxMaxY);
+          setpageRightMinY(boundingBoxMinY);
 
-          setCanvasMaxWidth(Math.max(boundingBoxMaxX, pageLeftMaxWidth));
-          setCanvasMaxHeight(Math.max(boundingBoxMaxY, pageLeftMaxHeight));
+          setCanvasMaxWidth(Math.max((boundingBoxMaxX + (-boundingBoxMinX)), pageLeftMaxX));
+          setCanvasMaxHeight(Math.max((boundingBoxMaxY + (-boundingBoxMinY)), pageLeftMaxY));
+
+          console.log("setCanvasMaxWidth(R):" + Math.max((boundingBoxMaxX + (-boundingBoxMinX)), pageLeftMaxX));
+          console.log("setCanvasMaxHeight(R):" + Math.max((boundingBoxMaxY + (-boundingBoxMinY)), pageLeftMaxY));
         }
-
+        setCanvasOffsetX(boundingBoxMinX);
+        setCanvasOffsetY(boundingBoxMinY);
+        console.log("setCanvasOffsetX:" + boundingBoxMinX);
+        console.log("setCanvasOffsetY:" + boundingBoxMinY);
 
       }
 
@@ -371,14 +396,14 @@ const Start = () => {
         itemOne={
           <TransformWrapper ref={secondImage} onTransformed={handleTransform} minScale={0.01} limitToBounds={false}>
             <TransformComponent wrapperClass='verticalLayout' contentClass='verticalLayout'>
-              <Canvas nodesWithImages={versionLeftNodesWithImages} canvasWidth={canvasMaxWidth} canvasHeight={canvasMaxHeight} />
+              <Canvas name='LEFT' nodesWithImages={versionLeftNodesWithImages} canvasWidth={canvasMaxWidth} canvasHeight={canvasMaxHeight} offsetX={canvasOffsetX} offsetY={canvasOffsetY} />
             </TransformComponent>
           </TransformWrapper>
         }
         itemTwo={
           <TransformWrapper ref={firstImage} onTransformed={handleTransform} minScale={0.01} limitToBounds={false}>
             <TransformComponent wrapperClass='verticalLayout' contentClass='verticalLayout'>
-              <Canvas nodesWithImages={versionRightNodesWithImages} canvasWidth={canvasMaxWidth} canvasHeight={canvasMaxHeight} />
+              <Canvas name='RIGHT' nodesWithImages={versionRightNodesWithImages} canvasWidth={canvasMaxWidth} canvasHeight={canvasMaxHeight} offsetX={canvasOffsetX} offsetY={canvasOffsetY} />
             </TransformComponent>
           </TransformWrapper>
         }
