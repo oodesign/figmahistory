@@ -175,6 +175,32 @@ body {
 }
 
 @media (prefers-color-scheme: light) {
+  .leftcanvas {
+    background-color: #F9F9F9;
+    color: #323232;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .leftcanvas {
+    background-color: #212123;
+    color: #ffffff;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  .rightcanvas {
+    background-color: #F9F9F9;
+    color: #323232;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .rightcanvas {
+    background-color: #212123;
+    color: #ffffff;
+  }
+}
+
+@media (prefers-color-scheme: light) {
   canvas {
     background-color: #F9F9F9;
     color: #323232;

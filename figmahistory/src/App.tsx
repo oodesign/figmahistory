@@ -12,6 +12,7 @@ import './App.css';
 import { access } from 'fs';
 import { NodeWithImage } from './NodeWithImage';
 import Canvas from './Canvas';
+import Canvas2 from './Canvas2';
 
 
 type User = {
@@ -396,14 +397,14 @@ const Start = () => {
         itemOne={
           <TransformWrapper ref={secondImage} onTransformed={handleTransform} minScale={0.01} limitToBounds={false}>
             <TransformComponent wrapperClass='verticalLayout' contentClass='verticalLayout'>
-              <Canvas name='LEFT' nodesWithImages={versionLeftNodesWithImages} canvasWidth={canvasMaxWidth} canvasHeight={canvasMaxHeight} offsetX={canvasOffsetX} offsetY={canvasOffsetY} />
+              <Canvas2 name='LEFT' nodesWithImages={versionLeftNodesWithImages} canvasWidth={canvasMaxWidth} canvasHeight={canvasMaxHeight} offsetX={canvasOffsetX} offsetY={canvasOffsetY} containerClass='leftcanvas'/>
             </TransformComponent>
           </TransformWrapper>
         }
         itemTwo={
           <TransformWrapper ref={firstImage} onTransformed={handleTransform} minScale={0.01} limitToBounds={false}>
             <TransformComponent wrapperClass='verticalLayout' contentClass='verticalLayout'>
-              <Canvas name='RIGHT' nodesWithImages={versionRightNodesWithImages} canvasWidth={canvasMaxWidth} canvasHeight={canvasMaxHeight} offsetX={canvasOffsetX} offsetY={canvasOffsetY} />
+              <Canvas2 name='RIGHT' nodesWithImages={versionRightNodesWithImages} canvasWidth={canvasMaxWidth} canvasHeight={canvasMaxHeight} offsetX={canvasOffsetX} offsetY={canvasOffsetY}  containerClass='rightcanvas'/>
             </TransformComponent>
           </TransformWrapper>
         }

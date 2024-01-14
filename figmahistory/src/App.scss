@@ -8,10 +8,12 @@
   font-family: AvenirNextLTPro-Medium;
   src: url(./fonts/AvenirNextLTPro-Medium.ttf) format('truetype');
 }
+
 @font-face {
   font-family: AvenirNextLTPro-Bold;
   src: url(./fonts/AvenirNextLTPro-Bold.ttf) format('truetype');
 }
+
 @font-face {
   font-family: AvenirNextLTPro-Demi;
   src: url(./fonts/AvenirNextLTPro-Demi.ttf) format('truetype');
@@ -47,18 +49,46 @@ body {
   }
 }
 
-#root{
+#root {
   width: 100%;
   height: 100%;
   @include flex;
 }
 
-.react-transform-wrapper{
-  width:100% !important;
-  height:100% !important;
+.react-transform-wrapper {
+  width: 100% !important;
+  height: 100% !important;
 }
 
-canvas{
+.leftcanvas {
+
+  // background-color: red;
+  @include for-theme(light) {
+    background-color: $light_backgroundColor;
+    color: $light_primaryColor;
+  }
+
+  @include for-theme(dark) {
+    background-color: $dark_backgroundColor;
+    color: $dark_primaryColor;
+  }
+}
+
+.rightcanvas {
+
+  // background-color: blue;
+  @include for-theme(light) {
+    background-color: $light_backgroundColor;
+    color: $light_primaryColor;
+  }
+
+  @include for-theme(dark) {
+    background-color: $dark_backgroundColor;
+    color: $dark_primaryColor;
+  }
+}
+
+canvas {
   @include for-theme(light) {
     background-color: $light_backgroundColor;
     color: $light_primaryColor;
@@ -90,9 +120,11 @@ canvas{
 @mixin primaryText {
   font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 14px;
+
   @include for-theme(light) {
     color: $light_primaryColor;
   }
+
   @include for-theme(dark) {
     color: $dark_primaryColor;
   }
@@ -103,9 +135,11 @@ canvas{
   font-family: AvenirNextLTPro-Demi, -apple-system, BlinkMacSystemFont, sans-serif;
   letter-spacing: 0.3px;
   font-size: 22px;
+
   @include for-theme(light) {
     color: $light_gray_900;
   }
+
   @include for-theme(dark) {
     color: $dark_primaryColor;
   }
@@ -146,6 +180,7 @@ canvas{
   @include for-theme(light) {
     color: $light_secondaryColor;
   }
+
   @include for-theme(dark) {
     color: $dark_secondaryColor;
   }
@@ -160,6 +195,7 @@ canvas{
   @include for-theme(light) {
     color: $light_secondaryColor;
   }
+
   @include for-theme(dark) {
     color: $dark_secondaryColor;
   }
@@ -218,11 +254,13 @@ canvas{
 // #region Bottom Bar
 
 .bottomBar {
+
   // height:60px;
   @include for-theme(light) {
     background-color: $light_bottomBarBackgroundColor;
     border-top: 1px solid $light_bottomBarBorderColor;
   }
+
   @include for-theme(dark) {
     background-color: $dark_bottomBarBackgroundColor;
     border-top: 1px solid $dark_bottomBarBorderColor;
@@ -260,6 +298,7 @@ canvas{
     background-color: $accentColorHover;
     outline: none;
   }
+
   &:active {
     background-color: $accentColorActive;
     border-color: $accentColorActive;
@@ -280,6 +319,7 @@ canvas{
   &.xl {
     width: 170px;
   }
+
   &.xxl {
     width: 210px;
   }
@@ -289,18 +329,24 @@ canvas{
   @include for-theme(light) {
     border: 1px solid $light_btnSecondaryBorderColor;
   }
+
   @include for-theme(dark) {
     border: 1px solid $dark_btnSecondaryBorderColor;
   }
+
   background-color: transparent;
   width: 100px;
   height: 34px;
   border-radius: 17px;
   background-origin: border-box;
-  background-clip: content-box, border-box;
+  background-clip: content-box,
+  border-box;
   @include alignHorizontalCenter;
   outline: none;
-  font-family: AvenirNextLTPro-Demi, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: AvenirNextLTPro-Demi,
+  -apple-system,
+  BlinkMacSystemFont,
+  sans-serif;
   font-size: 13px;
   transition: all 0.1s ease-out;
   line-height: 34px;
@@ -308,6 +354,7 @@ canvas{
   @include for-theme(light) {
     color: $light_primaryColor;
   }
+
   @include for-theme(dark) {
     color: $dark_inverseColor;
   }
@@ -318,21 +365,26 @@ canvas{
       border-color: $accentColorHover;
       color: $accentColorDarkText;
     }
+
     @include for-theme(dark) {
       background-color: $dark_btnSecondaryBackgroundHover;
       border-color: $accentColorHover;
     }
+
     outline: none;
   }
+
   &:active {
     @include for-theme(light) {
       background-color: $light_btnSecondaryBackgroundActive;
       border-color: $accentColorActive;
     }
+
     @include for-theme(dark) {
       background-color: $dark_btnSecondaryBackgroundActive;
       border-color: $accentColorActive;
     }
+
     outline: none;
   }
 }
@@ -343,6 +395,7 @@ canvas{
   &.xl {
     width: 200px;
   }
+
   &.xxl {
     width: 260px;
   }
@@ -365,6 +418,7 @@ canvas{
   @include for-theme(light) {
     color: $light_secondaryColor;
   }
+
   @include for-theme(dark) {
     color: $dark_secondaryColor;
   }
@@ -374,19 +428,24 @@ canvas{
       border-color: $accentColorHover;
       color: $accentColorDarkText;
     }
+
     @include for-theme(dark) {
       border-color: $accentColorHover;
       color: $dark_primaryColor;
     }
+
     outline: none;
   }
+
   &:active {
     @include for-theme(light) {
       border-color: $accentColorActive;
     }
+
     @include for-theme(dark) {
       border-color: $accentColorActive;
     }
+
     outline: none;
   }
 }
@@ -414,6 +473,7 @@ canvas{
     #bg {
       fill: #ffffff;
     }
+
     #lines,
     #dots {
       stroke: #ffffff;
@@ -424,6 +484,7 @@ canvas{
     background-color: $accentColorHover;
     outline: none;
   }
+
   &:active {
     background-color: $accentColorActive;
     outline: none;
@@ -447,6 +508,7 @@ canvas{
     border: 1px solid $light_gray_500;
     color: $light_primaryColor;
   }
+
   @include for-theme(dark) {
     background-color: $dark_gray_500;
     color: $dark_inverseColor;
@@ -457,19 +519,24 @@ canvas{
       background-color: rgba($light_gray_500_hover, 0.2);
       border: 1px solid $light_gray_500_hover;
     }
+
     @include for-theme(dark) {
       background-color: $dark_gray_500_hover;
     }
+
     outline: none;
   }
+
   &:active {
     @include for-theme(light) {
       background-color: rgba($light_gray_500_pressed, 0.1);
       border: 1px solid $light_gray_500_pressed;
     }
+
     @include for-theme(dark) {
       background-color: $dark_gray_500_pressed;
     }
+
     outline: none;
   }
 }
@@ -491,17 +558,20 @@ canvas{
       #bg {
         fill: #727272;
       }
+
       #lines,
       #dots {
         stroke: #727272;
       }
     }
   }
+
   @include for-theme(dark) {
     svg {
       #bg {
         fill: #ffffff;
       }
+
       #lines,
       #dots {
         stroke: #ffffff;
@@ -514,6 +584,7 @@ canvas{
     border: 1px solid $light_gray_500;
     color: $light_primaryColor;
   }
+
   @include for-theme(dark) {
     background-color: rgba($dark_gray_500, 0);
     border: 1px solid $dark_gray_500;
@@ -525,21 +596,26 @@ canvas{
       background-color: rgba($light_gray_500_hover, 0.2);
       border: 1px solid $light_gray_500_hover;
     }
+
     @include for-theme(dark) {
       background-color: rgba($dark_gray_500_hover, 0.2);
       border: 1px solid $dark_gray_500_hover;
     }
+
     outline: none;
   }
+
   &:active {
     @include for-theme(light) {
       background-color: rgba($light_gray_500_pressed, 0.1);
       border: 1px solid $light_gray_500_pressed;
     }
+
     @include for-theme(dark) {
       background-color: rgba($dark_gray_500_pressed, 0.1);
       border: 1px solid $dark_gray_500_pressed;
     }
+
     outline: none;
   }
 }
@@ -627,6 +703,7 @@ canvas{
     @include for-theme(light) {
       fill: $light_primaryColor;
     }
+
     @include for-theme(dark) {
       fill: $dark_primaryColor;
     }
@@ -784,6 +861,7 @@ canvas{
   @include for-theme(light) {
     border-bottom: 1px solid $light_bottomBarBorderColor;
   }
+
   @include for-theme(dark) {
     border-bottom: 1px solid $dark_bottomBarBorderColor;
   }
@@ -808,6 +886,7 @@ canvas{
       background-color: rgba($dark_primaryColor, 0.05);
     }
   }
+
   &:active {
     @include for-theme(light) {
       background-color: rgba($accentColor, 0.1);
@@ -863,6 +942,7 @@ canvas{
     @include for-theme(light) {
       border-color: $light_gray_500;
     }
+
     @include for-theme(dark) {
       border-color: $dark_gray_500;
     }
@@ -871,6 +951,7 @@ canvas{
       @include for-theme(light) {
         border-color: $light_gray_500_hover;
       }
+
       @include for-theme(dark) {
         border-color: $dark_gray_500_hover;
       }
@@ -880,6 +961,7 @@ canvas{
       @include for-theme(light) {
         border-color: $light_gray_500_pressed;
       }
+
       @include for-theme(dark) {
         border-color: $dark_gray_500_pressed;
       }
@@ -915,12 +997,12 @@ canvas{
     visibility: hidden;
   }
 
-  input[type="checkbox"]:checked + label {
+  input[type="checkbox"]:checked+label {
     background-color: $bgColor;
     border-color: $bgColor;
   }
 
-  input[type="checkbox"]:checked + label:after {
+  input[type="checkbox"]:checked+label:after {
     opacity: 1;
   }
 }
@@ -945,9 +1027,11 @@ div::-webkit-scrollbar {
 
 div::-webkit-scrollbar-thumb {
   border-radius: 10px;
+
   @include for-theme(light) {
     background-color: $light_scrollThumbColor;
   }
+
   @include for-theme(dark) {
     background-color: $dark_scrollThumbColor;
   }
@@ -956,6 +1040,7 @@ div::-webkit-scrollbar-thumb {
     @include for-theme(light) {
       background-color: $light_scrollThumbColorHover;
     }
+
     @include for-theme(dark) {
       background-color: $dark_scrollThumbColorHover;
     }
@@ -965,6 +1050,7 @@ div::-webkit-scrollbar-thumb {
     @include for-theme(light) {
       background-color: $light_scrollThumbColorActive;
     }
+
     @include for-theme(dark) {
       background-color: $dark_scrollThumbColorActive;
     }
@@ -1001,12 +1087,15 @@ textarea {
   .tooltipText {
     visibility: hidden;
     width: 240px;
+
     @include for-theme(light) {
       background-color: $light_tooltipColor;
     }
+
     @include for-theme(dark) {
       background-color: $dark_tooltipColor;
     }
+
     border-radius: 6px;
     padding: 5px 10px;
     position: absolute;
@@ -1026,9 +1115,11 @@ textarea {
       margin-left: -5px;
       border-width: 5px;
       border-style: solid;
+
       @include for-theme(light) {
         border-color: $light_tooltipColor transparent transparent transparent;
       }
+
       @include for-theme(dark) {
         border-color: $dark_tooltipColor transparent transparent transparent;
       }
@@ -1071,10 +1162,12 @@ input[type="text"] {
   border-radius: 3px;
   outline: none;
   @include primaryText;
+
   @include for-theme(light) {
     background-color: $light_inputBackgroundColor;
     border: 1px solid $light_inputBorderColor;
   }
+
   @include for-theme(dark) {
     background-color: $dark_inputBackgroundColor;
     border: 1px solid $dark_gray_300;
@@ -1262,6 +1355,7 @@ a {
   @include for-theme(light) {
     background-color: $light_backgroundColor_200;
   }
+
   @include for-theme(dark) {
     background-color: $dark_gray_400;
   }
@@ -1270,6 +1364,7 @@ a {
     @include for-theme(light) {
       background-color: $light_backgroundColor_300;
     }
+
     @include for-theme(dark) {
       background-color: $dark_gray_300;
     }
@@ -1279,6 +1374,7 @@ a {
     @include for-theme(light) {
       background-color: rgba($accentColor, 0.3);
     }
+
     @include for-theme(dark) {
       background-color: $dark_gray_500;
     }
@@ -1294,6 +1390,7 @@ a {
     @include for-theme(light) {
       background-color: $accentColor;
     }
+
     @include for-theme(dark) {
       background-color: $dark_primaryColor;
     }
@@ -1302,6 +1399,7 @@ a {
       @include for-theme(light) {
         border: 1px solid $light_backgroundColor;
       }
+
       @include for-theme(dark) {
         border: 1px solid $dark_backgroundColor_500;
       }
@@ -1339,6 +1437,7 @@ a {
 .customColorPicker {
   position: absolute;
   z-index: 40;
+
   .a-color-picker {
     box-shadow: rgba($color: #000000, $alpha: 0.15) 0 2px 16px 0 !important;
   }
@@ -1354,6 +1453,7 @@ a {
   margin-top: 150px;
   width: 200px;
   text-align: center;
+
   span {
     left: -50%;
   }
@@ -1382,6 +1482,7 @@ a {
     border-radius: 10px;
     padding: 0 0 10px 0;
     box-shadow: none;
+
     @include for-theme(light) {
       background-color: $light_backgroundColor;
     }
@@ -1395,6 +1496,7 @@ a {
     .a-color-picker-circle {
       border: none;
     }
+
     .a-color-picker-sl {
       border-radius: 10px 10px 0 0;
     }
@@ -1407,8 +1509,10 @@ a {
       label {
         padding: 0 8px 0 0;
       }
+
       input {
         margin: 0 8px 0 0;
+
         &:last-child {
           margin: 0;
         }
@@ -1419,12 +1523,15 @@ a {
       width: 15px;
       height: 15px;
       background-color: transparent;
+
       @include for-theme(light) {
         border: 2px solid $light_inverseColor;
       }
+
       @include for-theme(dark) {
         border: 2px solid $dark_inverseColor;
       }
+
       box-shadow: rgba(0, 0, 0, 0.5) 0 2px 4px 0;
       top: 0;
     }
@@ -1442,9 +1549,11 @@ a {
       @include primaryText;
       background: transparent;
       border-radius: 4px;
+
       @include for-theme(light) {
         border: 1px solid $light_gray_500;
       }
+
       @include for-theme(dark) {
         border: 1px solid $dark_gray_500;
       }
@@ -1636,6 +1745,7 @@ a {
 
     div {
       width: 140px;
+
       &:first-child {
         margin-right: 48px;
       }
@@ -1646,6 +1756,7 @@ a {
     @include for-theme(light) {
       border: 1px solid $light_secondaryColor;
     }
+
     @include for-theme(dark) {
       border: 1px solid $dark_secondaryColor;
     }
@@ -1675,6 +1786,7 @@ a {
   width: 42px;
   height: 42px;
 }
+
 .lds-dual-ring:after {
   content: " ";
   display: block;
@@ -1685,10 +1797,12 @@ a {
   border-color: rgb(105, 105, 105) transparent rgb(105, 105, 105) transparent;
   animation: lds-dual-ring 1.2s linear infinite;
 }
+
 @keyframes lds-dual-ring {
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }
