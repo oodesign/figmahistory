@@ -71,9 +71,14 @@ const Start = () => {
   const [file1SelectedOption, setFile1SelectedOption] = useState<string>("");
   const [file2SelectedOption, setFile2SelectedOption] = useState<string>("");
 
+  const [pageSelectedLeft, setPageSelectedLeft] = useState<string>("");
+  const [pageSelectedRight, setPageSelectedRight] = useState<string>("");
 
   const [fetchedVersionLeft, setFetchedVersionLeft] = useState<Document>();
   const [fetchedVersionRight, setFetchedVersionRight] = useState<Document>();
+
+  const [pagesOptionsVersionLeft, setPagesOptionsVersionLeft] = useState<Page[]>();
+  const [pagesOptionsVersionRight, setPagesOptionsVersionRight] = useState<Page[]>();
 
   const [versionLeftNodesWithImages, setVersionLeftNodesWithImages] = useState<NodeWithImage[]>([]);
   const [versionRightNodesWithImages, setVersionRightNodesWithImages] = useState<NodeWithImage[]>([]);
@@ -136,7 +141,7 @@ const Start = () => {
       .map((child: any) => ({
         id: child.id,
         child: child,
-        image: null, 
+        image: null,
       }));
 
     let firstPageContentsIDs: string = newNodesWithImages.map((node: NodeWithImage) => node.child.id).join(',');
@@ -150,7 +155,6 @@ const Start = () => {
         'Authorization': `Bearer ${accessTokenReceived}` // Replace FigmaAPIKey with your actual access token
       }
     })
-
 
     if (getPagesVersion1Image.ok) {
       const responseJson = await getPagesVersion1Image.json();
@@ -260,11 +264,23 @@ const Start = () => {
         version: responseJson.document.version,
         pages: pages
       }
+      let pageOptions = pages.map((page: any, index: number) => {
+        return {
+          id: page.id,
+          children: page.children,
+          name: page.name,
+          backgroundColor: page.backgroundColor
+        };
+      });
 
-      if (side == Side.LEFT)
+      if (side == Side.LEFT) {
         setFetchedVersionLeft(versionDocument);
-      if (side == Side.RIGHT)
+        setPagesOptionsVersionLeft(pageOptions);
+      }
+      if (side == Side.RIGHT) {
         setFetchedVersionRight(versionDocument);
+        setPagesOptionsVersionRight(pageOptions);
+      }
 
       let pageId = 0;
 
@@ -419,6 +435,43 @@ const Start = () => {
     ));
   };
 
+  function mergePagesPreservingOrder(array1: Page[], array2: Page[]): Page[] {
+    const mergedArray: Page[] = [];
+    const idSet = new Set<string>();
+
+    // Helper function to add a unique page to the merged array and set
+    const addUniquePage = (page: Page) => {
+      if (!idSet.has(page.id)) {
+        mergedArray.push(page);
+        idSet.add(page.id);
+      }
+    };
+
+    // Iterate over array1 and add unique elements to mergedArray
+    for (const page of array1) {
+      addUniquePage(page);
+    }
+
+    // Iterate over array2 and add unique elements to mergedArray
+    for (const page of array2) {
+      addUniquePage(page);
+    }
+
+    return mergedArray;
+  }
+
+  const renderPages = () => {
+    let combinedPageOptions: Page[] = [];
+    if (pagesOptionsVersionLeft && pagesOptionsVersionRight)
+      combinedPageOptions = mergePagesPreservingOrder(pagesOptionsVersionLeft, pagesOptionsVersionRight);
+
+    return combinedPageOptions?.map((page) => (
+      <option key={page.id} value={page.id}>
+        {page.name}
+      </option>
+    ));
+  };
+
 
   function onVersion1Changed(event: ChangeEvent<HTMLSelectElement>): void {
     console.log("Changed v1 to version:" + event.target.value);
@@ -431,6 +484,17 @@ const Start = () => {
     if (documentID && accessToken) fetchVersion(event.target.value, Side.RIGHT, documentID, accessToken);
   }
 
+
+  function onPageSelectedLeftChanged(event: ChangeEvent<HTMLSelectElement>): void {
+    console.log("Changed Page to:" + event.target.value);
+    setPageSelectedLeft(event.target.value);
+    drawPage(documentID || "", fetchedVersionLeft?.version || "", fetchedVersionLeft?.pages || [], event.target.selectedIndex, Side.LEFT, accessToken || "");
+    drawPage(documentID || "", fetchedVersionRight?.version || "", fetchedVersionRight?.pages || [], event.target.selectedIndex, Side.RIGHT, accessToken || "");
+  }
+  function onPageSelectedRightChanged(event: ChangeEvent<HTMLSelectElement>): void {
+
+  }
+
   return <div className='rowAvailable verticalLayout'>
     <div className='rowAuto'>
       {/* <input id="figmaFileURL" type='text' placeholder='Paste your Figma URL here' defaultValue="https://www.figma.com/file/58J9lvktDn7tFZu16UDJHl/Dolby-pHRTF---Capture-app---No-Cloud?type=design&node-id=10163%3A65721&mode=design&t=6n0ZrLO9YyM2lHjb-1" /> */}
@@ -441,6 +505,9 @@ const Start = () => {
       </select>
       <select id="selectVersion2" value={file2SelectedOption} onChange={onVersion2Changed}>
         {renderOptions()}
+      </select>
+      <select id="selectPageLeft" value={pageSelectedLeft} onChange={onPageSelectedLeftChanged}>
+        {renderPages()}
       </select>
 
     </div>
