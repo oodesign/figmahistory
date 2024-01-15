@@ -83,6 +83,8 @@ const Start = () => {
   const [versionLeftNodesWithImages, setVersionLeftNodesWithImages] = useState<NodeWithImage[]>([]);
   const [versionRightNodesWithImages, setVersionRightNodesWithImages] = useState<NodeWithImage[]>([]);
 
+  const canvasDiv = useRef<HTMLDivElement | null>(null);
+
 
   const [pageLeftMaxX, setPageLeftMaxX] = useState(0);
   const [pageLeftMaxY, setPageLeftMaxY] = useState(0);
@@ -131,8 +133,8 @@ const Start = () => {
     return versions;
   }
 
-  async function drawPage(documentIDReceived: string, fileId: string, pages: any[], pageId: number, side: Side, accessTokenReceived: string) {
-    let page = pages[pageId];
+  async function drawPage(documentIDReceived: string, fileId: string, pages: any[], pageId: string, side: Side, accessTokenReceived: string) {
+    let page = pages.find(page => page.id === pageId);
     console.log(page)
     let allowedTypes = ['FRAME', 'SECTION', 'COMPONENT', 'COMPONENT_SET'];
 
@@ -224,15 +226,16 @@ const Start = () => {
       console.log("setCanvasOffsetX:" + boundingBoxMinX);
       console.log("setCanvasOffsetY:" + boundingBoxMinY);
 
-      let scaleX = window.innerWidth / canvasMaxWidth;
-      let scaleY = window.innerHeight / canvasMaxHeight;
+      if (canvasDiv.current) {
+        let scaleX = canvasDiv.current.clientWidth / canvasMaxWidth;
+        let scaleY = canvasDiv.current.clientHeight / canvasMaxHeight;
 
 
-      console.log("Window:" + window.innerWidth + "," + window.innerHeight + " - Canvas:" + canvasMaxWidth + "," + canvasMaxHeight + ". Scale:" + scaleX + "," + scaleY);
+        console.log("Window:" + window.innerWidth + "," + window.innerHeight + " - Canvas:" + canvasMaxWidth + "," + canvasMaxHeight + ". Scale:" + scaleX + "," + scaleY);
 
-      (firstImage.current as any).setTransform(0, 0, Math.min(scaleX, scaleY), 0);
-      (secondImage.current as any).setTransform(0, 0, Math.min(scaleX, scaleY), 0);
-
+        (firstImage.current as any).setTransform(0, 0, Math.min(scaleX, scaleY), 0);
+        (secondImage.current as any).setTransform(0, 0, Math.min(scaleX, scaleY), 0);
+      }
     }
 
   }
@@ -282,9 +285,7 @@ const Start = () => {
         setPagesOptionsVersionRight(pageOptions);
       }
 
-      let pageId = 0;
-
-      drawPage(documentIDReceived, fileId, pages, pageId, side, accessTokenReceived);
+      drawPage(documentIDReceived, fileId, pages, pageOptions[0].id, side, accessTokenReceived);
 
     }
   }
@@ -472,6 +473,28 @@ const Start = () => {
     ));
   };
 
+  const renderPages2 = () => {
+    let combinedPageOptions: Page[] = [];
+    if (pagesOptionsVersionLeft && pagesOptionsVersionRight)
+      combinedPageOptions = mergePagesPreservingOrder(pagesOptionsVersionLeft, pagesOptionsVersionRight);
+
+    function onPageChangedClick(pageId: string) {
+      return (event: React.MouseEvent<HTMLDivElement, MouseEvent>): void => {
+        // Now you have access to both event and pageId
+        console.log("Changed Page to:" + pageId);
+    setPageSelectedLeft(pageId);
+    drawPage(documentID || "", fetchedVersionLeft?.version || "", fetchedVersionLeft?.pages || [], pageId, Side.LEFT, accessToken || "");
+    drawPage(documentID || "", fetchedVersionRight?.version || "", fetchedVersionRight?.pages || [], pageId, Side.RIGHT, accessToken || "");
+      };
+    }
+
+    return combinedPageOptions?.map((page) => (
+      <div className='listItem' onClick={onPageChangedClick(page.id)}>
+        {page.name}
+      </div>
+    ));
+  };
+
 
   function onVersion1Changed(event: ChangeEvent<HTMLSelectElement>): void {
     console.log("Changed v1 to version:" + event.target.value);
@@ -485,15 +508,6 @@ const Start = () => {
   }
 
 
-  function onPageSelectedLeftChanged(event: ChangeEvent<HTMLSelectElement>): void {
-    console.log("Changed Page to:" + event.target.value);
-    setPageSelectedLeft(event.target.value);
-    drawPage(documentID || "", fetchedVersionLeft?.version || "", fetchedVersionLeft?.pages || [], event.target.selectedIndex, Side.LEFT, accessToken || "");
-    drawPage(documentID || "", fetchedVersionRight?.version || "", fetchedVersionRight?.pages || [], event.target.selectedIndex, Side.RIGHT, accessToken || "");
-  }
-  function onPageSelectedRightChanged(event: ChangeEvent<HTMLSelectElement>): void {
-
-  }
 
   return <div className='rowAvailable verticalLayout'>
     <div className='rowAuto'>
@@ -506,31 +520,33 @@ const Start = () => {
       <select id="selectVersion2" value={file2SelectedOption} onChange={onVersion2Changed}>
         {renderOptions()}
       </select>
-      <select id="selectPageLeft" value={pageSelectedLeft} onChange={onPageSelectedLeftChanged}>
-        {renderPages()}
-      </select>
+    
 
     </div>
-    <div className='rowAvailable verticalLayout'>
+    <div className='rowAvailable horizontalLayout'>
+      <div className="colAuto">
+        {renderPages2()}
+      </div>
+      <div ref={canvasDiv} className="colAvailable verticalLayout">
+        <ReactCompareSlider
+          onlyHandleDraggable={true}
+          itemOne={
+            <TransformWrapper ref={secondImage} onTransformed={handleTransform} minScale={0.01} limitToBounds={false}>
+              <TransformComponent wrapperClass='verticalLayout leftcanvas' contentClass='verticalLayout'>
+                <Canvas2 name='LEFT' nodesWithImages={versionLeftNodesWithImages} canvasWidth={canvasMaxWidth} canvasHeight={canvasMaxHeight} offsetX={canvasOffsetX} offsetY={canvasOffsetY} containerClass='' />
+              </TransformComponent>
+            </TransformWrapper>
+          }
+          itemTwo={
+            <TransformWrapper ref={firstImage} onTransformed={handleTransform} minScale={0.01} limitToBounds={false}>
+              <TransformComponent wrapperClass='verticalLayout rightcanvas' contentClass='verticalLayout'>
+                <Canvas2 name='RIGHT' nodesWithImages={versionRightNodesWithImages} canvasWidth={canvasMaxWidth} canvasHeight={canvasMaxHeight} offsetX={canvasOffsetX} offsetY={canvasOffsetY} containerClass='' />
+              </TransformComponent>
+            </TransformWrapper>
+          }
+        />
 
-      <ReactCompareSlider
-        onlyHandleDraggable={true} className='verticalLayout'
-        itemOne={
-          <TransformWrapper ref={secondImage} onTransformed={handleTransform} minScale={0.01} limitToBounds={false}>
-            <TransformComponent wrapperClass='verticalLayout leftcanvas' contentClass='verticalLayout'>
-              <Canvas2 name='LEFT' nodesWithImages={versionLeftNodesWithImages} canvasWidth={canvasMaxWidth} canvasHeight={canvasMaxHeight} offsetX={canvasOffsetX} offsetY={canvasOffsetY} containerClass='' />
-            </TransformComponent>
-          </TransformWrapper>
-        }
-        itemTwo={
-          <TransformWrapper ref={firstImage} onTransformed={handleTransform} minScale={0.01} limitToBounds={false}>
-            <TransformComponent wrapperClass='verticalLayout rightcanvas' contentClass='verticalLayout'>
-              <Canvas2 name='RIGHT' nodesWithImages={versionRightNodesWithImages} canvasWidth={canvasMaxWidth} canvasHeight={canvasMaxHeight} offsetX={canvasOffsetX} offsetY={canvasOffsetY} containerClass='' />
-            </TransformComponent>
-          </TransformWrapper>
-        }
-      />
-
+      </div>
     </div>
   </div>
 };

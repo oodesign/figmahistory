@@ -1,0 +1,61 @@
+@import "./_typography";
+
+.listItem {
+
+    @include flex;
+    @include alignVerticalCenter;
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin-bottom: 1px;
+    margin-right: 4px;
+    cursor: pointer;
+
+    @include primaryText;
+    background-color: transparent;
+    transition: all 0.2s ease-out;
+
+    &:hover {
+        @include for-theme(light) {
+            background-color: $light_leftListItemHoverBackgroundColor;
+        }
+
+        @include for-theme(dark) {
+            background-color: $dark_leftListItemHoverBackgroundColor;
+        }
+    }
+
+    &.selected {
+        background-color: $accentComplementaryColor;
+    }
+
+    span {
+        @include primaryText;
+        width: 100%;
+        margin: 4px 10px 4px 4px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        display: inline-block;
+        overflow: hidden;
+    }
+
+
+    .listItemIcon {
+        width: 12px;
+        height: 12px;
+        background-size: contain;
+        background-repeat: no-repeat;
+
+
+        &.component {
+            @include for-theme(light) {
+                background-image: url("images/componentIcon.png");
+            }
+
+            @include for-theme(dark) {
+                background-image: url("images/componentIcon.png");
+            }
+        }
+    }
+
+
+}

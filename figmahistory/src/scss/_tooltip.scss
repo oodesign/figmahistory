@@ -1,0 +1,61 @@
+.tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: none;
+
+    .tooltipText {
+        visibility: hidden;
+        width: 460px;
+
+        @include for-theme(light) {
+            background-color: $light_tooltipColor;
+        }
+
+        @include for-theme(dark) {
+            background-color: $dark_tooltipColor;
+        }
+
+        visibility: hidden;
+        @include primaryText;
+        padding: 10px 16px 14px 16px;
+
+        /* Position the tooltip text - see examples below! */
+        position: absolute;
+        border-radius: 6px;
+        z-index: 1;
+        bottom: 150%;
+        margin-left: -230px;
+        opacity: 0;
+        transition: opacity 0.3s;
+        box-shadow: 0px 2px 11px rgba(0, 0, 0, 0.2);
+        text-align: left;
+
+
+        &::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+
+            @include for-theme(light) {
+                border-color: $light_tooltipColor transparent transparent transparent;
+            }
+
+            @include for-theme(dark) {
+                border-color: $dark_tooltipColor transparent transparent transparent;
+            }
+        }
+
+        span {
+            @include primaryText;
+        }
+    }
+
+    &:hover .tooltipText {
+        visibility: visible;
+        opacity: 1;
+    }
+}
