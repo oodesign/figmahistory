@@ -27,6 +27,27 @@ enum Side {
   RIGHT = 1
 }
 
+type Color = {
+  a: number;
+  r: number;
+  g: number;
+  b: number;
+}
+
+type Document = {
+  children: any[];
+  name: string;
+  version: string;
+  pages: any[];
+}
+
+type Page = {
+  id: string;
+  children: any[];
+  name: string;
+  backgroundColor: Color;
+}
+
 type Version = {
   id: string;
   created_at: string;
@@ -49,6 +70,10 @@ const Start = () => {
 
   const [file1SelectedOption, setFile1SelectedOption] = useState<string>("");
   const [file2SelectedOption, setFile2SelectedOption] = useState<string>("");
+
+
+  const [fetchedVersionLeft, setFetchedVersionLeft] = useState<Document>();
+  const [fetchedVersionRight, setFetchedVersionRight] = useState<Document>();
 
   const [versionLeftNodesWithImages, setVersionLeftNodesWithImages] = useState<NodeWithImage[]>([]);
   const [versionRightNodesWithImages, setVersionRightNodesWithImages] = useState<NodeWithImage[]>([]);
@@ -101,12 +126,119 @@ const Start = () => {
     return versions;
   }
 
+  async function drawPage(documentIDReceived: string, fileId: string, pages: any[], pageId: number, side: Side, accessTokenReceived: string) {
+    let page = pages[pageId];
+    console.log(page)
+    let allowedTypes = ['FRAME', 'SECTION', 'COMPONENT', 'COMPONENT_SET'];
+
+    let newNodesWithImages = page.children
+      .filter((child: any) => allowedTypes.includes(child.type))
+      .map((child: any) => ({
+        id: child.id,
+        child: child,
+        image: null, 
+      }));
+
+    let firstPageContentsIDs: string = newNodesWithImages.map((node: NodeWithImage) => node.child.id).join(',');
+
+    console.log("newNodesWithImages:")
+    console.log(newNodesWithImages)
+
+    let getPagesVersion1Image = await fetch('https://api.figma.com/v1/images/' + documentIDReceived + "?ids=" + firstPageContentsIDs + "&format=png&scale=1&version=" + fileId, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${accessTokenReceived}` // Replace FigmaAPIKey with your actual access token
+      }
+    })
+
+
+    if (getPagesVersion1Image.ok) {
+      const responseJson = await getPagesVersion1Image.json();
+
+      console.log(responseJson.images);
+
+      let mapper = newNodesWithImages.map((node) => {
+        const imageUrl = responseJson.images[node.id] || '';
+
+        return {
+          ...node,
+          imageUrl,
+        };
+      });
+
+
+      console.log("newNodesWithImages (again):")
+      console.log(mapper);
+
+      let boundingBoxMaxX = 0;
+      let boundingBoxMinX = 0;
+      let boundingBoxMaxY = 0;
+      let boundingBoxMinY = 0;
+
+      mapper.forEach((nodeWithImage) => {
+        boundingBoxMaxX = Math.max(boundingBoxMaxX, nodeWithImage.child.absoluteBoundingBox.x + nodeWithImage.child.absoluteBoundingBox.width);
+        boundingBoxMinX = Math.min(boundingBoxMinX, nodeWithImage.child.absoluteBoundingBox.x);
+        boundingBoxMaxY = Math.max(boundingBoxMaxY, nodeWithImage.child.absoluteBoundingBox.y + nodeWithImage.child.absoluteBoundingBox.height);
+        boundingBoxMinY = Math.min(boundingBoxMinY, nodeWithImage.child.absoluteBoundingBox.y);
+      });
+
+      let canvasMaxWidth, canvasMaxHeight = 0
+
+
+      console.log("boundingBoxMinMaxX:" + boundingBoxMinX + "," + boundingBoxMaxX + " - boundingBoxMinMaxY:" + boundingBoxMinY + "," + boundingBoxMaxY);
+      console.log("PageLeftMax:" + pageLeftMaxX + "," + pageLeftMaxY + " - PageRightMax:" + pageRightMaxX + "," + pageRightMaxY);
+
+      if (side == Side.LEFT) {
+        setVersionLeftNodesWithImages(mapper);
+        setPageLeftMaxX((boundingBoxMaxX + (-boundingBoxMinX)));
+        setPageLeftMaxY((boundingBoxMaxY + (-boundingBoxMinY)));
+
+        canvasMaxWidth = (Math.max((boundingBoxMaxX + (-boundingBoxMinX)), pageRightMaxX));
+        canvasMaxHeight = (Math.max((boundingBoxMaxY + (-boundingBoxMinY)), pageRightMaxY));
+
+        console.log("setCanvasMaxWidth(L):" + Math.max((boundingBoxMaxX + (-boundingBoxMinX)), pageRightMaxX));
+        console.log("setCanvasMaxHeight(L):" + Math.max((boundingBoxMaxY + (-boundingBoxMinY)), pageRightMaxY));
+      }
+      else if (side == Side.RIGHT) {
+        setVersionRightNodesWithImages(mapper);
+        setPageRightMaxX((boundingBoxMaxX + (-boundingBoxMinX)));
+        setPageRightMaxY((boundingBoxMaxY + (-boundingBoxMinY)));
+
+        canvasMaxWidth = (Math.max((boundingBoxMaxX + (-boundingBoxMinX)), pageLeftMaxX));
+        canvasMaxHeight = (Math.max((boundingBoxMaxY + (-boundingBoxMinY)), pageLeftMaxY));
+
+        console.log("setCanvasMaxWidth(R):" + Math.max((boundingBoxMaxX + (-boundingBoxMinX)), pageLeftMaxX));
+        console.log("setCanvasMaxHeight(R):" + Math.max((boundingBoxMaxY + (-boundingBoxMinY)), pageLeftMaxY));
+      }
+
+
+      setCanvasMaxWidth(canvasMaxWidth);
+      setCanvasMaxHeight(canvasMaxHeight);
+
+      setCanvasOffsetX(Math.min(boundingBoxMinX, canvasOffsetX));
+      setCanvasOffsetY(Math.min(boundingBoxMinY, canvasOffsetY));
+      console.log("setCanvasOffsetX:" + boundingBoxMinX);
+      console.log("setCanvasOffsetY:" + boundingBoxMinY);
+
+      let scaleX = window.innerWidth / canvasMaxWidth;
+      let scaleY = window.innerHeight / canvasMaxHeight;
+
+
+      console.log("Window:" + window.innerWidth + "," + window.innerHeight + " - Canvas:" + canvasMaxWidth + "," + canvasMaxHeight + ". Scale:" + scaleX + "," + scaleY);
+
+      (firstImage.current as any).setTransform(0, 0, Math.min(scaleX, scaleY), 0);
+      (secondImage.current as any).setTransform(0, 0, Math.min(scaleX, scaleY), 0);
+
+    }
+
+  }
+
 
   async function fetchVersion(fileId: string, side: Side, documentIDReceived: string, accessTokenReceived: string) {
 
     console.log("Fetching version. documentID:" + documentIDReceived + ", accessToken:" + accessTokenReceived)
 
-    console.log("PageLeftMax:" + pageLeftMaxX + "," + pageLeftMaxY + " - PageRightMax:" + pageRightMaxX + "," + pageRightMaxY );
+    console.log("PageLeftMax:" + pageLeftMaxX + "," + pageLeftMaxY + " - PageRightMax:" + pageRightMaxX + "," + pageRightMaxY);
 
     let getPagesVersion = await fetch('https://api.figma.com/v1/files/' + documentIDReceived + "?version=" + fileId + "&depth=2", {
       method: 'GET',
@@ -122,112 +254,21 @@ const Start = () => {
       let pages = responseJson.document.children.filter((child: any) => child.type === 'CANVAS');
       console.log(pages);
 
-      let firstPage = pages[0];
-      console.log(firstPage)
-      let allowedTypes = ['FRAME', 'SECTION', 'COMPONENT', 'COMPONENT_SET'];
-      // let firstPageContents = firstPage.children.filter((child: any) => allowedTypes.includes(child.type));
-      // let firstPageContentsIDs = firstPageContents.map((child: any) => child.id).join(',');
-
-      let newNodesWithImages = firstPage.children
-        .filter((child: any) => allowedTypes.includes(child.type))
-        .map((child: any) => ({
-          id: child.id,
-          child: child,
-          image: null, // Replace with your actual function to generate thumbnail URL
-        }));
-
-      let firstPageContentsIDs: string = newNodesWithImages.map((node: NodeWithImage) => node.child.id).join(',');
-
-
-      console.log("newNodesWithImages:")
-      console.log(newNodesWithImages)
-
-      let getPagesVersion1Image = await fetch('https://api.figma.com/v1/images/' + documentIDReceived + "?ids=" + firstPageContentsIDs + "&format=png&scale=1&version=" + fileId, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${accessTokenReceived}` // Replace FigmaAPIKey with your actual access token
-        }
-      })
-
-
-      if (getPagesVersion1Image.ok) {
-        const responseJson = await getPagesVersion1Image.json();
-
-        console.log(responseJson.images);
-
-        let mapper = newNodesWithImages.map((node) => {
-          const imageUrl = responseJson.images[node.id] || '';
-
-          return {
-            ...node,
-            imageUrl,
-          };
-        });
-
-
-        console.log("newNodesWithImages (again):")
-        console.log(mapper);
-
-        let boundingBoxMaxX = 0;
-        let boundingBoxMinX = 0;
-        let boundingBoxMaxY = 0;
-        let boundingBoxMinY = 0;
-
-        mapper.forEach((nodeWithImage) => {
-          boundingBoxMaxX = Math.max(boundingBoxMaxX, nodeWithImage.child.absoluteBoundingBox.x + nodeWithImage.child.absoluteBoundingBox.width);
-          boundingBoxMinX = Math.min(boundingBoxMinX, nodeWithImage.child.absoluteBoundingBox.x);
-          boundingBoxMaxY = Math.max(boundingBoxMaxY, nodeWithImage.child.absoluteBoundingBox.y + nodeWithImage.child.absoluteBoundingBox.height);
-          boundingBoxMinY = Math.min(boundingBoxMinY, nodeWithImage.child.absoluteBoundingBox.y);
-        });
-
-        let canvasMaxWidth, canvasMaxHeight = 0
-
-
-        console.log("boundingBoxMinMaxX:" + boundingBoxMinX + "," + boundingBoxMaxX + " - boundingBoxMinMaxY:" + boundingBoxMinY + "," + boundingBoxMaxY );
-        console.log("PageLeftMax:" + pageLeftMaxX + "," + pageLeftMaxY + " - PageRightMax:" + pageRightMaxX + "," + pageRightMaxY );
-
-        if (side == Side.LEFT) {
-          setVersionLeftNodesWithImages(mapper);
-          setPageLeftMaxX((boundingBoxMaxX + (-boundingBoxMinX)));
-          setPageLeftMaxY((boundingBoxMaxY + (-boundingBoxMinY)));
-
-          canvasMaxWidth = (Math.max((boundingBoxMaxX + (-boundingBoxMinX)), pageRightMaxX));
-          canvasMaxHeight = (Math.max((boundingBoxMaxY + (-boundingBoxMinY)), pageRightMaxY));
-
-          console.log("setCanvasMaxWidth(L):" + Math.max((boundingBoxMaxX + (-boundingBoxMinX)), pageRightMaxX));
-          console.log("setCanvasMaxHeight(L):" + Math.max((boundingBoxMaxY + (-boundingBoxMinY)), pageRightMaxY));
-        }
-        else if (side == Side.RIGHT) {
-          setVersionRightNodesWithImages(mapper);
-          setPageRightMaxX((boundingBoxMaxX + (-boundingBoxMinX)));
-          setPageRightMaxY((boundingBoxMaxY + (-boundingBoxMinY)));
-
-          canvasMaxWidth = (Math.max((boundingBoxMaxX + (-boundingBoxMinX)), pageLeftMaxX));
-          canvasMaxHeight = (Math.max((boundingBoxMaxY + (-boundingBoxMinY)), pageLeftMaxY));
-
-          console.log("setCanvasMaxWidth(R):" + Math.max((boundingBoxMaxX + (-boundingBoxMinX)), pageLeftMaxX));
-          console.log("setCanvasMaxHeight(R):" + Math.max((boundingBoxMaxY + (-boundingBoxMinY)), pageLeftMaxY));
-        }
-
-
-        setCanvasMaxWidth(canvasMaxWidth);
-        setCanvasMaxHeight(canvasMaxHeight);
-
-        setCanvasOffsetX(Math.min(boundingBoxMinX, canvasOffsetX));
-        setCanvasOffsetY(Math.min(boundingBoxMinY, canvasOffsetY));
-        console.log("setCanvasOffsetX:" + boundingBoxMinX);
-        console.log("setCanvasOffsetY:" + boundingBoxMinY);
-
-        let scaleX = window.innerWidth / canvasMaxWidth;
-        let scaleY = window.innerHeight / canvasMaxHeight;
-
-
-        console.log("Window:" + window.innerWidth + "," + window.innerHeight + " - Canvas:" + canvasMaxWidth + "," + canvasMaxHeight + ". Scale:" + scaleX + "," + scaleY);
-
-        (firstImage.current as any).setTransform(0, 0, Math.min(scaleX, scaleY), 0);
-        (secondImage.current as any).setTransform(0, 0, Math.min(scaleX, scaleY), 0);
-
+      let versionDocument: Document = {
+        children: responseJson.document.children,
+        name: responseJson.document.name,
+        version: responseJson.document.version,
+        pages: pages
       }
+
+      if (side == Side.LEFT)
+        setFetchedVersionLeft(versionDocument);
+      if (side == Side.RIGHT)
+        setFetchedVersionRight(versionDocument);
+
+      let pageId = 0;
+
+      drawPage(documentIDReceived, fileId, pages, pageId, side, accessTokenReceived);
 
     }
   }
@@ -441,3 +482,5 @@ const App = () => {
 };
 
 export default App;
+
+
