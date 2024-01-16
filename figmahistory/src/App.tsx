@@ -46,6 +46,8 @@ type Page = {
   children: any[];
   name: string;
   backgroundColor: Color;
+  presentInVersionLeft: boolean
+  presentInVersionRight: boolean
 }
 
 type Version = {
@@ -71,8 +73,12 @@ const Start = () => {
   const [file1SelectedOption, setFile1SelectedOption] = useState<string>("");
   const [file2SelectedOption, setFile2SelectedOption] = useState<string>("");
 
-  const [pageSelectedLeft, setPageSelectedLeft] = useState<string>("");
-  const [pageSelectedRight, setPageSelectedRight] = useState<string>("");
+  const [pageSelected, setPageSelected] = useState<string>("");
+
+
+  const [isLeftPageAvailable, setIsLeftPageAvailable] = useState<boolean>(true);
+  const [isRightPageAvailable, setIsRightPageAvailable] = useState<boolean>(true);
+
 
   const [fetchedVersionLeft, setFetchedVersionLeft] = useState<Document>();
   const [fetchedVersionRight, setFetchedVersionRight] = useState<Document>();
@@ -133,7 +139,14 @@ const Start = () => {
     return versions;
   }
 
+
+  function drawVersionPresent(side: Side, present: boolean) {
+    if (side == Side.LEFT) setIsLeftPageAvailable(present);
+    if (side == Side.RIGHT) setIsRightPageAvailable(present);
+  }
+
   async function drawPage(documentIDReceived: string, fileId: string, pages: any[], pageId: string, side: Side, accessTokenReceived: string) {
+    drawVersionPresent(side, true);
     let page = pages.find(page => page.id === pageId);
     console.log(page)
     let allowedTypes = ['FRAME', 'SECTION', 'COMPONENT', 'COMPONENT_SET'];
@@ -272,7 +285,9 @@ const Start = () => {
           id: page.id,
           children: page.children,
           name: page.name,
-          backgroundColor: page.backgroundColor
+          backgroundColor: page.backgroundColor,
+          presentInVersionLeft: false,
+          presentInVersionRight: false
         };
       });
 
@@ -438,24 +453,31 @@ const Start = () => {
 
   function mergePagesPreservingOrder(array1: Page[], array2: Page[]): Page[] {
     const mergedArray: Page[] = [];
-    const idSet = new Set<string>();
 
-    // Helper function to add a unique page to the merged array and set
-    const addUniquePage = (page: Page) => {
-      if (!idSet.has(page.id)) {
-        mergedArray.push(page);
-        idSet.add(page.id);
-      }
-    };
-
-    // Iterate over array1 and add unique elements to mergedArray
-    for (const page of array1) {
-      addUniquePage(page);
+    function addPage(page: Page, presentInVersionLeft: boolean, presentInVersionRight: boolean, secondName: string) {
+      const newPage: Page = {
+        id: page.id,
+        children: page.children,
+        name: page.name + (secondName != "" && secondName != page.name ? "(" + secondName + ")" : ""),
+        backgroundColor: page.backgroundColor,
+        presentInVersionLeft: presentInVersionLeft,
+        presentInVersionRight: presentInVersionRight,
+      };
+      mergedArray.push(newPage);
     }
 
-    // Iterate over array2 and add unique elements to mergedArray
+    for (const page of array1) {
+      const array2Page = array2.find(page2 => page.id === page2.id);
+      if (array2Page)
+        addPage(page, true, true, array2Page.name);
+      else
+        addPage(page, true, false, "");
+    }
+
+
     for (const page of array2) {
-      addUniquePage(page);
+      if (!array1.some(page1 => page.id === page1.id))
+        addPage(page, false, true, "");
     }
 
     return mergedArray;
@@ -474,23 +496,39 @@ const Start = () => {
   };
 
   const renderPages2 = () => {
+    console.log("Rendering pages")
     let combinedPageOptions: Page[] = [];
     if (pagesOptionsVersionLeft && pagesOptionsVersionRight)
       combinedPageOptions = mergePagesPreservingOrder(pagesOptionsVersionLeft, pagesOptionsVersionRight);
 
-    function onPageChangedClick(pageId: string) {
+
+    console.log("Pages (left, right, combined):")
+    console.log(pagesOptionsVersionLeft)
+    console.log(pagesOptionsVersionRight)
+    console.log(combinedPageOptions)
+
+    function onPageChangedClick(page: Page) {
       return (event: React.MouseEvent<HTMLDivElement, MouseEvent>): void => {
         // Now you have access to both event and pageId
-        console.log("Changed Page to:" + pageId);
-    setPageSelectedLeft(pageId);
-    drawPage(documentID || "", fetchedVersionLeft?.version || "", fetchedVersionLeft?.pages || [], pageId, Side.LEFT, accessToken || "");
-    drawPage(documentID || "", fetchedVersionRight?.version || "", fetchedVersionRight?.pages || [], pageId, Side.RIGHT, accessToken || "");
+        console.log("Changed Page to:" + page.id);
+        setPageSelected(page.id);
+        if (page.presentInVersionLeft)
+          drawPage(documentID || "", fetchedVersionLeft?.version || "", fetchedVersionLeft?.pages || [], page.id, Side.LEFT, accessToken || "");
+        else
+          drawVersionPresent(Side.LEFT, false);
+
+        if (page.presentInVersionRight)
+          drawPage(documentID || "", fetchedVersionRight?.version || "", fetchedVersionRight?.pages || [], page.id, Side.RIGHT, accessToken || "");
+        else
+          drawVersionPresent(Side.RIGHT, false);
       };
     }
 
     return combinedPageOptions?.map((page) => (
-      <div className='listItem' onClick={onPageChangedClick(page.id)}>
-        {page.name}
+      <div className='listItem' key={page.id} onClick={onPageChangedClick(page)}>
+        {page.name}<br />
+        {page.presentInVersionLeft && 'vLeft'}<br />
+        {page.presentInVersionRight && 'vRight'}<br />
       </div>
     ));
   };
@@ -520,7 +558,7 @@ const Start = () => {
       <select id="selectVersion2" value={file2SelectedOption} onChange={onVersion2Changed}>
         {renderOptions()}
       </select>
-    
+
 
     </div>
     <div className='rowAvailable horizontalLayout'>
@@ -528,19 +566,27 @@ const Start = () => {
         {renderPages2()}
       </div>
       <div ref={canvasDiv} className="colAvailable verticalLayout">
-        <ReactCompareSlider
+        <ReactCompareSlider className='extend'
           onlyHandleDraggable={true}
           itemOne={
             <TransformWrapper ref={secondImage} onTransformed={handleTransform} minScale={0.01} limitToBounds={false}>
               <TransformComponent wrapperClass='verticalLayout leftcanvas' contentClass='verticalLayout'>
-                <Canvas2 name='LEFT' nodesWithImages={versionLeftNodesWithImages} canvasWidth={canvasMaxWidth} canvasHeight={canvasMaxHeight} offsetX={canvasOffsetX} offsetY={canvasOffsetY} containerClass='' />
+                {isLeftPageAvailable ? (
+                  <Canvas2 name='LEFT' nodesWithImages={versionLeftNodesWithImages} canvasWidth={canvasMaxWidth} canvasHeight={canvasMaxHeight} offsetX={canvasOffsetX} offsetY={canvasOffsetY} containerClass='' />
+                ) : (
+                  <span>Not available</span>
+                )}
               </TransformComponent>
             </TransformWrapper>
           }
           itemTwo={
             <TransformWrapper ref={firstImage} onTransformed={handleTransform} minScale={0.01} limitToBounds={false}>
               <TransformComponent wrapperClass='verticalLayout rightcanvas' contentClass='verticalLayout'>
-                <Canvas2 name='RIGHT' nodesWithImages={versionRightNodesWithImages} canvasWidth={canvasMaxWidth} canvasHeight={canvasMaxHeight} offsetX={canvasOffsetX} offsetY={canvasOffsetY} containerClass='' />
+                {isRightPageAvailable ? (
+                  <Canvas2 name='RIGHT' nodesWithImages={versionRightNodesWithImages} canvasWidth={canvasMaxWidth} canvasHeight={canvasMaxHeight} offsetX={canvasOffsetX} offsetY={canvasOffsetY} containerClass='' />
+                ) : (
+                  <span>Not available</span>
+                )}
               </TransformComponent>
             </TransformWrapper>
           }
@@ -565,5 +611,6 @@ const App = () => {
 };
 
 export default App;
+
 
 
