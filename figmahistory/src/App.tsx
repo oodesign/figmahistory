@@ -36,8 +36,8 @@ const Start = () => {
   const [isLeftPageAvailable, setIsLeftPageAvailable] = useState<boolean>(true);
   const [isRightPageAvailable, setIsRightPageAvailable] = useState<boolean>(true);
 
-  const [pagesOptionsVersionLeft, setPagesOptionsVersionLeft] = useState<Page[]>();
-  const [pagesOptionsVersionRight, setPagesOptionsVersionRight] = useState<Page[]>();
+  const [pagesListVersionLeft, setPagesListVersionLeft] = useState<Page[]>();
+  const [pagesListVersionRight, setPagesListVersionRight] = useState<Page[]>();
 
   const [versionLeftNodesWithImages, setVersionLeftNodesWithImages] = useState<NodeWithImage[]>([]);
   const [versionRightNodesWithImages, setVersionRightNodesWithImages] = useState<NodeWithImage[]>([]);
@@ -222,16 +222,10 @@ const Start = () => {
       const responseJson = await getPagesVersion.json();
       console.log(responseJson);
 
-      let pages = responseJson.document.children.filter((child: any) => child.type === 'CANVAS');
-      console.log(pages);
+      let figmaDocumentPages: any[] = responseJson.document.children.filter((child: any) => child.type === 'CANVAS');
+      console.log(figmaDocumentPages);
 
-      let versionDocument: Document = {
-        children: responseJson.document.children,
-        name: responseJson.document.name,
-        version: responseJson.document.version,
-        pages: pages
-      }
-      let pageOptions = pages.map((page: any, index: number) => {
+      let pages: Page[] = figmaDocumentPages.map((page: any, index: number) => {
         return {
           id: page.id,
           children: page.children,
@@ -242,16 +236,23 @@ const Start = () => {
         };
       });
 
+      let versionDocument: Document = {
+        children: responseJson.document.children,
+        name: responseJson.document.name,
+        version: responseJson.document.version,
+        pages: pages
+      }
+
       if (side == Side.LEFT) {
         setDocumentLeft(versionDocument);
-        setPagesOptionsVersionLeft(pageOptions);
+        setPagesListVersionLeft(pages);
       }
       if (side == Side.RIGHT) {
         setDocumentRight(versionDocument);
-        setPagesOptionsVersionRight(pageOptions);
+        setPagesListVersionRight(pages);
       }
 
-      drawPage(fileId, pages, pageOptions[0].id, side);
+      drawPage(fileId, pages, versionDocument.pages[0].id, side);
 
     }
   }
@@ -439,29 +440,13 @@ const Start = () => {
     return mergedArray;
   }
 
-  const renderPages = () => {
-    let combinedPageOptions: Page[] = [];
-    if (pagesOptionsVersionLeft && pagesOptionsVersionRight)
-      combinedPageOptions = mergePagesPreservingOrder(pagesOptionsVersionLeft, pagesOptionsVersionRight);
 
-    return combinedPageOptions?.map((page) => (
-      <option key={page.id} value={page.id}>
-        {page.name}
-      </option>
-    ));
-  };
-
-  const renderPages2 = () => {
+  const renderPageList = () => {
     console.log("Rendering pages")
     let combinedPageOptions: Page[] = [];
-    if (pagesOptionsVersionLeft && pagesOptionsVersionRight)
-      combinedPageOptions = mergePagesPreservingOrder(pagesOptionsVersionLeft, pagesOptionsVersionRight);
+    if (pagesListVersionLeft && pagesListVersionRight)
+      combinedPageOptions = mergePagesPreservingOrder(pagesListVersionLeft, pagesListVersionRight);
 
-
-    console.log("Pages (left, right, combined):")
-    console.log(pagesOptionsVersionLeft)
-    console.log(pagesOptionsVersionRight)
-    console.log(combinedPageOptions)
 
     function onPageChangedClick(page: Page) {
       return (event: React.MouseEvent<HTMLDivElement, MouseEvent>): void => {
@@ -516,7 +501,7 @@ const Start = () => {
     </div>
     <div className='rowAvailable horizontalLayout'>
       <div className="colAuto">
-        {renderPages2()}
+        {renderPageList()}
       </div>
       <div ref={canvasDiv} className="colAvailable verticalLayout">
         <ReactCompareSlider className='extend'
