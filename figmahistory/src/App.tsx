@@ -6,7 +6,7 @@ import ImageDiff from 'react-image-diff';
 import ReactCompareImage from 'react-compare-image';
 import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slider';
 import { TransformWrapper, TransformComponent, ReactZoomPanPinchRef } from "react-zoom-pan-pinch";
-import { globalState, setDocumentID, setAccessToken,  } from './globals';
+import { globalState, setDocumentID, setAccessToken, setDocumentLeft, setDocumentRight,  } from './globals';
 
 import { User, Side, Color, Document, Version, Page} from './types';
 
@@ -17,6 +17,7 @@ import { access } from 'fs';
 import { NodeWithImage } from './NodeWithImage';
 import Canvas from './Canvas';
 import Canvas2 from './Canvas2';
+import { version } from 'yargs';
 
 
 
@@ -34,9 +35,6 @@ const Start = () => {
 
   const [isLeftPageAvailable, setIsLeftPageAvailable] = useState<boolean>(true);
   const [isRightPageAvailable, setIsRightPageAvailable] = useState<boolean>(true);
-
-  const [fetchedVersionLeft, setFetchedVersionLeft] = useState<Document>();
-  const [fetchedVersionRight, setFetchedVersionRight] = useState<Document>();
 
   const [pagesOptionsVersionLeft, setPagesOptionsVersionLeft] = useState<Page[]>();
   const [pagesOptionsVersionRight, setPagesOptionsVersionRight] = useState<Page[]>();
@@ -245,11 +243,11 @@ const Start = () => {
       });
 
       if (side == Side.LEFT) {
-        setFetchedVersionLeft(versionDocument);
+        setDocumentLeft(versionDocument);
         setPagesOptionsVersionLeft(pageOptions);
       }
       if (side == Side.RIGHT) {
-        setFetchedVersionRight(versionDocument);
+        setDocumentRight(versionDocument);
         setPagesOptionsVersionRight(pageOptions);
       }
 
@@ -468,12 +466,12 @@ const Start = () => {
     function onPageChangedClick(page: Page) {
       return (event: React.MouseEvent<HTMLDivElement, MouseEvent>): void => {
         if (page.presentInVersionLeft)
-          drawPage(fetchedVersionLeft?.version || "", fetchedVersionLeft?.pages || [], page.id, Side.LEFT);
+          drawPage(globalState.documentLeft.version, globalState.documentLeft.pages, page.id, Side.LEFT);
         else
           drawVersionPresent(Side.LEFT, false);
 
         if (page.presentInVersionRight)
-          drawPage(fetchedVersionRight?.version || "", fetchedVersionRight?.pages || [], page.id, Side.RIGHT);
+          drawPage(globalState.documentRight.version, globalState.documentRight.pages, page.id, Side.RIGHT);
         else
           drawVersionPresent(Side.RIGHT, false);
       };
