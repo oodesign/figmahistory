@@ -6,6 +6,8 @@ import ImageDiff from 'react-image-diff';
 import ReactCompareImage from 'react-compare-image';
 import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slider';
 import { TransformWrapper, TransformComponent, ReactZoomPanPinchRef } from "react-zoom-pan-pinch";
+import { globalState, setDocumentID, setAccessToken,  } from './globals';
+
 
 
 import './App.css';
@@ -62,10 +64,7 @@ type Version = {
 
 const Start = () => {
 
-  const [documentID, setDocumentID] = useState<string | null>(null);
-  const [accessToken, setAccessToken] = useState<string | null>(null);
   const [popupWindow, setPopupWindow] = useState<Window | null>(null);
-  const [error, setError] = useState<string | null>(null);
 
   const firstImage = useRef<ReactZoomPanPinchRef>(null);
   const secondImage = useRef<ReactZoomPanPinchRef>(null);
@@ -73,12 +72,8 @@ const Start = () => {
   const [file1SelectedOption, setFile1SelectedOption] = useState<string>("");
   const [file2SelectedOption, setFile2SelectedOption] = useState<string>("");
 
-  const [pageSelected, setPageSelected] = useState<string>("");
-
-
   const [isLeftPageAvailable, setIsLeftPageAvailable] = useState<boolean>(true);
   const [isRightPageAvailable, setIsRightPageAvailable] = useState<boolean>(true);
-
 
   const [fetchedVersionLeft, setFetchedVersionLeft] = useState<Document>();
   const [fetchedVersionRight, setFetchedVersionRight] = useState<Document>();
@@ -90,7 +85,6 @@ const Start = () => {
   const [versionRightNodesWithImages, setVersionRightNodesWithImages] = useState<NodeWithImage[]>([]);
 
   const canvasDiv = useRef<HTMLDivElement | null>(null);
-
 
   const [pageLeftMaxX, setPageLeftMaxX] = useState(0);
   const [pageLeftMaxY, setPageLeftMaxY] = useState(0);
@@ -145,7 +139,7 @@ const Start = () => {
     if (side == Side.RIGHT) setIsRightPageAvailable(present);
   }
 
-  async function drawPage(documentIDReceived: string, fileId: string, pages: any[], pageId: string, side: Side, accessTokenReceived: string) {
+  async function drawPage(fileId: string, pages: any[], pageId: string, side: Side) {
     drawVersionPresent(side, true);
     let page = pages.find(page => page.id === pageId);
     console.log(page)
@@ -164,10 +158,10 @@ const Start = () => {
     console.log("newNodesWithImages:")
     console.log(newNodesWithImages)
 
-    let getPagesVersion1Image = await fetch('https://api.figma.com/v1/images/' + documentIDReceived + "?ids=" + firstPageContentsIDs + "&format=png&scale=1&version=" + fileId, {
+    let getPagesVersion1Image = await fetch('https://api.figma.com/v1/images/' + globalState.documentId + "?ids=" + firstPageContentsIDs + "&format=png&scale=1&version=" + fileId, {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${accessTokenReceived}` // Replace FigmaAPIKey with your actual access token
+        'Authorization': `Bearer ${globalState.accessToken}` // Replace FigmaAPIKey with your actual access token
       }
     })
 
@@ -254,16 +248,15 @@ const Start = () => {
   }
 
 
-  async function fetchVersion(fileId: string, side: Side, documentIDReceived: string, accessTokenReceived: string) {
+  async function fetchVersion(fileId: string, side: Side) {
 
-    console.log("Fetching version. documentID:" + documentIDReceived + ", accessToken:" + accessTokenReceived)
 
     console.log("PageLeftMax:" + pageLeftMaxX + "," + pageLeftMaxY + " - PageRightMax:" + pageRightMaxX + "," + pageRightMaxY);
 
-    let getPagesVersion = await fetch('https://api.figma.com/v1/files/' + documentIDReceived + "?version=" + fileId + "&depth=2", {
+    let getPagesVersion = await fetch('https://api.figma.com/v1/files/' + globalState.documentId + "?version=" + fileId + "&depth=2", {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${accessTokenReceived}`
+        'Authorization': `Bearer ${globalState.accessToken}`
       }
     })
 
@@ -300,7 +293,7 @@ const Start = () => {
         setPagesOptionsVersionRight(pageOptions);
       }
 
-      drawPage(documentIDReceived, fileId, pages, pageOptions[0].id, side, accessTokenReceived);
+      drawPage(fileId, pages, pageOptions[0].id, side);
 
     }
   }
@@ -319,8 +312,8 @@ const Start = () => {
     setFile1SelectedOption(allVersions[0].id);
     setFile2SelectedOption(allVersions[1].id);
 
-    fetchVersion(allVersions[0].id, Side.LEFT, documentIDReceived, accessTokenReceived);
-    fetchVersion(allVersions[1].id, Side.RIGHT, documentIDReceived, accessTokenReceived);
+    fetchVersion(allVersions[0].id, Side.LEFT);
+    fetchVersion(allVersions[1].id, Side.RIGHT);
 
   };
 
@@ -328,7 +321,10 @@ const Start = () => {
 
     let figmaDocumentID = getFigmaDocumentID();
     console.log("Document IDs is:" + figmaDocumentID);
-    if (figmaDocumentID) setDocumentID(figmaDocumentID);
+    if (figmaDocumentID) {
+      setDocumentID(figmaDocumentID);
+    }
+
 
     console.log("Try post call");
     fetch('http://localhost:5002/get-figma-access-token', {
@@ -392,7 +388,9 @@ const Start = () => {
 
     let figmaDocumentID = getFigmaDocumentID();
     console.log("Document IDs is:" + figmaDocumentID);
-    if (figmaDocumentID) setDocumentID(figmaDocumentID);
+    if (figmaDocumentID) {
+      setDocumentID(figmaDocumentID);
+    }
 
     if (token && figmaDocumentID) {
       console.log("Token is known")
@@ -509,16 +507,13 @@ const Start = () => {
 
     function onPageChangedClick(page: Page) {
       return (event: React.MouseEvent<HTMLDivElement, MouseEvent>): void => {
-        // Now you have access to both event and pageId
-        console.log("Changed Page to:" + page.id);
-        setPageSelected(page.id);
         if (page.presentInVersionLeft)
-          drawPage(documentID || "", fetchedVersionLeft?.version || "", fetchedVersionLeft?.pages || [], page.id, Side.LEFT, accessToken || "");
+          drawPage(fetchedVersionLeft?.version || "", fetchedVersionLeft?.pages || [], page.id, Side.LEFT);
         else
           drawVersionPresent(Side.LEFT, false);
 
         if (page.presentInVersionRight)
-          drawPage(documentID || "", fetchedVersionRight?.version || "", fetchedVersionRight?.pages || [], page.id, Side.RIGHT, accessToken || "");
+          drawPage(fetchedVersionRight?.version || "", fetchedVersionRight?.pages || [], page.id, Side.RIGHT);
         else
           drawVersionPresent(Side.RIGHT, false);
       };
@@ -537,12 +532,12 @@ const Start = () => {
   function onVersion1Changed(event: ChangeEvent<HTMLSelectElement>): void {
     console.log("Changed v1 to version:" + event.target.value);
     setFile1SelectedOption(event.target.value);
-    if (documentID && accessToken) fetchVersion(event.target.value, Side.LEFT, documentID, accessToken);
+    fetchVersion(event.target.value, Side.LEFT);
   }
   function onVersion2Changed(event: ChangeEvent<HTMLSelectElement>): void {
     console.log("Changed v2 to version:" + event.target.value);
     setFile2SelectedOption(event.target.value);
-    if (documentID && accessToken) fetchVersion(event.target.value, Side.RIGHT, documentID, accessToken);
+    fetchVersion(event.target.value, Side.RIGHT);
   }
 
 
