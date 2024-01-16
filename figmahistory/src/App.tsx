@@ -8,6 +8,8 @@ import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slide
 import { TransformWrapper, TransformComponent, ReactZoomPanPinchRef } from "react-zoom-pan-pinch";
 import { globalState, setDocumentID, setAccessToken,  } from './globals';
 
+import { User, Side, Color, Document, Version, Page} from './types';
+
 
 
 import './App.css';
@@ -17,48 +19,6 @@ import Canvas from './Canvas';
 import Canvas2 from './Canvas2';
 
 
-type User = {
-  id: string;
-  handle: string;
-  img_url: string;
-  email: string;
-};
-
-enum Side {
-  LEFT = 0,
-  RIGHT = 1
-}
-
-type Color = {
-  a: number;
-  r: number;
-  g: number;
-  b: number;
-}
-
-type Document = {
-  children: any[];
-  name: string;
-  version: string;
-  pages: any[];
-}
-
-type Page = {
-  id: string;
-  children: any[];
-  name: string;
-  backgroundColor: Color;
-  presentInVersionLeft: boolean
-  presentInVersionRight: boolean
-}
-
-type Version = {
-  id: string;
-  created_at: string;
-  label: string;
-  description: string;
-  user: User;
-};
 
 
 
@@ -69,8 +29,8 @@ const Start = () => {
   const firstImage = useRef<ReactZoomPanPinchRef>(null);
   const secondImage = useRef<ReactZoomPanPinchRef>(null);
 
-  const [file1SelectedOption, setFile1SelectedOption] = useState<string>("");
-  const [file2SelectedOption, setFile2SelectedOption] = useState<string>("");
+  const [selectVersionLeftSelectedOption, setSelectVersionLeftSelectedOption] = useState<string>("");
+  const [selectVersionRightSelectedOption, setSelectVersionRightSelectedOption] = useState<string>("");
 
   const [isLeftPageAvailable, setIsLeftPageAvailable] = useState<boolean>(true);
   const [isRightPageAvailable, setIsRightPageAvailable] = useState<boolean>(true);
@@ -309,8 +269,8 @@ const Start = () => {
 
     setFileVersions(allVersions);
 
-    setFile1SelectedOption(allVersions[0].id);
-    setFile2SelectedOption(allVersions[1].id);
+    setSelectVersionLeftSelectedOption(allVersions[0].id);
+    setSelectVersionRightSelectedOption(allVersions[1].id);
 
     fetchVersion(allVersions[0].id, Side.LEFT);
     fetchVersion(allVersions[1].id, Side.RIGHT);
@@ -531,12 +491,12 @@ const Start = () => {
 
   function onVersion1Changed(event: ChangeEvent<HTMLSelectElement>): void {
     console.log("Changed v1 to version:" + event.target.value);
-    setFile1SelectedOption(event.target.value);
+    setSelectVersionLeftSelectedOption(event.target.value);
     fetchVersion(event.target.value, Side.LEFT);
   }
   function onVersion2Changed(event: ChangeEvent<HTMLSelectElement>): void {
     console.log("Changed v2 to version:" + event.target.value);
-    setFile2SelectedOption(event.target.value);
+    setSelectVersionRightSelectedOption(event.target.value);
     fetchVersion(event.target.value, Side.RIGHT);
   }
 
@@ -547,10 +507,10 @@ const Start = () => {
       {/* <input id="figmaFileURL" type='text' placeholder='Paste your Figma URL here' defaultValue="https://www.figma.com/file/58J9lvktDn7tFZu16UDJHl/Dolby-pHRTF---Capture-app---No-Cloud?type=design&node-id=10163%3A65721&mode=design&t=6n0ZrLO9YyM2lHjb-1" /> */}
       <input id="figmaFileURL" type='text' placeholder='Paste your Figma URL here' defaultValue="https://www.figma.com/file/HTUxsQSO4pR1GCvv8Nvqd5/HistoryChecker?type=design&node-id=1%3A2&mode=design&t=ffdrgnmtJ92dZgeQ-1" />
       <button onClick={getData}>Auth Figma</button>
-      <select id="selectVersion1" value={file1SelectedOption} onChange={onVersion1Changed}>
+      <select id="selectVersion1" value={selectVersionLeftSelectedOption} onChange={onVersion1Changed}>
         {renderOptions()}
       </select>
-      <select id="selectVersion2" value={file2SelectedOption} onChange={onVersion2Changed}>
+      <select id="selectVersion2" value={selectVersionRightSelectedOption} onChange={onVersion2Changed}>
         {renderOptions()}
       </select>
 
