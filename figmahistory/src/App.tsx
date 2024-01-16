@@ -6,22 +6,12 @@ import ImageDiff from 'react-image-diff';
 import ReactCompareImage from 'react-compare-image';
 import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slider';
 import { TransformWrapper, TransformComponent, ReactZoomPanPinchRef } from "react-zoom-pan-pinch";
-import { globalState, setDocumentID, setAccessToken, setDocumentLeft, setDocumentRight,  } from './globals';
+import { globalState, setDocumentID, setAccessToken, setDocumentLeft, setDocumentRight, } from './globals';
 
-import { User, Side, Color, Document, Version, Page} from './types';
+import { User, Side, Color, Document, Version, Page, NodeWithImage } from './types';
 
-
-
-import './App.css';
-import { access } from 'fs';
-import { NodeWithImage } from './NodeWithImage';
-import Canvas from './Canvas';
 import Canvas2 from './Canvas2';
-import { version } from 'yargs';
-
-
-
-
+import './App.css';
 
 const Start = () => {
 
@@ -29,6 +19,9 @@ const Start = () => {
 
   const firstImage = useRef<ReactZoomPanPinchRef>(null);
   const secondImage = useRef<ReactZoomPanPinchRef>(null);
+  const canvasDiv = useRef<HTMLDivElement | null>(null);
+
+  // #region canvas drawing state variables 
 
   const [selectVersionLeftSelectedOption, setSelectVersionLeftSelectedOption] = useState<string>("");
   const [selectVersionRightSelectedOption, setSelectVersionRightSelectedOption] = useState<string>("");
@@ -42,7 +35,6 @@ const Start = () => {
   const [versionLeftNodesWithImages, setVersionLeftNodesWithImages] = useState<NodeWithImage[]>([]);
   const [versionRightNodesWithImages, setVersionRightNodesWithImages] = useState<NodeWithImage[]>([]);
 
-  const canvasDiv = useRef<HTMLDivElement | null>(null);
 
   const [pageLeftMaxX, setPageLeftMaxX] = useState(0);
   const [pageLeftMaxY, setPageLeftMaxY] = useState(0);
@@ -53,19 +45,21 @@ const Start = () => {
   const [canvasOffsetX, setCanvasOffsetX] = useState(0);
   const [canvasOffsetY, setCanvasOffsetY] = useState(0);
 
-  const [fileVersions, setFileVersions] = useState<Version[]>([]);
+  const [fileVersionsList, setFileVersionsList] = useState<Version[]>([]);
 
+  // #endregion
 
-  async function fetchAllVersions(documentIDReceived: string, accessTokenReceived: string): Promise<Version[]> {
+  // #region Fetching files, versions
+
+  async function fetchVersionList(): Promise<Version[]> {
     const versions: Version[] = [];
 
     async function fetchPage(url: string | undefined): Promise<void> {
-      //console.log("Fetching url: "+url);
       if (url) {
         const response = await fetch(url, {
           method: 'GET',
           headers: {
-            'Authorization': `Bearer ${accessTokenReceived}` // Replace FigmaAPIKey with your actual access token
+            'Authorization': `Bearer ${globalState.accessToken}` // Replace FigmaAPIKey with your actual access token
           }
         });
 
@@ -86,132 +80,34 @@ const Start = () => {
     }
 
     // Start fetching with the initial page (undefined for the first page)
-    await fetchPage('https://api.figma.com/v1/files/' + documentIDReceived + "/versions");
+    await fetchPage('https://api.figma.com/v1/files/' + globalState.documentId + "/versions");
 
     return versions;
   }
 
+  const fetchFigmaFiles = async () => {
 
-  function drawVersionPresent(side: Side, present: boolean) {
-    if (side == Side.LEFT) setIsLeftPageAvailable(present);
-    if (side == Side.RIGHT) setIsRightPageAvailable(present);
-  }
+    const allVersions: Version[] = await fetchVersionList();
 
-  async function drawPage(fileId: string, pages: any[], pageId: string, side: Side) {
-    drawVersionPresent(side, true);
-    let page = pages.find(page => page.id === pageId);
-    console.log(page)
-    let allowedTypes = ['FRAME', 'SECTION', 'COMPONENT', 'COMPONENT_SET'];
+    console.log("allVersions:");
+    console.log(allVersions);
 
-    let newNodesWithImages = page.children
-      .filter((child: any) => allowedTypes.includes(child.type))
-      .map((child: any) => ({
-        id: child.id,
-        child: child,
-        image: null,
-      }));
+    setFileVersionsList(allVersions);
 
-    let firstPageContentsIDs: string = newNodesWithImages.map((node: NodeWithImage) => node.child.id).join(',');
+    setSelectVersionLeftSelectedOption(allVersions[0].id);
+    setSelectVersionRightSelectedOption(allVersions[1].id);
 
-    console.log("newNodesWithImages:")
-    console.log(newNodesWithImages)
+    fetchDocumentVersion(allVersions[0].id, Side.LEFT);
+    fetchDocumentVersion(allVersions[1].id, Side.RIGHT);
 
-    let getPagesVersion1Image = await fetch('https://api.figma.com/v1/images/' + globalState.documentId + "?ids=" + firstPageContentsIDs + "&format=png&scale=1&version=" + fileId, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${globalState.accessToken}` // Replace FigmaAPIKey with your actual access token
-      }
-    })
+  };
 
-    if (getPagesVersion1Image.ok) {
-      const responseJson = await getPagesVersion1Image.json();
-
-      console.log(responseJson.images);
-
-      let mapper = newNodesWithImages.map((node) => {
-        const imageUrl = responseJson.images[node.id] || '';
-
-        return {
-          ...node,
-          imageUrl,
-        };
-      });
-
-
-      console.log("newNodesWithImages (again):")
-      console.log(mapper);
-
-      let boundingBoxMaxX = 0;
-      let boundingBoxMinX = 0;
-      let boundingBoxMaxY = 0;
-      let boundingBoxMinY = 0;
-
-      mapper.forEach((nodeWithImage) => {
-        boundingBoxMaxX = Math.max(boundingBoxMaxX, nodeWithImage.child.absoluteBoundingBox.x + nodeWithImage.child.absoluteBoundingBox.width);
-        boundingBoxMinX = Math.min(boundingBoxMinX, nodeWithImage.child.absoluteBoundingBox.x);
-        boundingBoxMaxY = Math.max(boundingBoxMaxY, nodeWithImage.child.absoluteBoundingBox.y + nodeWithImage.child.absoluteBoundingBox.height);
-        boundingBoxMinY = Math.min(boundingBoxMinY, nodeWithImage.child.absoluteBoundingBox.y);
-      });
-
-      let canvasMaxWidth, canvasMaxHeight = 0
-
-
-      console.log("boundingBoxMinMaxX:" + boundingBoxMinX + "," + boundingBoxMaxX + " - boundingBoxMinMaxY:" + boundingBoxMinY + "," + boundingBoxMaxY);
-      console.log("PageLeftMax:" + pageLeftMaxX + "," + pageLeftMaxY + " - PageRightMax:" + pageRightMaxX + "," + pageRightMaxY);
-
-      if (side == Side.LEFT) {
-        setVersionLeftNodesWithImages(mapper);
-        setPageLeftMaxX((boundingBoxMaxX + (-boundingBoxMinX)));
-        setPageLeftMaxY((boundingBoxMaxY + (-boundingBoxMinY)));
-
-        canvasMaxWidth = (Math.max((boundingBoxMaxX + (-boundingBoxMinX)), pageRightMaxX));
-        canvasMaxHeight = (Math.max((boundingBoxMaxY + (-boundingBoxMinY)), pageRightMaxY));
-
-        console.log("setCanvasMaxWidth(L):" + Math.max((boundingBoxMaxX + (-boundingBoxMinX)), pageRightMaxX));
-        console.log("setCanvasMaxHeight(L):" + Math.max((boundingBoxMaxY + (-boundingBoxMinY)), pageRightMaxY));
-      }
-      else if (side == Side.RIGHT) {
-        setVersionRightNodesWithImages(mapper);
-        setPageRightMaxX((boundingBoxMaxX + (-boundingBoxMinX)));
-        setPageRightMaxY((boundingBoxMaxY + (-boundingBoxMinY)));
-
-        canvasMaxWidth = (Math.max((boundingBoxMaxX + (-boundingBoxMinX)), pageLeftMaxX));
-        canvasMaxHeight = (Math.max((boundingBoxMaxY + (-boundingBoxMinY)), pageLeftMaxY));
-
-        console.log("setCanvasMaxWidth(R):" + Math.max((boundingBoxMaxX + (-boundingBoxMinX)), pageLeftMaxX));
-        console.log("setCanvasMaxHeight(R):" + Math.max((boundingBoxMaxY + (-boundingBoxMinY)), pageLeftMaxY));
-      }
-
-
-      setCanvasMaxWidth(canvasMaxWidth);
-      setCanvasMaxHeight(canvasMaxHeight);
-
-      setCanvasOffsetX(Math.min(boundingBoxMinX, canvasOffsetX));
-      setCanvasOffsetY(Math.min(boundingBoxMinY, canvasOffsetY));
-      console.log("setCanvasOffsetX:" + boundingBoxMinX);
-      console.log("setCanvasOffsetY:" + boundingBoxMinY);
-
-      if (canvasDiv.current) {
-        let scaleX = canvasDiv.current.clientWidth / canvasMaxWidth;
-        let scaleY = canvasDiv.current.clientHeight / canvasMaxHeight;
-
-
-        console.log("Window:" + window.innerWidth + "," + window.innerHeight + " - Canvas:" + canvasMaxWidth + "," + canvasMaxHeight + ". Scale:" + scaleX + "," + scaleY);
-
-        (firstImage.current as any).setTransform(0, 0, Math.min(scaleX, scaleY), 0);
-        (secondImage.current as any).setTransform(0, 0, Math.min(scaleX, scaleY), 0);
-      }
-    }
-
-  }
-
-
-  async function fetchVersion(fileId: string, side: Side) {
+  async function fetchDocumentVersion(versionId: string, side: Side) {
 
 
     console.log("PageLeftMax:" + pageLeftMaxX + "," + pageLeftMaxY + " - PageRightMax:" + pageRightMaxX + "," + pageRightMaxY);
 
-    let getPagesVersion = await fetch('https://api.figma.com/v1/files/' + globalState.documentId + "?version=" + fileId + "&depth=2", {
+    let getPagesVersion = await fetch('https://api.figma.com/v1/files/' + globalState.documentId + "?version=" + versionId + "&depth=2", {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${globalState.accessToken}`
@@ -237,9 +133,9 @@ const Start = () => {
       });
 
       let versionDocument: Document = {
-        children: responseJson.document.children,
         name: responseJson.document.name,
-        version: responseJson.document.version,
+        version: versionId,
+        children: responseJson.document.children,
         pages: pages
       }
 
@@ -252,29 +148,148 @@ const Start = () => {
         setPagesListVersionRight(pages);
       }
 
-      drawPage(fileId, pages, versionDocument.pages[0].id, side);
+      drawPage(versionDocument.pages[0].id, side);
 
     }
   }
 
+  // #endregion
 
-  // Usage in a React component or elsewhere in your TypeScript code
-  const fetchFigmaFiles = async (documentIDReceived: string, accessTokenReceived: string) => {
+  // #region Draw pages
 
-    const allVersions: Version[] = await fetchAllVersions(documentIDReceived, accessTokenReceived);
+  async function drawPage(pageId: string, side: Side) {
+    drawVersionPresent(side, true);
+    let pages: Page[] = [];
+    let versionId = "";
 
-    console.log("allVersions:");
-    console.log(allVersions);
+    if (side == Side.LEFT) {
+      pages = globalState.documentLeft.pages;
+      versionId = globalState.documentLeft.version;
+      console.log("Will try to draw on the LEFT file with documentId:" + globalState.documentId + ", version:" + versionId + " and page:" + pageId)
+    } else if (side == Side.RIGHT) {
+      pages = globalState.documentRight.pages;
+      versionId = globalState.documentRight.version;
+      console.log("Will try to draw on the RIGHT file with documentId:" + globalState.documentId + ", version:" + versionId + " and page:" + pageId)
+    }
 
-    setFileVersions(allVersions);
 
-    setSelectVersionLeftSelectedOption(allVersions[0].id);
-    setSelectVersionRightSelectedOption(allVersions[1].id);
+    let page = pages.find(page => page.id === pageId);
 
-    fetchVersion(allVersions[0].id, Side.LEFT);
-    fetchVersion(allVersions[1].id, Side.RIGHT);
+    if (page) {
 
-  };
+      console.log(page)
+      let allowedTypes = ['FRAME', 'SECTION', 'COMPONENT', 'COMPONENT_SET'];
+
+      let newNodesWithImages = page.children
+        .filter((child: any) => allowedTypes.includes(child.type))
+        .map((child: any) => ({
+          id: child.id,
+          child: child,
+          imageUrl: ""
+        }));
+
+      let firstPageContentsIDs: string = newNodesWithImages.map((node: NodeWithImage) => node.child.id).join(',');
+
+      console.log("newNodesWithImages:")
+      console.log(newNodesWithImages)
+
+      let getPagesVersion1Image = await fetch('https://api.figma.com/v1/images/' + globalState.documentId + "?ids=" + firstPageContentsIDs + "&format=png&scale=1&version=" + versionId, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${globalState.accessToken}` // Replace FigmaAPIKey with your actual access token
+        }
+      })
+
+      if (getPagesVersion1Image.ok) {
+        const responseJson = await getPagesVersion1Image.json();
+
+        console.log(responseJson.images);
+
+        let mapper = newNodesWithImages.map((node) => {
+          const imageUrl = responseJson.images[node.id] || '';
+
+          return {
+            ...node,
+            imageUrl,
+          };
+        });
+
+
+        console.log("newNodesWithImages (again):")
+        console.log(mapper);
+
+        let boundingBoxMaxX = 0;
+        let boundingBoxMinX = 0;
+        let boundingBoxMaxY = 0;
+        let boundingBoxMinY = 0;
+
+        mapper.forEach((nodeWithImage) => {
+          boundingBoxMaxX = Math.max(boundingBoxMaxX, nodeWithImage.child.absoluteBoundingBox.x + nodeWithImage.child.absoluteBoundingBox.width);
+          boundingBoxMinX = Math.min(boundingBoxMinX, nodeWithImage.child.absoluteBoundingBox.x);
+          boundingBoxMaxY = Math.max(boundingBoxMaxY, nodeWithImage.child.absoluteBoundingBox.y + nodeWithImage.child.absoluteBoundingBox.height);
+          boundingBoxMinY = Math.min(boundingBoxMinY, nodeWithImage.child.absoluteBoundingBox.y);
+        });
+
+        let canvasMaxWidth, canvasMaxHeight = 0
+
+
+        console.log("boundingBoxMinMaxX:" + boundingBoxMinX + "," + boundingBoxMaxX + " - boundingBoxMinMaxY:" + boundingBoxMinY + "," + boundingBoxMaxY);
+        console.log("PageLeftMax:" + pageLeftMaxX + "," + pageLeftMaxY + " - PageRightMax:" + pageRightMaxX + "," + pageRightMaxY);
+
+        if (side == Side.LEFT) {
+          setVersionLeftNodesWithImages(mapper);
+          setPageLeftMaxX((boundingBoxMaxX + (-boundingBoxMinX)));
+          setPageLeftMaxY((boundingBoxMaxY + (-boundingBoxMinY)));
+
+          canvasMaxWidth = (Math.max((boundingBoxMaxX + (-boundingBoxMinX)), pageRightMaxX));
+          canvasMaxHeight = (Math.max((boundingBoxMaxY + (-boundingBoxMinY)), pageRightMaxY));
+
+          console.log("setCanvasMaxWidth(L):" + Math.max((boundingBoxMaxX + (-boundingBoxMinX)), pageRightMaxX));
+          console.log("setCanvasMaxHeight(L):" + Math.max((boundingBoxMaxY + (-boundingBoxMinY)), pageRightMaxY));
+        }
+        else if (side == Side.RIGHT) {
+          setVersionRightNodesWithImages(mapper);
+          setPageRightMaxX((boundingBoxMaxX + (-boundingBoxMinX)));
+          setPageRightMaxY((boundingBoxMaxY + (-boundingBoxMinY)));
+
+          canvasMaxWidth = (Math.max((boundingBoxMaxX + (-boundingBoxMinX)), pageLeftMaxX));
+          canvasMaxHeight = (Math.max((boundingBoxMaxY + (-boundingBoxMinY)), pageLeftMaxY));
+
+          console.log("setCanvasMaxWidth(R):" + Math.max((boundingBoxMaxX + (-boundingBoxMinX)), pageLeftMaxX));
+          console.log("setCanvasMaxHeight(R):" + Math.max((boundingBoxMaxY + (-boundingBoxMinY)), pageLeftMaxY));
+        }
+
+
+        setCanvasMaxWidth(canvasMaxWidth);
+        setCanvasMaxHeight(canvasMaxHeight);
+
+        setCanvasOffsetX(Math.min(boundingBoxMinX, canvasOffsetX));
+        setCanvasOffsetY(Math.min(boundingBoxMinY, canvasOffsetY));
+        console.log("setCanvasOffsetX:" + boundingBoxMinX);
+        console.log("setCanvasOffsetY:" + boundingBoxMinY);
+
+        if (canvasDiv.current) {
+          let scaleX = canvasDiv.current.clientWidth / canvasMaxWidth;
+          let scaleY = canvasDiv.current.clientHeight / canvasMaxHeight;
+
+
+          console.log("Window:" + window.innerWidth + "," + window.innerHeight + " - Canvas:" + canvasMaxWidth + "," + canvasMaxHeight + ". Scale:" + scaleX + "," + scaleY);
+
+          (firstImage.current as any).setTransform(0, 0, Math.min(scaleX, scaleY), 0);
+          (secondImage.current as any).setTransform(0, 0, Math.min(scaleX, scaleY), 0);
+        }
+      }
+    }
+
+  }
+  function drawVersionPresent(side: Side, present: boolean) {
+    if (side == Side.LEFT) setIsLeftPageAvailable(present);
+    if (side == Side.RIGHT) setIsRightPageAvailable(present);
+  }
+
+  // #endregion
+
+  // #region Authentication and access
 
   const handleFigmaAuthentication = async (code: string) => {
 
@@ -295,35 +310,49 @@ const Start = () => {
     })
       .then(async response => {
         const responseObject = await response.json();
-        console.log(responseObject.figmaData)
-        console.log("AccessToken returned is:" + responseObject.figmaData.access_token)
-        if (responseObject.figmaData.access_token) setAccessToken(responseObject.figmaData.access_token);
+        if (responseObject.figmaData.access_token)
+          setAccessToken(responseObject.figmaData.access_token);
+
         setDocumentID(figmaDocumentID);
-        fetchFigmaFiles(figmaDocumentID, responseObject.figmaData.access_token)
+        fetchFigmaFiles();
       })
       .then(data => console.log(data))
       .catch(error => console.error('Error:', error));
 
   };
 
+
+  const getData = () => {
+    //TODO Retrieve token from storage
+    const token = "figu_c3F858MxN07ZBhWSXewYZglB_c_hGa4l0tx_MLrb";
+
+    let figmaDocumentID = getFigmaDocumentID();
+
+    if (token && figmaDocumentID) {
+      console.log("Token is known")
+      setAccessToken(token);
+      setDocumentID(figmaDocumentID);
+      fetchFigmaFiles()
+    }
+    else {
+      openPopupWindow();
+    }
+  }
+
+  // #endregion
+
+  // #region Helpers
+
   const getFigmaDocumentID = () => {
     const inputElement = document.getElementById("figmaFileURL") as HTMLInputElement;
     const inputURL = inputElement.value;
 
-    // regular expression that matches figma file urls
     const regex = /^((http|https):\/\/)?(www\.)?figma.com\/file\/([a-zA-Z0-9]{22})(.*)?/
-
-    // test the user input against the regular expression
     const matches = inputURL.match(regex)
-
-    // if there are no matches, the user didn't paste a link to their figma file
     if (matches === null) return "";
-
-    // if there is a match, the fourth group matched will be the file id
     const id = matches[4]
     return id || "";
   }
-
 
   const openPopupWindow = () => {
 
@@ -342,50 +371,9 @@ const Start = () => {
     setPopupWindow(popup);
   };
 
-  const getData = () => {
-    const token = "figu_c3F858MxN07ZBhWSXewYZglB_c_hGa4l0tx_MLrb";
+  // #endregion
 
-    let figmaDocumentID = getFigmaDocumentID();
-    console.log("Document IDs is:" + figmaDocumentID);
-    if (figmaDocumentID) {
-      setDocumentID(figmaDocumentID);
-    }
-
-    if (token && figmaDocumentID) {
-      console.log("Token is known")
-      setAccessToken(token);
-      setDocumentID(figmaDocumentID);
-      fetchFigmaFiles(figmaDocumentID, token)
-    }
-    else {
-      openPopupWindow();
-    }
-  }
-
-  useEffect(() => {
-    const handlePopupData = (event: MessageEvent) => {
-      // Check if the event data contains the parameters you expect
-      if (event.data && event.data.figmaSentCode) {
-        // Handle the received parameters
-        handleFigmaAuthentication(event.data.figmaSentCode);
-
-        // Close the popup window
-        if (popupWindow) {
-          popupWindow.close();
-        }
-      }
-    };
-
-    // Set up event listener when the component mounts
-    window.addEventListener('message', handlePopupData);
-
-    // Clean up the event listener when the component unmounts
-    return () => {
-      window.removeEventListener('message', handlePopupData);
-    };
-  }, [popupWindow]);
-
-
+  // #region UI drawing
 
   function handleTransform(ref: ReactZoomPanPinchRef, state: { scale: number; positionX: number; positionY: number; }): void {
 
@@ -401,7 +389,7 @@ const Start = () => {
   }
 
   const renderOptions = () => {
-    return fileVersions.map((fileVersion) => (
+    return fileVersionsList.map((fileVersion) => (
       <option key={fileVersion.id} value={fileVersion.id}>
         {fileVersion.label} - {fileVersion.user.handle}
       </option>
@@ -440,7 +428,6 @@ const Start = () => {
     return mergedArray;
   }
 
-
   const renderPageList = () => {
     console.log("Rendering pages")
     let combinedPageOptions: Page[] = [];
@@ -450,13 +437,17 @@ const Start = () => {
 
     function onPageChangedClick(page: Page) {
       return (event: React.MouseEvent<HTMLDivElement, MouseEvent>): void => {
-        if (page.presentInVersionLeft)
-          drawPage(globalState.documentLeft.version, globalState.documentLeft.pages, page.id, Side.LEFT);
+        if (page.presentInVersionLeft) {
+          console.log("Will try to draw left version. version id is:" + globalState.documentLeft.version)
+          drawPage(page.id, Side.LEFT);
+        }
         else
           drawVersionPresent(Side.LEFT, false);
 
-        if (page.presentInVersionRight)
-          drawPage(globalState.documentRight.version, globalState.documentRight.pages, page.id, Side.RIGHT);
+        if (page.presentInVersionRight) {
+          console.log("Will try to draw right version. version id is:" + globalState.documentRight.version)
+          drawPage(page.id, Side.RIGHT);
+        }
         else
           drawVersionPresent(Side.RIGHT, false);
       };
@@ -471,23 +462,45 @@ const Start = () => {
     ));
   };
 
+  // #endregion
+
+  // #region UIEvent handlers
 
   function onVersion1Changed(event: ChangeEvent<HTMLSelectElement>): void {
     console.log("Changed v1 to version:" + event.target.value);
     setSelectVersionLeftSelectedOption(event.target.value);
-    fetchVersion(event.target.value, Side.LEFT);
+    fetchDocumentVersion(event.target.value, Side.LEFT);
   }
   function onVersion2Changed(event: ChangeEvent<HTMLSelectElement>): void {
     console.log("Changed v2 to version:" + event.target.value);
     setSelectVersionRightSelectedOption(event.target.value);
-    fetchVersion(event.target.value, Side.RIGHT);
+    fetchDocumentVersion(event.target.value, Side.RIGHT);
   }
 
+  // #endregion
+
+
+  useEffect(() => {
+    const handlePopupData = (event: MessageEvent) => {
+      if (event.data && event.data.figmaSentCode) {
+        handleFigmaAuthentication(event.data.figmaSentCode);
+
+        if (popupWindow) {
+          popupWindow.close();
+        }
+      }
+    };
+
+    window.addEventListener('message', handlePopupData);
+
+    return () => {
+      window.removeEventListener('message', handlePopupData);
+    };
+  }, [popupWindow]);
 
 
   return <div className='rowAvailable verticalLayout'>
     <div className='rowAuto'>
-      {/* <input id="figmaFileURL" type='text' placeholder='Paste your Figma URL here' defaultValue="https://www.figma.com/file/58J9lvktDn7tFZu16UDJHl/Dolby-pHRTF---Capture-app---No-Cloud?type=design&node-id=10163%3A65721&mode=design&t=6n0ZrLO9YyM2lHjb-1" /> */}
       <input id="figmaFileURL" type='text' placeholder='Paste your Figma URL here' defaultValue="https://www.figma.com/file/HTUxsQSO4pR1GCvv8Nvqd5/HistoryChecker?type=design&node-id=1%3A2&mode=design&t=ffdrgnmtJ92dZgeQ-1" />
       <button onClick={getData}>Auth Figma</button>
       <select id="selectVersion1" value={selectVersionLeftSelectedOption} onChange={onVersion1Changed}>

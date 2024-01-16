@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { NodeWithImage } from './NodeWithImage';
+import { NodeWithImage } from './types';
 
 interface Canvas2Props {
     name: string;
