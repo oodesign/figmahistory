@@ -126,6 +126,7 @@ const Start = () => {
           id: page.id,
           children: page.children,
           name: page.name,
+          nameOtherVersion: "",
           backgroundColor: page.backgroundColor,
           presentInVersionLeft: false,
           presentInVersionRight: false
@@ -159,17 +160,16 @@ const Start = () => {
 
   async function drawPage(pageId: string, side: Side) {
     drawVersionPresent(side, true);
+
     let pages: Page[] = [];
     let versionId = "";
 
     if (side == Side.LEFT) {
       pages = globalState.documentLeft.pages;
       versionId = globalState.documentLeft.version;
-      console.log("Will try to draw on the LEFT file with documentId:" + globalState.documentId + ", version:" + versionId + " and page:" + pageId)
     } else if (side == Side.RIGHT) {
       pages = globalState.documentRight.pages;
       versionId = globalState.documentRight.version;
-      console.log("Will try to draw on the RIGHT file with documentId:" + globalState.documentId + ", version:" + versionId + " and page:" + pageId)
     }
 
 
@@ -177,7 +177,6 @@ const Start = () => {
 
     if (page) {
 
-      console.log(page)
       let allowedTypes = ['FRAME', 'SECTION', 'COMPONENT', 'COMPONENT_SET'];
 
       let newNodesWithImages = page.children
@@ -281,7 +280,17 @@ const Start = () => {
       }
     }
 
+    findDifferences();
+
   }
+
+  function findDifferences() {
+    const documentLeft = globalState.documentLeft;
+    const documentRight = globalState.documentRight;
+
+  }
+
+
   function drawVersionPresent(side: Side, present: boolean) {
     if (side == Side.LEFT) setIsLeftPageAvailable(present);
     if (side == Side.RIGHT) setIsRightPageAvailable(present);
@@ -403,7 +412,8 @@ const Start = () => {
       const newPage: Page = {
         id: page.id,
         children: page.children,
-        name: page.name + (secondName != "" && secondName != page.name ? "(" + secondName + ")" : ""),
+        name: page.name,
+        nameOtherVersion: secondName,
         backgroundColor: page.backgroundColor,
         presentInVersionLeft: presentInVersionLeft,
         presentInVersionRight: presentInVersionRight,
@@ -455,9 +465,26 @@ const Start = () => {
 
     return combinedPageOptions?.map((page) => (
       <div className='listItem' key={page.id} onClick={onPageChangedClick(page)}>
-        {page.name}<br />
-        {page.presentInVersionLeft && 'vLeft'}<br />
-        {page.presentInVersionRight && 'vRight'}<br />
+        <div className='verticalLayout'>
+          <div className='rowAuto primaryText'>
+            {page.name}
+          </div>
+          {page.name != page.nameOtherVersion && page.nameOtherVersion != "" ? (
+            <div className='rowAuto secondaryText'>
+              ( {page.nameOtherVersion})
+            </div>
+          ) : ""}
+          {page.presentInVersionLeft && !page.presentInVersionRight ? (
+            <div className='rowAuto primaryText'>
+              🌟 Just in vLeft
+            </div>
+          ) : ""}
+          {!page.presentInVersionLeft && page.presentInVersionRight ? (
+            <div className='rowAuto primaryText'>
+              🌟 Just in vRight
+            </div>
+          ) : ""}
+        </div>
       </div>
     ));
   };
@@ -514,7 +541,9 @@ const Start = () => {
     </div>
     <div className='rowAvailable horizontalLayout'>
       <div className="colAuto">
-        {renderPageList()}
+        <div className="verticalLayout">
+          {renderPageList()}
+        </div>
       </div>
       <div ref={canvasDiv} className="colAvailable verticalLayout">
         <ReactCompareSlider className='extend'

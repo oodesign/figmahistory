@@ -101,7 +101,7 @@ $headerSidesDistance: 18px;
     @include colAvailable;
 }
 
-.rowAuto {
+@mixin rowAuto {
     -webkit-box-flex: 0;
     -moz-box-flex: 0;
     -ms-flex: 0 0 auto;
@@ -109,6 +109,10 @@ $headerSidesDistance: 18px;
     flex: 0 0 auto;
     position: relative;
     width: 100%;
+}
+
+.rowAuto {
+    @include rowAuto();
 }
 
 .rowAvailable {

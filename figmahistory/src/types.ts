@@ -29,6 +29,7 @@ export interface Page {
     id: string;
     children: any[];
     name: string;
+    nameOtherVersion: string;
     backgroundColor: Color;
     presentInVersionLeft: boolean
     presentInVersionRight: boolean

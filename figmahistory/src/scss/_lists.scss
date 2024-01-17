@@ -2,7 +2,7 @@
 
 .listItem {
 
-    @include flex;
+    @include rowAuto;
     @include alignVerticalCenter;
     padding: 4px 8px;
     border-radius: 4px;
