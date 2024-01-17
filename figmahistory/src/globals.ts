@@ -1,6 +1,6 @@
 // globals.ts
 
-import { User, Side, Color, Document, Version, Page } from './types';
+import { User, Side, Color, Document, Version, Page, FigmaNode, Node } from './types';
 
 export interface GlobalState {
     documentId: string;
@@ -17,12 +17,14 @@ export let globalState: GlobalState = {
         version: "",
         children: [],
         pages: [],
+        flatNodes: []
     },
     documentRight: {
         name: "",
         version: "",
         children: [],
         pages: [],
+        flatNodes: []
     },
 };
 
@@ -38,7 +40,28 @@ export function setDocumentLeft(doc: Document) {
     globalState = { ...globalState, documentLeft: doc };
 }
 
+export function updateDocumentLeftFlatNodes(flatNodes: Node[]) {
+    globalState = {
+        ...globalState,
+        documentLeft: {
+            ...globalState.documentLeft,
+            flatNodes: flatNodes,
+        },
+    };
+}
+
 export function setDocumentRight(doc: Document) {
     globalState = { ...globalState, documentRight: doc };
 }
+
+export function updateDocumentRightFlatNodes(flatNodes: Node[]) {
+    globalState = {
+        ...globalState,
+        documentLeft: {
+            ...globalState.documentLeft,
+            flatNodes: flatNodes,
+        },
+    };
+}
+
 

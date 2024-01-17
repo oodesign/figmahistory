@@ -23,6 +23,7 @@ export interface Document {
     version: string;
     children: any[];
     pages: any[];
+    flatNodes: Node[];
 }
 
 export interface Page {
@@ -47,4 +48,16 @@ export interface NodeWithImage {
     id: string,
     child: any;
     imageUrl: string;
+}
+
+export interface FigmaNode {
+    id: string
+    children?: FigmaNode[];
+}
+
+export interface Node {
+    nodeId: string
+    isPresentInOtherVersion: boolean
+    isEqualToOtherVersion: boolean
+    figmaNode: FigmaNode;
 }

@@ -6,12 +6,14 @@ import ImageDiff from 'react-image-diff';
 import ReactCompareImage from 'react-compare-image';
 import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slider';
 import { TransformWrapper, TransformComponent, ReactZoomPanPinchRef } from "react-zoom-pan-pinch";
-import { globalState, setDocumentID, setAccessToken, setDocumentLeft, setDocumentRight, } from './globals';
+import { globalState, setDocumentID, setAccessToken, setDocumentLeft, setDocumentRight, updateDocumentLeftFlatNodes, updateDocumentRightFlatNodes, } from './globals';
+import isEqual from 'lodash/isEqual';
 
-import { User, Side, Color, Document, Version, Page, NodeWithImage } from './types';
+import { User, Side, Color, Document, Version, Page, NodeWithImage, FigmaNode, Node } from './types';
 
 import Canvas2 from './Canvas2';
 import './App.css';
+import { timeout } from 'q';
 
 const Start = () => {
 
@@ -69,7 +71,7 @@ const Start = () => {
           versions.push(...data.versions);
 
           // Continue fetching if there is a previous page
-          console.log("-- Has more pages? NextPage is:" + data.pagination.next_page)
+          //console.log("-- Has more pages? NextPage is:" + data.pagination.next_page)
           if (data.pagination && data.pagination.next_page) {
             await fetchPage(data.pagination.next_page);
           }
@@ -89,8 +91,8 @@ const Start = () => {
 
     const allVersions: Version[] = await fetchVersionList();
 
-    console.log("allVersions:");
-    console.log(allVersions);
+    // console.log("allVersions:");
+    // console.log(allVersions);
 
     setFileVersionsList(allVersions);
 
@@ -102,12 +104,38 @@ const Start = () => {
 
   };
 
+  function flattenNodes(node: FigmaNode): Node[] {
+    let flatNodes: Node[] = [];
+
+    function traverse(node: FigmaNode) {
+      let pushNode: Node = {
+        nodeId: node.id,
+        figmaNode: node,
+        isPresentInOtherVersion: false,
+        isEqualToOtherVersion: false
+      }
+      flatNodes.push(pushNode); // Add the current node to the array
+
+      if (node.children) {
+        for (const child of node.children) {
+          traverse(child); // Recursively traverse child nodes
+        }
+      }
+    }
+
+    traverse(node);
+
+    return flatNodes;
+  }
+
   async function fetchDocumentVersion(versionId: string, side: Side) {
 
+    console.log("Fetching version:" + versionId + " for side:" + side.valueOf());
 
-    console.log("PageLeftMax:" + pageLeftMaxX + "," + pageLeftMaxY + " - PageRightMax:" + pageRightMaxX + "," + pageRightMaxY);
+    let depth = "";
+    // let depth = "&depth=2";
 
-    let getPagesVersion = await fetch('https://api.figma.com/v1/files/' + globalState.documentId + "?version=" + versionId + "&depth=2", {
+    let getPagesVersion = await fetch('https://api.figma.com/v1/files/' + globalState.documentId + "?version=" + versionId + depth, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${globalState.accessToken}`
@@ -116,10 +144,14 @@ const Start = () => {
 
     if (getPagesVersion.ok) {
       const responseJson = await getPagesVersion.json();
-      console.log(responseJson);
+      // console.log(responseJson);
+
+      let documentFlatNodes = flattenNodes(responseJson.document);
+      // console.log("documentFlatNodes(" + documentFlatNodes.length + ") - Side " + side.valueOf());
+      // await (logFlattenNodes(documentFlatNodes));
 
       let figmaDocumentPages: any[] = responseJson.document.children.filter((child: any) => child.type === 'CANVAS');
-      console.log(figmaDocumentPages);
+      // console.log(figmaDocumentPages);
 
       let pages: Page[] = figmaDocumentPages.map((page: any, index: number) => {
         return {
@@ -137,7 +169,8 @@ const Start = () => {
         name: responseJson.document.name,
         version: versionId,
         children: responseJson.document.children,
-        pages: pages
+        pages: pages,
+        flatNodes: documentFlatNodes
       }
 
       if (side == Side.LEFT) {
@@ -149,6 +182,8 @@ const Start = () => {
         setPagesListVersionRight(pages);
       }
 
+      calculateDifferences();
+
       drawPage(versionDocument.pages[0].id, side);
 
     }
@@ -157,6 +192,10 @@ const Start = () => {
   // #endregion
 
   // #region Draw pages
+
+  async function logFlattenNodes(nodes: Node[]) {
+    console.log(nodes);
+  }
 
   async function drawPage(pageId: string, side: Side) {
     drawVersionPresent(side, true);
@@ -189,8 +228,8 @@ const Start = () => {
 
       let firstPageContentsIDs: string = newNodesWithImages.map((node: NodeWithImage) => node.child.id).join(',');
 
-      console.log("newNodesWithImages:")
-      console.log(newNodesWithImages)
+      // console.log("newNodesWithImages:")
+      // console.log(newNodesWithImages)
 
       let getPagesVersion1Image = await fetch('https://api.figma.com/v1/images/' + globalState.documentId + "?ids=" + firstPageContentsIDs + "&format=png&scale=1&version=" + versionId, {
         method: 'GET',
@@ -202,7 +241,7 @@ const Start = () => {
       if (getPagesVersion1Image.ok) {
         const responseJson = await getPagesVersion1Image.json();
 
-        console.log(responseJson.images);
+        // console.log(responseJson.images);
 
         let mapper = newNodesWithImages.map((node) => {
           const imageUrl = responseJson.images[node.id] || '';
@@ -214,8 +253,8 @@ const Start = () => {
         });
 
 
-        console.log("newNodesWithImages (again):")
-        console.log(mapper);
+        // console.log("newNodesWithImages (again):")
+        // console.log(mapper);
 
         let boundingBoxMaxX = 0;
         let boundingBoxMinX = 0;
@@ -232,7 +271,7 @@ const Start = () => {
         let canvasMaxWidth, canvasMaxHeight = 0
 
 
-        console.log("boundingBoxMinMaxX:" + boundingBoxMinX + "," + boundingBoxMaxX + " - boundingBoxMinMaxY:" + boundingBoxMinY + "," + boundingBoxMaxY);
+        // console.log("boundingBoxMinMaxX:" + boundingBoxMinX + "," + boundingBoxMaxX + " - boundingBoxMinMaxY:" + boundingBoxMinY + "," + boundingBoxMaxY);
         console.log("PageLeftMax:" + pageLeftMaxX + "," + pageLeftMaxY + " - PageRightMax:" + pageRightMaxX + "," + pageRightMaxY);
 
         if (side == Side.LEFT) {
@@ -243,8 +282,8 @@ const Start = () => {
           canvasMaxWidth = (Math.max((boundingBoxMaxX + (-boundingBoxMinX)), pageRightMaxX));
           canvasMaxHeight = (Math.max((boundingBoxMaxY + (-boundingBoxMinY)), pageRightMaxY));
 
-          console.log("setCanvasMaxWidth(L):" + Math.max((boundingBoxMaxX + (-boundingBoxMinX)), pageRightMaxX));
-          console.log("setCanvasMaxHeight(L):" + Math.max((boundingBoxMaxY + (-boundingBoxMinY)), pageRightMaxY));
+          // console.log("setCanvasMaxWidth(L):" + Math.max((boundingBoxMaxX + (-boundingBoxMinX)), pageRightMaxX));
+          // console.log("setCanvasMaxHeight(L):" + Math.max((boundingBoxMaxY + (-boundingBoxMinY)), pageRightMaxY));
         }
         else if (side == Side.RIGHT) {
           setVersionRightNodesWithImages(mapper);
@@ -254,8 +293,8 @@ const Start = () => {
           canvasMaxWidth = (Math.max((boundingBoxMaxX + (-boundingBoxMinX)), pageLeftMaxX));
           canvasMaxHeight = (Math.max((boundingBoxMaxY + (-boundingBoxMinY)), pageLeftMaxY));
 
-          console.log("setCanvasMaxWidth(R):" + Math.max((boundingBoxMaxX + (-boundingBoxMinX)), pageLeftMaxX));
-          console.log("setCanvasMaxHeight(R):" + Math.max((boundingBoxMaxY + (-boundingBoxMinY)), pageLeftMaxY));
+          // console.log("setCanvasMaxWidth(R):" + Math.max((boundingBoxMaxX + (-boundingBoxMinX)), pageLeftMaxX));
+          // console.log("setCanvasMaxHeight(R):" + Math.max((boundingBoxMaxY + (-boundingBoxMinY)), pageLeftMaxY));
         }
 
 
@@ -264,23 +303,21 @@ const Start = () => {
 
         setCanvasOffsetX(Math.min(boundingBoxMinX, canvasOffsetX));
         setCanvasOffsetY(Math.min(boundingBoxMinY, canvasOffsetY));
-        console.log("setCanvasOffsetX:" + boundingBoxMinX);
-        console.log("setCanvasOffsetY:" + boundingBoxMinY);
+        // console.log("setCanvasOffsetX:" + boundingBoxMinX);
+        // console.log("setCanvasOffsetY:" + boundingBoxMinY);
 
         if (canvasDiv.current) {
           let scaleX = canvasDiv.current.clientWidth / canvasMaxWidth;
           let scaleY = canvasDiv.current.clientHeight / canvasMaxHeight;
 
 
-          console.log("Window:" + window.innerWidth + "," + window.innerHeight + " - Canvas:" + canvasMaxWidth + "," + canvasMaxHeight + ". Scale:" + scaleX + "," + scaleY);
+          // console.log("Window:" + window.innerWidth + "," + window.innerHeight + " - Canvas:" + canvasMaxWidth + "," + canvasMaxHeight + ". Scale:" + scaleX + "," + scaleY);
 
           (firstImage.current as any).setTransform(0, 0, Math.min(scaleX, scaleY), 0);
           (secondImage.current as any).setTransform(0, 0, Math.min(scaleX, scaleY), 0);
         }
       }
     }
-
-    findDifferences();
 
   }
 
@@ -439,7 +476,7 @@ const Start = () => {
   }
 
   const renderPageList = () => {
-    console.log("Rendering pages")
+    //console.log("Rendering pages")
     let combinedPageOptions: Page[] = [];
     if (pagesListVersionLeft && pagesListVersionRight)
       combinedPageOptions = mergePagesPreservingOrder(pagesListVersionLeft, pagesListVersionRight);
@@ -448,14 +485,14 @@ const Start = () => {
     function onPageChangedClick(page: Page) {
       return (event: React.MouseEvent<HTMLDivElement, MouseEvent>): void => {
         if (page.presentInVersionLeft) {
-          console.log("Will try to draw left version. version id is:" + globalState.documentLeft.version)
+          //console.log("Will try to draw left version. version id is:" + globalState.documentLeft.version)
           drawPage(page.id, Side.LEFT);
         }
         else
           drawVersionPresent(Side.LEFT, false);
 
         if (page.presentInVersionRight) {
-          console.log("Will try to draw right version. version id is:" + globalState.documentRight.version)
+          //console.log("Will try to draw right version. version id is:" + globalState.documentRight.version)
           drawPage(page.id, Side.RIGHT);
         }
         else
@@ -593,4 +630,47 @@ const App = () => {
 export default App;
 
 
+
+function calculateDifferences() {
+  let documentLeftFlatNodes = globalState.documentLeft.flatNodes;
+  let documentRightFlatNodes = globalState.documentRight.flatNodes;
+
+
+  const newDocumentLeftFlatNodes = getVersionComparison(documentLeftFlatNodes, documentRightFlatNodes);
+  const newDocumentRightFlatNodes = getVersionComparison(documentRightFlatNodes, documentLeftFlatNodes);
+
+  console.log("After comparisons:")
+  console.log(newDocumentLeftFlatNodes);
+  console.log(newDocumentRightFlatNodes);
+
+  updateDocumentLeftFlatNodes(newDocumentLeftFlatNodes);
+  updateDocumentRightFlatNodes(newDocumentRightFlatNodes);
+}
+
+function getVersionComparison(array1FlatNodes: Node[], array2FlatNodes: Node[]) {
+  let newDocumentFlatNodes: Node[] = [];
+
+  for (const node1 of array1FlatNodes) {
+    let isPresentInOtherVersion = false;
+    let isEqualToOtherVersion = false;
+
+    const correspondingNode2 = array2FlatNodes.find(node2 => node1.nodeId === node2.nodeId);
+
+    if (correspondingNode2) {
+      isPresentInOtherVersion = true;
+      isEqualToOtherVersion = (node1.nodeId === correspondingNode2.nodeId && isEqual(node1.figmaNode, correspondingNode2.figmaNode));
+    } else {
+      isPresentInOtherVersion = false;
+    }
+
+    newDocumentFlatNodes.push({
+      nodeId: node1.nodeId,
+      isPresentInOtherVersion: isPresentInOtherVersion,
+      isEqualToOtherVersion: isEqualToOtherVersion,
+      figmaNode: node1.figmaNode
+    });
+  }
+
+  return newDocumentFlatNodes;
+}
 

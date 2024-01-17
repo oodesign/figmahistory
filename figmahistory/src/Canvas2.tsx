@@ -21,7 +21,7 @@ const Canvas2: React.FC<Canvas2Props> = ({ name, nodesWithImages, canvasWidth, c
     }, [canvasWidth, canvasHeight, offsetX, offsetY]);
 
     const renderOptions = (): React.ReactNode => {
-        console.log("Drawing canvas: " + name + ". Offset:" + offsetX + "," + offsetY);
+        //console.log("Drawing canvas: " + name + ". Offset:" + offsetX + "," + offsetY);
         return nodesWithImages.map((nodeWithImage, index) => (
             <img
                 key={index}
