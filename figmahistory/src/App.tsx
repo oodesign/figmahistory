@@ -40,7 +40,7 @@ const Start = () => {
 
   const [versionLeftDifferences, setVersionLeftDifferences] = useState<Difference[]>([]);
   const [versionRightDifferences, setVersionRightDifferences] = useState<Difference[]>([]);
-  const [differencesTypes, setDifferencesTypes] = useState<string[]>([]);
+  const [differencesTypes, setDifferencesTypes] = useState<string[]>(['FRAME', 'SECTION']);
 
 
   const [pageLeftMaxX, setPageLeftMaxX] = useState(0);
@@ -98,8 +98,6 @@ const Start = () => {
 
     const allVersions: Version[] = await fetchVersionList();
 
-    // console.log("allVersions:");
-    // console.log(allVersions);
 
     setFileVersionsList(allVersions);
 
@@ -267,8 +265,6 @@ const Start = () => {
     await fetchPage(versionId, pageId, side);
 
 
-    let diffTypes = ['FRAME', 'SECTION', 'RECTANGLE'];
-    setDifferencesTypes(diffTypes);
 
 
     calculateDifferences(pageId);
@@ -725,16 +721,46 @@ const Start = () => {
   }, [popupWindow]);
 
 
+  function onDifferenceTypesChanged(event: ChangeEvent<HTMLInputElement>): void {
+    const { value, checked } = event.target;
+
+    setDifferencesTypes((prevSelectedTypes) => {
+      if (checked) {
+        return [...prevSelectedTypes, value];
+      } else {
+        return prevSelectedTypes.filter((type) => type !== value);
+      }
+    });
+  }
+
   return <div className='rowAvailable verticalLayout'>
     <div className='rowAuto'>
       <input id="figmaFileURL" type='text' placeholder='Paste your Figma URL here' defaultValue="https://www.figma.com/file/HTUxsQSO4pR1GCvv8Nvqd5/HistoryChecker?type=design&node-id=1%3A2&mode=design&t=ffdrgnmtJ92dZgeQ-1" />
-      <button onClick={getData}>Auth Figma</button>
+      <button onClick={getData}>Load</button>
       <select id="selectVersion1" value={selectVersionLeftSelectedOption} onChange={onVersion1Changed}>
         {renderOptions()}
       </select>
       <select id="selectVersion2" value={selectVersionRightSelectedOption} onChange={onVersion2Changed}>
         {renderOptions()}
       </select>
+
+      <input type="checkbox" value="SECTION" onChange={onDifferenceTypesChanged} checked={differencesTypes.includes('SECTION')} />
+      <label>Section</label>
+      <input type="checkbox" value="FRAME" onChange={onDifferenceTypesChanged} checked={differencesTypes.includes('FRAME')} />
+      <label>Frame</label>
+      <input type="checkbox" value="COMPONENT_SET" onChange={onDifferenceTypesChanged} checked={differencesTypes.includes('COMPONENT_SET')} />
+      <label>Component sets</label>
+      <input type="checkbox" value="COMPONENT" onChange={onDifferenceTypesChanged} checked={differencesTypes.includes('COMPONENT')} />
+      <label>Components</label>
+      <input type="checkbox" value="INSTANCE" onChange={onDifferenceTypesChanged} checked={differencesTypes.includes('INSTANCE')} />
+      <label>Instances</label>
+      <input type="checkbox" value="GROUP" onChange={onDifferenceTypesChanged} checked={differencesTypes.includes('GROUP')} />
+      <label>Groups</label>
+      <input type="checkbox" value="RECTANGLE" onChange={onDifferenceTypesChanged} checked={differencesTypes.includes('RECTANGLE')} />
+      <label>Rectangle</label>
+      <input type="checkbox" value="TEXT" onChange={onDifferenceTypesChanged} checked={differencesTypes.includes('TEXT')} />
+      <label>Text</label>
+
 
 
     </div>
