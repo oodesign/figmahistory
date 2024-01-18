@@ -32,8 +32,8 @@ export interface Page {
     name: string;
     nameOtherVersion: string;
     backgroundColor: Color;
-    presentInVersionLeft: boolean
-    presentInVersionRight: boolean
+    presentInVersionLeft: boolean;
+    presentInVersionRight: boolean;
 }
 
 export interface Version {
@@ -45,19 +45,33 @@ export interface Version {
 };
 
 export interface NodeWithImage {
-    id: string,
+    id: string;
     child: any;
     imageUrl: string;
 }
 
 export interface FigmaNode {
-    id: string
+    id: string;
     children?: FigmaNode[];
+    absoluteBoundingBox?: any;
+    type?: any;
 }
 
 export interface Node {
-    nodeId: string
-    isPresentInOtherVersion: boolean
-    isEqualToOtherVersion: boolean
+    nodeId: string;
+    isPresentInOtherVersion: boolean;
+    isEqualToOtherVersion: boolean;
     figmaNode: FigmaNode;
+}
+
+export interface Rect{
+    x:number;
+    y:number;
+    width:number;
+    height:number;
+}
+
+export interface Difference{
+    boundingRect: Rect
+    
 }

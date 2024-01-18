@@ -6,10 +6,10 @@ import ImageDiff from 'react-image-diff';
 import ReactCompareImage from 'react-compare-image';
 import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slider';
 import { TransformWrapper, TransformComponent, ReactZoomPanPinchRef } from "react-zoom-pan-pinch";
-import { globalState, setDocumentID, setAccessToken, setDocumentLeft, setDocumentRight, updateDocumentLeftFlatNodes, updateDocumentRightFlatNodes, } from './globals';
+import { globalState, setDocumentID, setAccessToken, setDocumentLeft, setDocumentRight, updateDocumentLeftFlatNodes, updateDocumentRightFlatNodes, setSelectedPageId, } from './globals';
 import isEqual from 'lodash/isEqual';
 
-import { User, Side, Color, Document, Version, Page, NodeWithImage, FigmaNode, Node } from './types';
+import { User, Side, Color, Document, Version, Page, NodeWithImage, FigmaNode, Node, Difference } from './types';
 
 import Canvas2 from './Canvas2';
 import './App.css';
@@ -38,6 +38,10 @@ const Start = () => {
   const [versionRightNodesWithImages, setVersionRightNodesWithImages] = useState<NodeWithImage[]>([]);
 
 
+  const [versionLeftDifferences, setVersionLeftDifferences] = useState<Difference[]>([]);
+  const [versionRightDifferences, setVersionRightDifferences] = useState<Difference[]>([]);
+
+
   const [pageLeftMaxX, setPageLeftMaxX] = useState(0);
   const [pageLeftMaxY, setPageLeftMaxY] = useState(0);
   const [pageRightMaxX, setPageRightMaxX] = useState(0);
@@ -48,6 +52,8 @@ const Start = () => {
   const [canvasOffsetY, setCanvasOffsetY] = useState(0);
 
   const [fileVersionsList, setFileVersionsList] = useState<Version[]>([]);
+
+
 
   // #endregion
 
@@ -104,6 +110,26 @@ const Start = () => {
 
   };
 
+  function getAllPageFigmaNodes(node: FigmaNode, allowedTypes: string[]): any[] {
+    let pageFigmaNodes: FigmaNode[] = [];
+
+    function traverse(node: FigmaNode) {
+      if (allowedTypes.includes(node.type))
+        pageFigmaNodes.push(node);
+
+      if (node.children) {
+        for (const child of node.children.filter((child: any) => allowedTypes.includes(child.type))) {
+          traverse(child);
+        }
+      }
+    }
+
+    traverse(node);
+
+    return pageFigmaNodes;
+  }
+
+
   function flattenNodes(node: FigmaNode): Node[] {
     let flatNodes: Node[] = [];
 
@@ -130,7 +156,7 @@ const Start = () => {
 
   async function fetchDocumentVersion(versionId: string, side: Side) {
 
-    console.log("Fetching version:" + versionId + " for side:" + side.valueOf());
+    //console.log("Fetching version:" + versionId + " for side:" + side.valueOf());
 
     let depth = "";
     // let depth = "&depth=2";
@@ -184,7 +210,10 @@ const Start = () => {
 
       calculateDifferences();
 
-      drawPage(versionDocument.pages[0].id, side);
+      let pageId = globalState.selectedPageId ? globalState.selectedPageId : versionDocument.pages[0].id;
+      console.log("PageId is:" + pageId);
+
+      drawPage(pageId, side);
 
     }
   }
@@ -193,11 +222,8 @@ const Start = () => {
 
   // #region Draw pages
 
-  async function logFlattenNodes(nodes: Node[]) {
-    console.log(nodes);
-  }
-
   async function drawPage(pageId: string, side: Side) {
+
     drawVersionPresent(side, true);
 
     let pages: Page[] = [];
@@ -217,6 +243,42 @@ const Start = () => {
     if (page) {
 
       let allowedTypes = ['FRAME', 'SECTION', 'COMPONENT', 'COMPONENT_SET'];
+
+      let allPageFigmaNodes = getAllPageFigmaNodes(page, allowedTypes);
+      let allPageFigmaNodesIds = allPageFigmaNodes.map(node => node.id);
+
+      let nodesInLeftPage = globalState.documentLeft.flatNodes.filter(flatNode => allPageFigmaNodesIds.includes(flatNode.nodeId));
+      let nodesInRightPage = globalState.documentRight.flatNodes.filter(flatNode => allPageFigmaNodesIds.includes(flatNode.nodeId));
+
+      // console.log("nodesInPage. Side:" + side)
+      // console.log(nodesInLeftPage)
+      // console.log(nodesInRightPage)
+
+      let leftDifferences: Difference[] = [];
+      for (const node of nodesInLeftPage) {
+        if (!node.isEqualToOtherVersion || !node.isPresentInOtherVersion) {
+          leftDifferences.push({
+            boundingRect: node.figmaNode.absoluteBoundingBox
+          });
+        }
+      }
+
+      let rightDifferences: Difference[] = [];
+      for (const node of nodesInRightPage) {
+        if (!node.isEqualToOtherVersion || !node.isPresentInOtherVersion) {
+          rightDifferences.push({
+            boundingRect: node.figmaNode.absoluteBoundingBox
+          });
+        }
+      }
+
+      // console.log("Differences:");
+      // console.log(leftDifferences);
+      // console.log(rightDifferences);
+
+      setVersionLeftDifferences(leftDifferences);
+      setVersionRightDifferences(rightDifferences);
+
 
       let newNodesWithImages = page.children
         .filter((child: any) => allowedTypes.includes(child.type))
@@ -272,7 +334,7 @@ const Start = () => {
 
 
         // console.log("boundingBoxMinMaxX:" + boundingBoxMinX + "," + boundingBoxMaxX + " - boundingBoxMinMaxY:" + boundingBoxMinY + "," + boundingBoxMaxY);
-        console.log("PageLeftMax:" + pageLeftMaxX + "," + pageLeftMaxY + " - PageRightMax:" + pageRightMaxX + "," + pageRightMaxY);
+        // console.log("PageLeftMax:" + pageLeftMaxX + "," + pageLeftMaxY + " - PageRightMax:" + pageRightMaxX + "," + pageRightMaxY);
 
         if (side == Side.LEFT) {
           setVersionLeftNodesWithImages(mapper);
@@ -321,12 +383,6 @@ const Start = () => {
 
   }
 
-  function findDifferences() {
-    const documentLeft = globalState.documentLeft;
-    const documentRight = globalState.documentRight;
-
-  }
-
 
   function drawVersionPresent(side: Side, present: boolean) {
     if (side == Side.LEFT) setIsLeftPageAvailable(present);
@@ -340,13 +396,13 @@ const Start = () => {
   const handleFigmaAuthentication = async (code: string) => {
 
     let figmaDocumentID = getFigmaDocumentID();
-    console.log("Document IDs is:" + figmaDocumentID);
+    // console.log("Document IDs is:" + figmaDocumentID);
     if (figmaDocumentID) {
       setDocumentID(figmaDocumentID);
     }
 
 
-    console.log("Try post call");
+    // console.log("Try post call");
     fetch('http://localhost:5002/get-figma-access-token', {
       method: 'POST',
       headers: {
@@ -362,7 +418,9 @@ const Start = () => {
         setDocumentID(figmaDocumentID);
         fetchFigmaFiles();
       })
-      .then(data => console.log(data))
+      .then(data => {
+        // console.log(data) 
+      })
       .catch(error => console.error('Error:', error));
 
   };
@@ -375,7 +433,7 @@ const Start = () => {
     let figmaDocumentID = getFigmaDocumentID();
 
     if (token && figmaDocumentID) {
-      console.log("Token is known")
+      // console.log("Token is known")
       setAccessToken(token);
       setDocumentID(figmaDocumentID);
       fetchFigmaFiles()
@@ -388,6 +446,55 @@ const Start = () => {
   // #endregion
 
   // #region Helpers
+
+  function calculateDifferences() {
+
+    let documentLeftFlatNodes = globalState.documentLeft.flatNodes;
+    let documentRightFlatNodes = globalState.documentRight.flatNodes;
+
+    // console.log("CalculatingDifferences. At this point documentLeftFlatNodes is (" + documentLeftFlatNodes.length + ") and documentRightFlatNodes is (" + documentRightFlatNodes.length + ")")
+
+    if (documentLeftFlatNodes.length > 0 && documentRightFlatNodes.length > 0) {
+
+      const newDocumentLeftFlatNodes = getVersionComparison(documentLeftFlatNodes, documentRightFlatNodes);
+      const newDocumentRightFlatNodes = getVersionComparison(documentRightFlatNodes, documentLeftFlatNodes);
+
+      // console.log("After comparisons:")
+      // console.log(newDocumentLeftFlatNodes);
+      // console.log(newDocumentRightFlatNodes);
+
+      updateDocumentLeftFlatNodes(newDocumentLeftFlatNodes);
+      updateDocumentRightFlatNodes(newDocumentRightFlatNodes);
+    }
+
+  }
+
+  function getVersionComparison(array1FlatNodes: Node[], array2FlatNodes: Node[]) {
+    let newDocumentFlatNodes: Node[] = [];
+
+    for (const node1 of array1FlatNodes) {
+      let isPresentInOtherVersion = false;
+      let isEqualToOtherVersion = false;
+
+      const correspondingNode2 = array2FlatNodes.find(node2 => node1.nodeId === node2.nodeId);
+
+      if (correspondingNode2) {
+        isPresentInOtherVersion = true;
+        isEqualToOtherVersion = (node1.nodeId === correspondingNode2.nodeId && isEqual(node1.figmaNode, correspondingNode2.figmaNode));
+      } else {
+        isPresentInOtherVersion = false;
+      }
+
+      newDocumentFlatNodes.push({
+        nodeId: node1.nodeId,
+        isPresentInOtherVersion: isPresentInOtherVersion,
+        isEqualToOtherVersion: isEqualToOtherVersion,
+        figmaNode: node1.figmaNode
+      });
+    }
+
+    return newDocumentFlatNodes;
+  }
 
   const getFigmaDocumentID = () => {
     const inputElement = document.getElementById("figmaFileURL") as HTMLInputElement;
@@ -484,6 +591,9 @@ const Start = () => {
 
     function onPageChangedClick(page: Page) {
       return (event: React.MouseEvent<HTMLDivElement, MouseEvent>): void => {
+
+        setSelectedPageId(page.id);
+
         if (page.presentInVersionLeft) {
           //console.log("Will try to draw left version. version id is:" + globalState.documentLeft.version)
           drawPage(page.id, Side.LEFT);
@@ -589,7 +699,7 @@ const Start = () => {
             <TransformWrapper ref={secondImage} onTransformed={handleTransform} minScale={0.01} limitToBounds={false}>
               <TransformComponent wrapperClass='verticalLayout leftcanvas' contentClass='verticalLayout'>
                 {isLeftPageAvailable ? (
-                  <Canvas2 name='LEFT' nodesWithImages={versionLeftNodesWithImages} canvasWidth={canvasMaxWidth} canvasHeight={canvasMaxHeight} offsetX={canvasOffsetX} offsetY={canvasOffsetY} containerClass='' />
+                  <Canvas2 name='LEFT' nodesWithImages={versionLeftNodesWithImages} differences={versionLeftDifferences} canvasWidth={canvasMaxWidth} canvasHeight={canvasMaxHeight} offsetX={canvasOffsetX} offsetY={canvasOffsetY} containerClass='innerCanvas' />
                 ) : (
                   <span>Not available</span>
                 )}
@@ -600,7 +710,7 @@ const Start = () => {
             <TransformWrapper ref={firstImage} onTransformed={handleTransform} minScale={0.01} limitToBounds={false}>
               <TransformComponent wrapperClass='verticalLayout rightcanvas' contentClass='verticalLayout'>
                 {isRightPageAvailable ? (
-                  <Canvas2 name='RIGHT' nodesWithImages={versionRightNodesWithImages} canvasWidth={canvasMaxWidth} canvasHeight={canvasMaxHeight} offsetX={canvasOffsetX} offsetY={canvasOffsetY} containerClass='' />
+                  <Canvas2 name='RIGHT' nodesWithImages={versionRightNodesWithImages} differences={versionRightDifferences} canvasWidth={canvasMaxWidth} canvasHeight={canvasMaxHeight} offsetX={canvasOffsetX} offsetY={canvasOffsetY} containerClass='innerCanvas' />
                 ) : (
                   <span>Not available</span>
                 )}
@@ -630,47 +740,4 @@ const App = () => {
 export default App;
 
 
-
-function calculateDifferences() {
-  let documentLeftFlatNodes = globalState.documentLeft.flatNodes;
-  let documentRightFlatNodes = globalState.documentRight.flatNodes;
-
-
-  const newDocumentLeftFlatNodes = getVersionComparison(documentLeftFlatNodes, documentRightFlatNodes);
-  const newDocumentRightFlatNodes = getVersionComparison(documentRightFlatNodes, documentLeftFlatNodes);
-
-  console.log("After comparisons:")
-  console.log(newDocumentLeftFlatNodes);
-  console.log(newDocumentRightFlatNodes);
-
-  updateDocumentLeftFlatNodes(newDocumentLeftFlatNodes);
-  updateDocumentRightFlatNodes(newDocumentRightFlatNodes);
-}
-
-function getVersionComparison(array1FlatNodes: Node[], array2FlatNodes: Node[]) {
-  let newDocumentFlatNodes: Node[] = [];
-
-  for (const node1 of array1FlatNodes) {
-    let isPresentInOtherVersion = false;
-    let isEqualToOtherVersion = false;
-
-    const correspondingNode2 = array2FlatNodes.find(node2 => node1.nodeId === node2.nodeId);
-
-    if (correspondingNode2) {
-      isPresentInOtherVersion = true;
-      isEqualToOtherVersion = (node1.nodeId === correspondingNode2.nodeId && isEqual(node1.figmaNode, correspondingNode2.figmaNode));
-    } else {
-      isPresentInOtherVersion = false;
-    }
-
-    newDocumentFlatNodes.push({
-      nodeId: node1.nodeId,
-      isPresentInOtherVersion: isPresentInOtherVersion,
-      isEqualToOtherVersion: isEqualToOtherVersion,
-      figmaNode: node1.figmaNode
-    });
-  }
-
-  return newDocumentFlatNodes;
-}
 

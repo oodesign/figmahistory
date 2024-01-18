@@ -7,6 +7,7 @@ export interface GlobalState {
     accessToken: string;
     documentLeft: Document;
     documentRight: Document;
+    selectedPageId: string;
 }
 
 export let globalState: GlobalState = {
@@ -26,6 +27,7 @@ export let globalState: GlobalState = {
         pages: [],
         flatNodes: []
     },
+    selectedPageId: "",
 };
 
 export function setDocumentID(id: string) {
@@ -57,11 +59,15 @@ export function setDocumentRight(doc: Document) {
 export function updateDocumentRightFlatNodes(flatNodes: Node[]) {
     globalState = {
         ...globalState,
-        documentLeft: {
-            ...globalState.documentLeft,
+        documentRight: {
+            ...globalState.documentRight,
             flatNodes: flatNodes,
         },
     };
+}
+
+export function setSelectedPageId(id: string) {
+    globalState = { ...globalState, selectedPageId: id };
 }
 
 
