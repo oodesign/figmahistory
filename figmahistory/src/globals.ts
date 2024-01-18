@@ -18,14 +18,12 @@ export let globalState: GlobalState = {
         version: "",
         children: [],
         pages: [],
-        flatNodes: []
     },
     documentRight: {
         name: "",
         version: "",
         children: [],
         pages: [],
-        flatNodes: []
     },
     selectedPageId: "",
 };
@@ -42,12 +40,21 @@ export function setDocumentLeft(doc: Document) {
     globalState = { ...globalState, documentLeft: doc };
 }
 
-export function updateDocumentLeftFlatNodes(flatNodes: Node[]) {
+export function updateDocumentPageLeftFlatNodes(pageId: string, flatNodes: Node[]) {
     globalState = {
         ...globalState,
         documentLeft: {
             ...globalState.documentLeft,
-            flatNodes: flatNodes,
+            pages: globalState.documentLeft.pages.map((page) => {
+                if (page.id === pageId) {
+                    return {
+                        ...page,
+                        flatNodes: flatNodes,
+                    };
+                } else {
+                    return page;
+                }
+            }),
         },
     };
 }
@@ -56,12 +63,21 @@ export function setDocumentRight(doc: Document) {
     globalState = { ...globalState, documentRight: doc };
 }
 
-export function updateDocumentRightFlatNodes(flatNodes: Node[]) {
+export function updateDocumentPageRightFlatNodes(pageId: string, flatNodes: Node[]) {
     globalState = {
         ...globalState,
         documentRight: {
             ...globalState.documentRight,
-            flatNodes: flatNodes,
+            pages: globalState.documentRight.pages.map((page) => {
+                if (page.id === pageId) {
+                    return {
+                        ...page,
+                        flatNodes: flatNodes,
+                    };
+                } else {
+                    return page;
+                }
+            }),
         },
     };
 }

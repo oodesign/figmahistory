@@ -6,7 +6,7 @@ import ImageDiff from 'react-image-diff';
 import ReactCompareImage from 'react-compare-image';
 import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slider';
 import { TransformWrapper, TransformComponent, ReactZoomPanPinchRef } from "react-zoom-pan-pinch";
-import { globalState, setDocumentID, setAccessToken, setDocumentLeft, setDocumentRight, updateDocumentLeftFlatNodes, updateDocumentRightFlatNodes, setSelectedPageId, } from './globals';
+import { globalState, setDocumentID, setAccessToken, setDocumentLeft, setDocumentRight, updateDocumentPageLeftFlatNodes, updateDocumentPageRightFlatNodes, setSelectedPageId, } from './globals';
 import isEqual from 'lodash/isEqual';
 
 import { User, Side, Color, Document, Version, Page, NodeWithImage, FigmaNode, Node, Difference } from './types';
@@ -133,23 +133,25 @@ const Start = () => {
   function flattenNodes(node: FigmaNode): Node[] {
     let flatNodes: Node[] = [];
 
-    function traverse(node: FigmaNode) {
-      let pushNode: Node = {
-        nodeId: node.id,
-        figmaNode: node,
-        isPresentInOtherVersion: false,
-        isEqualToOtherVersion: false
+    function traverse(node: FigmaNode, includeNode: boolean) {
+      if (includeNode) {
+        let pushNode: Node = {
+          nodeId: node.id,
+          figmaNode: node,
+          isPresentInOtherVersion: false,
+          isEqualToOtherVersion: false
+        }
+        flatNodes.push(pushNode);
       }
-      flatNodes.push(pushNode); // Add the current node to the array
 
       if (node.children) {
         for (const child of node.children) {
-          traverse(child); // Recursively traverse child nodes
+          traverse(child, true); // Recursively traverse child nodes
         }
       }
     }
 
-    traverse(node);
+    traverse(node, false);
 
     return flatNodes;
   }
@@ -187,7 +189,8 @@ const Start = () => {
           nameOtherVersion: "",
           backgroundColor: page.backgroundColor,
           presentInVersionLeft: false,
-          presentInVersionRight: false
+          presentInVersionRight: false,
+          flatNodes: (globalState.selectedPageId && globalState.selectedPageId == page.id) ? flattenNodes(page) : []
         };
       });
 
@@ -196,7 +199,6 @@ const Start = () => {
         version: versionId,
         children: responseJson.document.children,
         pages: pages,
-        flatNodes: documentFlatNodes
       }
 
       if (side == Side.LEFT) {
@@ -208,10 +210,10 @@ const Start = () => {
         setPagesListVersionRight(pages);
       }
 
-      calculateDifferences();
 
       let pageId = globalState.selectedPageId ? globalState.selectedPageId : versionDocument.pages[0].id;
-      console.log("PageId is:" + pageId);
+      // console.log("PageId is:" + pageId);
+      calculateDifferences(pageId);
 
       drawPage(pageId, side);
 
@@ -226,58 +228,55 @@ const Start = () => {
 
     drawVersionPresent(side, true);
 
-    let pages: Page[] = [];
+    let page: Page | undefined = undefined;
+    let leftPage = globalState.documentLeft.pages.find(page => page.id === pageId);
+    let rightPage = globalState.documentRight.pages.find(page => page.id === pageId);
     let versionId = "";
 
+
+
     if (side == Side.LEFT) {
-      pages = globalState.documentLeft.pages;
       versionId = globalState.documentLeft.version;
+      page = leftPage;
     } else if (side == Side.RIGHT) {
-      pages = globalState.documentRight.pages;
+      page = rightPage;
       versionId = globalState.documentRight.version;
     }
-
-
-    let page = pages.find(page => page.id === pageId);
 
     if (page) {
 
       let allowedTypes = ['FRAME', 'SECTION', 'COMPONENT', 'COMPONENT_SET'];
 
-      let allPageFigmaNodes = getAllPageFigmaNodes(page, allowedTypes);
-      let allPageFigmaNodesIds = allPageFigmaNodes.map(node => node.id);
+      if (leftPage && rightPage) {
+        // console.log("nodesInPage. Side:" + side)
+        // console.log(nodesInLeftPage)
+        // console.log(nodesInRightPage)
 
-      let nodesInLeftPage = globalState.documentLeft.flatNodes.filter(flatNode => allPageFigmaNodesIds.includes(flatNode.nodeId));
-      let nodesInRightPage = globalState.documentRight.flatNodes.filter(flatNode => allPageFigmaNodesIds.includes(flatNode.nodeId));
-
-      // console.log("nodesInPage. Side:" + side)
-      // console.log(nodesInLeftPage)
-      // console.log(nodesInRightPage)
-
-      let leftDifferences: Difference[] = [];
-      for (const node of nodesInLeftPage) {
-        if (!node.isEqualToOtherVersion || !node.isPresentInOtherVersion) {
-          leftDifferences.push({
-            boundingRect: node.figmaNode.absoluteBoundingBox
-          });
+        let leftDifferences: Difference[] = [];
+        for (const node of leftPage.flatNodes) {
+          if (!node.isEqualToOtherVersion || !node.isPresentInOtherVersion) {
+            leftDifferences.push({
+              boundingRect: node.figmaNode.absoluteBoundingBox
+            });
+          }
         }
-      }
 
-      let rightDifferences: Difference[] = [];
-      for (const node of nodesInRightPage) {
-        if (!node.isEqualToOtherVersion || !node.isPresentInOtherVersion) {
-          rightDifferences.push({
-            boundingRect: node.figmaNode.absoluteBoundingBox
-          });
+        let rightDifferences: Difference[] = [];
+        for (const node of rightPage.flatNodes) {
+          if (!node.isEqualToOtherVersion || !node.isPresentInOtherVersion) {
+            rightDifferences.push({
+              boundingRect: node.figmaNode.absoluteBoundingBox
+            });
+          }
         }
+
+        // console.log("Differences:");
+        // console.log(leftDifferences);
+        // console.log(rightDifferences);
+
+        setVersionLeftDifferences(leftDifferences);
+        setVersionRightDifferences(rightDifferences);
       }
-
-      // console.log("Differences:");
-      // console.log(leftDifferences);
-      // console.log(rightDifferences);
-
-      setVersionLeftDifferences(leftDifferences);
-      setVersionRightDifferences(rightDifferences);
 
 
       let newNodesWithImages = page.children
@@ -447,24 +446,26 @@ const Start = () => {
 
   // #region Helpers
 
-  function calculateDifferences() {
+  function calculateDifferences(pageId: string) {
 
-    let documentLeftFlatNodes = globalState.documentLeft.flatNodes;
-    let documentRightFlatNodes = globalState.documentRight.flatNodes;
+    let pageLeftNodes = globalState.documentLeft.pages.find(page => page.id == pageId)?.flatNodes;
+    let pageRightNodes = globalState.documentRight.pages.find(page => page.id == pageId)?.flatNodes;
 
+    // console.log(pageLeftNodes);
+    // console.log(pageRightNodes);
     // console.log("CalculatingDifferences. At this point documentLeftFlatNodes is (" + documentLeftFlatNodes.length + ") and documentRightFlatNodes is (" + documentRightFlatNodes.length + ")")
 
-    if (documentLeftFlatNodes.length > 0 && documentRightFlatNodes.length > 0) {
+    if (pageLeftNodes && pageLeftNodes.length > 0 && pageRightNodes && pageRightNodes.length > 0) {
 
-      const newDocumentLeftFlatNodes = getVersionComparison(documentLeftFlatNodes, documentRightFlatNodes);
-      const newDocumentRightFlatNodes = getVersionComparison(documentRightFlatNodes, documentLeftFlatNodes);
+      const newDocumentLeftFlatNodes = getVersionComparison(pageLeftNodes, pageRightNodes);
+      const newDocumentRightFlatNodes = getVersionComparison(pageRightNodes, pageLeftNodes);
 
       // console.log("After comparisons:")
       // console.log(newDocumentLeftFlatNodes);
       // console.log(newDocumentRightFlatNodes);
 
-      updateDocumentLeftFlatNodes(newDocumentLeftFlatNodes);
-      updateDocumentRightFlatNodes(newDocumentRightFlatNodes);
+      updateDocumentPageLeftFlatNodes(pageId, newDocumentLeftFlatNodes);
+      updateDocumentPageRightFlatNodes(pageId, newDocumentRightFlatNodes);
     }
 
   }
@@ -561,6 +562,7 @@ const Start = () => {
         backgroundColor: page.backgroundColor,
         presentInVersionLeft: presentInVersionLeft,
         presentInVersionRight: presentInVersionRight,
+        flatNodes: page.flatNodes
       };
       mergedArray.push(newPage);
     }
@@ -641,12 +643,12 @@ const Start = () => {
   // #region UIEvent handlers
 
   function onVersion1Changed(event: ChangeEvent<HTMLSelectElement>): void {
-    console.log("Changed v1 to version:" + event.target.value);
+    // console.log("Changed v1 to version:" + event.target.value);
     setSelectVersionLeftSelectedOption(event.target.value);
     fetchDocumentVersion(event.target.value, Side.LEFT);
   }
   function onVersion2Changed(event: ChangeEvent<HTMLSelectElement>): void {
-    console.log("Changed v2 to version:" + event.target.value);
+    // console.log("Changed v2 to version:" + event.target.value);
     setSelectVersionRightSelectedOption(event.target.value);
     fetchDocumentVersion(event.target.value, Side.RIGHT);
   }

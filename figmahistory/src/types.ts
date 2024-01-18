@@ -22,8 +22,7 @@ export interface Document {
     name: string;
     version: string;
     children: any[];
-    pages: any[];
-    flatNodes: Node[];
+    pages: Page[];
 }
 
 export interface Page {
@@ -34,6 +33,7 @@ export interface Page {
     backgroundColor: Color;
     presentInVersionLeft: boolean;
     presentInVersionRight: boolean;
+    flatNodes: Node[];
 }
 
 export interface Version {
