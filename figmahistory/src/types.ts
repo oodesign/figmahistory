@@ -61,6 +61,7 @@ export interface Node {
     isPresentInOtherVersion: boolean;
     isEqualToOtherVersion: boolean;
     figmaNode: FigmaNode;
+    type?: any;
 }
 
 export interface Rect{
@@ -71,6 +72,7 @@ export interface Rect{
 }
 
 export interface Difference{
+    type:string,
     boundingRect: Rect
     
 }

@@ -10,9 +10,10 @@ interface Canvas2Props {
     offsetX: number;
     offsetY: number;
     containerClass: string;
+    differenceTypes: string[];
 }
 
-const Canvas2: React.FC<Canvas2Props> = ({ name, nodesWithImages, differences, canvasWidth, canvasHeight, offsetX, offsetY, containerClass }) => {
+const Canvas2: React.FC<Canvas2Props> = ({ name, nodesWithImages, differences, canvasWidth, canvasHeight, offsetX, offsetY, containerClass, differenceTypes }) => {
     const [containerWidth, setContainerWidth] = useState(canvasWidth);
     const [containerHeight, setContainerHeight] = useState(canvasHeight);
 
@@ -42,30 +43,32 @@ const Canvas2: React.FC<Canvas2Props> = ({ name, nodesWithImages, differences, c
     const renderDifferences = (): React.ReactNode => {
         //console.log("Drawing canvas: " + name + ". Offset:" + offsetX + "," + offsetY);
         return differences.map((difference, index) => (
+            (differenceTypes.includes(difference.type) ?
+                <div key={index}>
 
-            <div key={index}>
-
-                <div className='negativeText' style={{
-                    position: 'absolute',
-                    left: `${(difference.boundingRect.x + (-offsetX))}px`,
-                    top: `${(difference.boundingRect.y + (-offsetY) - 30)}px`,
-                    backgroundColor: `yellow`,
-                    height: `24px`
-                }}>
-                    CHANGED
-                </div>
-
-                <div
-                    style={{
+                    <div className={`negativeText nodeType-${difference.type}`} style={{
                         position: 'absolute',
                         left: `${(difference.boundingRect.x + (-offsetX))}px`,
-                        top: `${(difference.boundingRect.y + (-offsetY))}px`,
-                        width: `${difference.boundingRect.width}px`,
-                        height: `${difference.boundingRect.height}px`,
-                        border: `2px solid yellow`
-                    }}
-                />
-            </div>
+                        top: `${(difference.boundingRect.y + (-offsetY) - 30)}px`,
+                        backgroundColor: `yellow`,
+                        height: `24px`
+                    }}>
+                        CHANGED
+                    </div>
+
+                    <div className={`negativeText nodeType-${difference.type}`}
+                        style={{
+                            position: 'absolute',
+                            left: `${(difference.boundingRect.x + (-offsetX))}px`,
+                            top: `${(difference.boundingRect.y + (-offsetY))}px`,
+                            width: `${difference.boundingRect.width}px`,
+                            height: `${difference.boundingRect.height}px`,
+                            border: `2px solid yellow`
+                        }}
+                    />
+                </div>
+                : ""
+            )
         ));
     };
 

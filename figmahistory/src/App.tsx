@@ -40,6 +40,7 @@ const Start = () => {
 
   const [versionLeftDifferences, setVersionLeftDifferences] = useState<Difference[]>([]);
   const [versionRightDifferences, setVersionRightDifferences] = useState<Difference[]>([]);
+  const [differencesTypes, setDifferencesTypes] = useState<string[]>([]);
 
 
   const [pageLeftMaxX, setPageLeftMaxX] = useState(0);
@@ -139,7 +140,8 @@ const Start = () => {
           nodeId: node.id,
           figmaNode: node,
           isPresentInOtherVersion: false,
-          isEqualToOtherVersion: false
+          isEqualToOtherVersion: false,
+          type: node.type
         }
         flatNodes.push(pushNode);
       }
@@ -265,6 +267,10 @@ const Start = () => {
     await fetchPage(versionId, pageId, side);
 
 
+    let diffTypes = ['FRAME', 'SECTION', 'RECTANGLE'];
+    setDifferencesTypes(diffTypes);
+
+
     calculateDifferences(pageId);
 
     drawVersionPresent(side, true);
@@ -296,6 +302,7 @@ const Start = () => {
         for (const node of leftPage.flatNodes) {
           if (!node.isEqualToOtherVersion || !node.isPresentInOtherVersion) {
             leftDifferences.push({
+              type: node.type,
               boundingRect: node.figmaNode.absoluteBoundingBox
             });
           }
@@ -305,6 +312,7 @@ const Start = () => {
         for (const node of rightPage.flatNodes) {
           if (!node.isEqualToOtherVersion || !node.isPresentInOtherVersion) {
             rightDifferences.push({
+              type: node.type,
               boundingRect: node.figmaNode.absoluteBoundingBox
             });
           }
@@ -505,10 +513,6 @@ const Start = () => {
       const newDocumentLeftFlatNodes = getVersionComparison(pageLeftNodes, pageRightNodes);
       const newDocumentRightFlatNodes = getVersionComparison(pageRightNodes, pageLeftNodes);
 
-      console.log("Differences found after comparison:")
-      console.log(newDocumentLeftFlatNodes);
-      console.log(newDocumentRightFlatNodes);
-
       updateDocumentPageLeftFlatNodes(pageId, newDocumentLeftFlatNodes);
       updateDocumentPageRightFlatNodes(pageId, newDocumentRightFlatNodes);
     }
@@ -535,6 +539,7 @@ const Start = () => {
         nodeId: node1.nodeId,
         isPresentInOtherVersion: isPresentInOtherVersion,
         isEqualToOtherVersion: isEqualToOtherVersion,
+        type: node1.type,
         figmaNode: node1.figmaNode
       });
     }
@@ -746,7 +751,7 @@ const Start = () => {
             <TransformWrapper ref={secondImage} onTransformed={handleTransform} minScale={0.01} limitToBounds={false}>
               <TransformComponent wrapperClass='verticalLayout leftcanvas' contentClass='verticalLayout'>
                 {isLeftPageAvailable ? (
-                  <Canvas2 name='LEFT' nodesWithImages={versionLeftNodesWithImages} differences={versionLeftDifferences} canvasWidth={canvasMaxWidth} canvasHeight={canvasMaxHeight} offsetX={canvasOffsetX} offsetY={canvasOffsetY} containerClass='innerCanvas' />
+                  <Canvas2 name='LEFT' nodesWithImages={versionLeftNodesWithImages} differences={versionLeftDifferences} differenceTypes={differencesTypes} canvasWidth={canvasMaxWidth} canvasHeight={canvasMaxHeight} offsetX={canvasOffsetX} offsetY={canvasOffsetY} containerClass='innerCanvas' />
                 ) : (
                   <span>Not available</span>
                 )}
@@ -757,7 +762,7 @@ const Start = () => {
             <TransformWrapper ref={firstImage} onTransformed={handleTransform} minScale={0.01} limitToBounds={false}>
               <TransformComponent wrapperClass='verticalLayout rightcanvas' contentClass='verticalLayout'>
                 {isRightPageAvailable ? (
-                  <Canvas2 name='RIGHT' nodesWithImages={versionRightNodesWithImages} differences={versionRightDifferences} canvasWidth={canvasMaxWidth} canvasHeight={canvasMaxHeight} offsetX={canvasOffsetX} offsetY={canvasOffsetY} containerClass='innerCanvas' />
+                  <Canvas2 name='RIGHT' nodesWithImages={versionRightNodesWithImages} differences={versionRightDifferences} differenceTypes={differencesTypes} canvasWidth={canvasMaxWidth} canvasHeight={canvasMaxHeight} offsetX={canvasOffsetX} offsetY={canvasOffsetY} containerClass='innerCanvas' />
                 ) : (
                   <span>Not available</span>
                 )}
