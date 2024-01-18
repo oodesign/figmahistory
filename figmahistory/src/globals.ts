@@ -16,13 +16,11 @@ export let globalState: GlobalState = {
     documentLeft: {
         name: "",
         version: "",
-        children: [],
         pages: [],
     },
     documentRight: {
         name: "",
         version: "",
-        children: [],
         pages: [],
     },
     selectedPageId: "",
@@ -40,6 +38,7 @@ export function setDocumentLeft(doc: Document) {
     globalState = { ...globalState, documentLeft: doc };
 }
 
+
 export function updateDocumentPageLeftFlatNodes(pageId: string, flatNodes: Node[]) {
     globalState = {
         ...globalState,
@@ -49,6 +48,25 @@ export function updateDocumentPageLeftFlatNodes(pageId: string, flatNodes: Node[
                 if (page.id === pageId) {
                     return {
                         ...page,
+                        flatNodes: flatNodes,
+                    };
+                } else {
+                    return page;
+                }
+            }),
+        },
+    };
+}
+export function updateDocumentPageLeftChildrenAndFlatNodes(pageId: string, pageChildren: any[], flatNodes: Node[]) {
+    globalState = {
+        ...globalState,
+        documentLeft: {
+            ...globalState.documentLeft,
+            pages: globalState.documentLeft.pages.map((page) => {
+                if (page.id === pageId) {
+                    return {
+                        ...page,
+                        children: pageChildren,
                         flatNodes: flatNodes,
                     };
                 } else {
@@ -72,6 +90,26 @@ export function updateDocumentPageRightFlatNodes(pageId: string, flatNodes: Node
                 if (page.id === pageId) {
                     return {
                         ...page,
+                        flatNodes: flatNodes,
+                    };
+                } else {
+                    return page;
+                }
+            }),
+        },
+    };
+}
+
+export function updateDocumentPageRightChildrenAndFlatNodes(pageId: string, pageChildren: any[], flatNodes: Node[]) {
+    globalState = {
+        ...globalState,
+        documentRight: {
+            ...globalState.documentRight,
+            pages: globalState.documentRight.pages.map((page) => {
+                if (page.id === pageId) {
+                    return {
+                        ...page,
+                        children: pageChildren,
                         flatNodes: flatNodes,
                     };
                 } else {

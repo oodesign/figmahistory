@@ -6,7 +6,7 @@ import ImageDiff from 'react-image-diff';
 import ReactCompareImage from 'react-compare-image';
 import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slider';
 import { TransformWrapper, TransformComponent, ReactZoomPanPinchRef } from "react-zoom-pan-pinch";
-import { globalState, setDocumentID, setAccessToken, setDocumentLeft, setDocumentRight, updateDocumentPageLeftFlatNodes, updateDocumentPageRightFlatNodes, setSelectedPageId, } from './globals';
+import { globalState, setDocumentID, setAccessToken, setDocumentLeft, setDocumentRight, updateDocumentPageLeftChildrenAndFlatNodes, updateDocumentPageRightChildrenAndFlatNodes, setSelectedPageId, updateDocumentPageLeftFlatNodes, updateDocumentPageRightFlatNodes, } from './globals';
 import isEqual from 'lodash/isEqual';
 
 import { User, Side, Color, Document, Version, Page, NodeWithImage, FigmaNode, Node, Difference } from './types';
@@ -156,11 +156,43 @@ const Start = () => {
     return flatNodes;
   }
 
+  async function fetchPage(versionId: string, pageId: string, side: Side) {
+
+    console.log("Fetching page:" + pageId);
+    let depth = "";
+    // let depth = "&depth=2";
+
+    let getPageNode = await fetch('https://api.figma.com/v1/files/' + globalState.documentId + "/nodes?version=" + versionId + depth + "&ids=" + pageId, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${globalState.accessToken}`
+      }
+    });
+
+    if (getPageNode.ok) {
+      const responseJson = await getPageNode.json();
+      // console.log("OK, Page is ready");
+      // console.log(responseJson.nodes);
+      // console.log(responseJson.nodes[pageId].document);
+
+      let pageChildren = responseJson.nodes[pageId].document.children;
+      let pageFlatNodes = flattenNodes(responseJson.nodes[pageId].document);
+
+      if (side == Side.LEFT) {
+        updateDocumentPageLeftChildrenAndFlatNodes(pageId, pageChildren, pageFlatNodes);
+      }
+      else if (side == Side.RIGHT) {
+        updateDocumentPageRightChildrenAndFlatNodes(pageId, pageChildren, pageFlatNodes);
+      }
+    }
+  }
+
   async function fetchDocumentVersion(versionId: string, side: Side) {
 
-    //console.log("Fetching version:" + versionId + " for side:" + side.valueOf());
+    console.log("Fetching version:" + versionId + " for side:" + side.valueOf());
 
-    let depth = "";
+    // let depth = "";
+    let depth = "&depth=1";
     // let depth = "&depth=2";
 
     let getPagesVersion = await fetch('https://api.figma.com/v1/files/' + globalState.documentId + "?version=" + versionId + depth, {
@@ -172,11 +204,9 @@ const Start = () => {
 
     if (getPagesVersion.ok) {
       const responseJson = await getPagesVersion.json();
+      console.log("OK, document is ready");
       // console.log(responseJson);
 
-      let documentFlatNodes = flattenNodes(responseJson.document);
-      // console.log("documentFlatNodes(" + documentFlatNodes.length + ") - Side " + side.valueOf());
-      // await (logFlattenNodes(documentFlatNodes));
 
       let figmaDocumentPages: any[] = responseJson.document.children.filter((child: any) => child.type === 'CANVAS');
       // console.log(figmaDocumentPages);
@@ -184,20 +214,19 @@ const Start = () => {
       let pages: Page[] = figmaDocumentPages.map((page: any, index: number) => {
         return {
           id: page.id,
-          children: page.children,
+          children: page.children, //Will be empty if depth is set to 1
           name: page.name,
           nameOtherVersion: "",
           backgroundColor: page.backgroundColor,
           presentInVersionLeft: false,
           presentInVersionRight: false,
-          flatNodes: (globalState.selectedPageId && globalState.selectedPageId == page.id) ? flattenNodes(page) : []
+          flatNodes: []
         };
       });
 
       let versionDocument: Document = {
         name: responseJson.document.name,
         version: versionId,
-        children: responseJson.document.children,
         pages: pages,
       }
 
@@ -213,7 +242,6 @@ const Start = () => {
 
       let pageId = globalState.selectedPageId ? globalState.selectedPageId : versionDocument.pages[0].id;
       // console.log("PageId is:" + pageId);
-      calculateDifferences(pageId);
 
       drawPage(pageId, side);
 
@@ -226,12 +254,24 @@ const Start = () => {
 
   async function drawPage(pageId: string, side: Side) {
 
+    let versionId = "";
+
+    if (side == Side.LEFT) {
+      versionId = globalState.documentLeft.version;
+    } else if (side == Side.RIGHT) {
+      versionId = globalState.documentRight.version;
+    }
+
+    await fetchPage(versionId, pageId, side);
+
+
+    calculateDifferences(pageId);
+
     drawVersionPresent(side, true);
 
     let page: Page | undefined = undefined;
     let leftPage = globalState.documentLeft.pages.find(page => page.id === pageId);
     let rightPage = globalState.documentRight.pages.find(page => page.id === pageId);
-    let versionId = "";
 
 
 
@@ -278,6 +318,8 @@ const Start = () => {
         setVersionRightDifferences(rightDifferences);
       }
 
+      // console.log("page:")
+      // console.log(page);
 
       let newNodesWithImages = page.children
         .filter((child: any) => allowedTypes.includes(child.type))
@@ -287,12 +329,15 @@ const Start = () => {
           imageUrl: ""
         }));
 
-      let firstPageContentsIDs: string = newNodesWithImages.map((node: NodeWithImage) => node.child.id).join(',');
+      let contentIds: string = newNodesWithImages.map((node: NodeWithImage) => node.child.id).join(',');
 
       // console.log("newNodesWithImages:")
       // console.log(newNodesWithImages)
 
-      let getPagesVersion1Image = await fetch('https://api.figma.com/v1/images/' + globalState.documentId + "?ids=" + firstPageContentsIDs + "&format=png&scale=1&version=" + versionId, {
+
+      // console.log("contentIds:" + contentIds)
+
+      let getPagesVersion1Image = await fetch('https://api.figma.com/v1/images/' + globalState.documentId + "?ids=" + contentIds + "&format=png&scale=1&version=" + versionId, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${globalState.accessToken}` // Replace FigmaAPIKey with your actual access token
@@ -460,9 +505,9 @@ const Start = () => {
       const newDocumentLeftFlatNodes = getVersionComparison(pageLeftNodes, pageRightNodes);
       const newDocumentRightFlatNodes = getVersionComparison(pageRightNodes, pageLeftNodes);
 
-      // console.log("After comparisons:")
-      // console.log(newDocumentLeftFlatNodes);
-      // console.log(newDocumentRightFlatNodes);
+      console.log("Differences found after comparison:")
+      console.log(newDocumentLeftFlatNodes);
+      console.log(newDocumentRightFlatNodes);
 
       updateDocumentPageLeftFlatNodes(pageId, newDocumentLeftFlatNodes);
       updateDocumentPageRightFlatNodes(pageId, newDocumentRightFlatNodes);

@@ -21,7 +21,6 @@ export interface Color {
 export interface Document {
     name: string;
     version: string;
-    children: any[];
     pages: Page[];
 }
 
