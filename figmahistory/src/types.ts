@@ -51,6 +51,7 @@ export interface NodeWithImage {
 
 export interface FigmaNode {
     id: string;
+    name: string;
     children?: FigmaNode[];
     absoluteBoundingBox?: any;
     type?: any;
@@ -62,6 +63,7 @@ export interface Node {
     isEqualToOtherVersion: boolean;
     figmaNode: FigmaNode;
     type?: any;
+    isChildOfFrame: boolean;
 }
 
 export interface Rect{
@@ -72,7 +74,7 @@ export interface Rect{
 }
 
 export interface Difference{
-    type:string,
-    boundingRect: Rect
-    
+    type:string;
+    boundingRect: Rect;
+    isChildOfFrame: boolean;
 }

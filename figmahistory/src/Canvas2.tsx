@@ -44,29 +44,33 @@ const Canvas2: React.FC<Canvas2Props> = ({ name, nodesWithImages, differences, c
         //console.log("Drawing canvas: " + name + ". Offset:" + offsetX + "," + offsetY);
         return differences.map((difference, index) => (
             (differenceTypes.includes(difference.type) ?
-                <div key={index}>
+                ((difference.type != "FRAME") || (difference.type == "FRAME" && !difference.isChildOfFrame) ?
+                    <div key={index}>
 
-                    <div className={`negativeText nodeType-${difference.type}`} style={{
-                        position: 'absolute',
-                        left: `${(difference.boundingRect.x + (-offsetX))}px`,
-                        top: `${(difference.boundingRect.y + (-offsetY) - 30)}px`,
-                        backgroundColor: `yellow`,
-                        height: `24px`
-                    }}>
-                        CHANGED
-                    </div>
-
-                    <div className={`negativeText nodeType-${difference.type}`}
-                        style={{
+                        <div className={`negativeText`} style={{
                             position: 'absolute',
                             left: `${(difference.boundingRect.x + (-offsetX))}px`,
-                            top: `${(difference.boundingRect.y + (-offsetY))}px`,
-                            width: `${difference.boundingRect.width}px`,
-                            height: `${difference.boundingRect.height}px`,
-                            border: `2px solid yellow`
-                        }}
-                    />
-                </div>
+                            top: `${(difference.boundingRect.y + (-offsetY) - 30)}px`,
+                            backgroundColor: `yellow`,
+                            height: `24px`
+                        }}>
+                            CHANGEDS - {difference.isChildOfFrame.valueOf()}
+                        </div>
+
+                        <div className={`negativeText`}
+                            style={{
+                                position: 'absolute',
+                                left: `${(difference.boundingRect.x + (-offsetX))}px`,
+                                top: `${(difference.boundingRect.y + (-offsetY))}px`,
+                                width: `${difference.boundingRect.width}px`,
+                                height: `${difference.boundingRect.height}px`,
+                                border: `2px solid yellow`
+                            }}
+                        />
+                    </div>
+
+                    : ""
+                )
                 : ""
             )
         ));

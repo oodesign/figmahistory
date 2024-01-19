@@ -132,33 +132,34 @@ const Start = () => {
   function flattenNodes(node: FigmaNode): Node[] {
     let flatNodes: Node[] = [];
 
-    function traverse(node: FigmaNode, includeNode: boolean) {
+    function traverse(node: FigmaNode, includeNode: boolean, isChildOfFrame: boolean) {
       if (includeNode) {
         let pushNode: Node = {
           nodeId: node.id,
           figmaNode: node,
           isPresentInOtherVersion: false,
           isEqualToOtherVersion: false,
-          type: node.type
+          type: node.type,
+          isChildOfFrame: isChildOfFrame
         }
         flatNodes.push(pushNode);
       }
 
       if (node.children) {
         for (const child of node.children) {
-          traverse(child, true); // Recursively traverse child nodes
+          traverse(child, true, (node.type == "FRAME")); // Recursively traverse child nodes
         }
       }
     }
 
-    traverse(node, false);
+    traverse(node, false, (node.type == "FRAME"));
 
     return flatNodes;
   }
 
   async function fetchPage(versionId: string, pageId: string, side: Side) {
 
-    console.log("Fetching page:" + pageId);
+    // console.log("Fetching page:" + pageId);
     let depth = "";
     // let depth = "&depth=2";
 
@@ -189,7 +190,7 @@ const Start = () => {
 
   async function fetchDocumentVersion(versionId: string, side: Side) {
 
-    console.log("Fetching version:" + versionId + " for side:" + side.valueOf());
+    // console.log("Fetching version:" + versionId + " for side:" + side.valueOf());
 
     // let depth = "";
     let depth = "&depth=1";
@@ -204,7 +205,7 @@ const Start = () => {
 
     if (getPagesVersion.ok) {
       const responseJson = await getPagesVersion.json();
-      console.log("OK, document is ready");
+      // console.log("OK, document is ready");
       // console.log(responseJson);
 
 
@@ -299,7 +300,8 @@ const Start = () => {
           if (!node.isEqualToOtherVersion || !node.isPresentInOtherVersion) {
             leftDifferences.push({
               type: node.type,
-              boundingRect: node.figmaNode.absoluteBoundingBox
+              boundingRect: node.figmaNode.absoluteBoundingBox,
+              isChildOfFrame: node.isChildOfFrame
             });
           }
         }
@@ -309,7 +311,8 @@ const Start = () => {
           if (!node.isEqualToOtherVersion || !node.isPresentInOtherVersion) {
             rightDifferences.push({
               type: node.type,
-              boundingRect: node.figmaNode.absoluteBoundingBox
+              boundingRect: node.figmaNode.absoluteBoundingBox,
+              isChildOfFrame: node.isChildOfFrame
             });
           }
         }
@@ -536,7 +539,8 @@ const Start = () => {
         isPresentInOtherVersion: isPresentInOtherVersion,
         isEqualToOtherVersion: isEqualToOtherVersion,
         type: node1.type,
-        figmaNode: node1.figmaNode
+        figmaNode: node1.figmaNode,
+        isChildOfFrame: node1.isChildOfFrame
       });
     }
 
