@@ -54,7 +54,7 @@ const Canvas2: React.FC<Canvas2Props> = ({ name, nodesWithImages, differences, c
                             backgroundColor: `yellow`,
                             height: `24px`
                         }}>
-                            CHANGEDS - {difference.isChildOfFrame.valueOf()}
+                            CHANGED
                         </div>
 
                         <div className={`negativeText`}

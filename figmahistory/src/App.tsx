@@ -46,6 +46,7 @@ const Start = () => {
   const [canvasHeight, setCanvasHeight] = useState(0);
   const [canvasPageOffsetX, setCanvasPageOffsetX] = useState(0);
   const [canvasPageOffsetY, setCanvasPageOffsetY] = useState(0);
+  const [canvasPadding, setCanvasPadding] = useState(100);
 
   const [fileVersionsList, setFileVersionsList] = useState<Version[]>([]);
 
@@ -468,11 +469,6 @@ const Start = () => {
     let pageLeftBounds = globalState.documentLeft.pages.find(page => page.id == pageId)?.boundingRect;
     let pageRightBounds = globalState.documentRight.pages.find(page => page.id == pageId)?.boundingRect;
 
-    console.log("pageLeftBounds")
-    console.log(pageLeftBounds)
-    console.log("pageRightBounds")
-    console.log(pageRightBounds)
-
     if (pageLeftBounds && pageRightBounds) {
       let canvasMinX = Math.min(pageLeftBounds.x, pageRightBounds.x);
       let canvasMinY = Math.min(pageLeftBounds.y, pageRightBounds.y);
@@ -483,7 +479,6 @@ const Start = () => {
       let pageOffsetX = canvasMinX;
       let pageOffsetY = canvasMinY;
 
-
       setCanvasWidth(canvasWidth);
       setCanvasHeight(canvasHeight);
       setCanvasPageOffsetX(pageOffsetX);
@@ -491,14 +486,11 @@ const Start = () => {
 
 
       if (canvasDiv.current) {
-        let scaleX = canvasDiv.current.clientWidth / canvasWidth;
-        let scaleY = canvasDiv.current.clientHeight / canvasHeight;
+        let scaleX = (canvasDiv.current.clientWidth - canvasPadding) / canvasWidth;
+        let scaleY = (canvasDiv.current.clientHeight - canvasPadding) / canvasHeight;
 
-
-        // console.log("Window:" + window.innerWidth + "," + window.innerHeight + " - Canvas:" + canvasMaxWidth + "," + canvasMaxHeight + ". Scale:" + scaleX + "," + scaleY);
-
-        (firstImage.current as any).setTransform(0, 0, Math.min(scaleX, scaleY), 0);
-        (secondImage.current as any).setTransform(0, 0, Math.min(scaleX, scaleY), 0);
+        (firstImage.current as any).setTransform(canvasPadding / 2, canvasPadding / 2, Math.min(scaleX, scaleY), 0);
+        (secondImage.current as any).setTransform(canvasPadding / 2, canvasPadding / 2, Math.min(scaleX, scaleY), 0);
       }
     }
   }
