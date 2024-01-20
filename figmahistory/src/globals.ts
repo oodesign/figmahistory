@@ -1,6 +1,6 @@
 // globals.ts
 
-import { User, Side, Color, Document, Version, Page, FigmaNode, Node } from './types';
+import { User, Side, Color, Document, Version, Page, FigmaNode, Node, Rect } from './types';
 
 export interface GlobalState {
     documentId: string;
@@ -36,6 +36,25 @@ export function setAccessToken(token: string) {
 
 export function setDocumentLeft(doc: Document) {
     globalState = { ...globalState, documentLeft: doc };
+}
+
+export function updateDocumentPageLeftBounds(pageId: string, boundingRect: Rect) {
+    globalState = {
+        ...globalState,
+        documentLeft: {
+            ...globalState.documentLeft,
+            pages: globalState.documentLeft.pages.map((page) => {
+                if (page.id === pageId) {
+                    return {
+                        ...page,
+                        boundingRect: boundingRect,
+                    };
+                } else {
+                    return page;
+                }
+            }),
+        },
+    };
 }
 
 
@@ -79,6 +98,26 @@ export function updateDocumentPageLeftChildrenAndFlatNodes(pageId: string, pageC
 
 export function setDocumentRight(doc: Document) {
     globalState = { ...globalState, documentRight: doc };
+}
+
+
+export function updateDocumentPageRightBounds(pageId: string, boundingRect: Rect) {
+    globalState = {
+        ...globalState,
+        documentRight: {
+            ...globalState.documentRight,
+            pages: globalState.documentRight.pages.map((page) => {
+                if (page.id === pageId) {
+                    return {
+                        ...page,
+                        boundingRect: boundingRect,
+                    };
+                } else {
+                    return page;
+                }
+            }),
+        },
+    };
 }
 
 export function updateDocumentPageRightFlatNodes(pageId: string, flatNodes: Node[]) {

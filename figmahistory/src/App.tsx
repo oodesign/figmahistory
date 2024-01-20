@@ -6,10 +6,10 @@ import ImageDiff from 'react-image-diff';
 import ReactCompareImage from 'react-compare-image';
 import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slider';
 import { TransformWrapper, TransformComponent, ReactZoomPanPinchRef } from "react-zoom-pan-pinch";
-import { globalState, setDocumentID, setAccessToken, setDocumentLeft, setDocumentRight, updateDocumentPageLeftChildrenAndFlatNodes, updateDocumentPageRightChildrenAndFlatNodes, setSelectedPageId, updateDocumentPageLeftFlatNodes, updateDocumentPageRightFlatNodes, } from './globals';
+import { globalState, setDocumentID, setAccessToken, setDocumentLeft, setDocumentRight, updateDocumentPageLeftChildrenAndFlatNodes, updateDocumentPageRightChildrenAndFlatNodes, setSelectedPageId, updateDocumentPageLeftFlatNodes, updateDocumentPageRightFlatNodes, updateDocumentPageRightBounds, updateDocumentPageLeftBounds, } from './globals';
 import isEqual from 'lodash/isEqual';
 
-import { User, Side, Color, Document, Version, Page, NodeWithImage, FigmaNode, Node, Difference } from './types';
+import { User, Side, Color, Document, Version, Page, NodeWithImage, FigmaNode, Node, Difference, Rect } from './types';
 
 import Canvas2 from './Canvas2';
 import './App.css';
@@ -42,15 +42,10 @@ const Start = () => {
   const [versionRightDifferences, setVersionRightDifferences] = useState<Difference[]>([]);
   const [differencesTypes, setDifferencesTypes] = useState<string[]>(['FRAME', 'SECTION']);
 
-
-  const [pageLeftMaxX, setPageLeftMaxX] = useState(0);
-  const [pageLeftMaxY, setPageLeftMaxY] = useState(0);
-  const [pageRightMaxX, setPageRightMaxX] = useState(0);
-  const [pageRightMaxY, setPageRightMaxY] = useState(0);
-  const [canvasMaxWidth, setCanvasMaxWidth] = useState(1000);
-  const [canvasMaxHeight, setCanvasMaxHeight] = useState(1000);
-  const [canvasOffsetX, setCanvasOffsetX] = useState(0);
-  const [canvasOffsetY, setCanvasOffsetY] = useState(0);
+  const [canvasWidth, setCanvasWidth] = useState(0);
+  const [canvasHeight, setCanvasHeight] = useState(0);
+  const [canvasPageOffsetX, setCanvasPageOffsetX] = useState(0);
+  const [canvasPageOffsetY, setCanvasPageOffsetY] = useState(0);
 
   const [fileVersionsList, setFileVersionsList] = useState<Version[]>([]);
 
@@ -176,13 +171,32 @@ const Start = () => {
       // console.log(responseJson.nodes);
       // console.log(responseJson.nodes[pageId].document);
 
+
       let pageChildren = responseJson.nodes[pageId].document.children;
       let pageFlatNodes = flattenNodes(responseJson.nodes[pageId].document);
 
+      let minX = 0, minY = 0, maxX = 0, maxY = 0;
+      for (const node of pageFlatNodes) {
+        minX = Math.min(minX, node.figmaNode.absoluteBoundingBox.x);
+        minY = Math.min(minY, node.figmaNode.absoluteBoundingBox.y);
+        maxX = Math.max(maxX, +node.figmaNode.absoluteBoundingBox.x + node.figmaNode.absoluteBoundingBox.width);
+        maxY = Math.max(maxY, node.figmaNode.absoluteBoundingBox.y + node.figmaNode.absoluteBoundingBox.height);
+      }
+
+      let pageDimensions: Rect = {
+        x: minX,
+        y: minY,
+        width: maxX - minX,
+        height: maxY - minY,
+      }
+
+
       if (side == Side.LEFT) {
+        updateDocumentPageLeftBounds(pageId, pageDimensions);
         updateDocumentPageLeftChildrenAndFlatNodes(pageId, pageChildren, pageFlatNodes);
       }
       else if (side == Side.RIGHT) {
+        updateDocumentPageRightBounds(pageId, pageDimensions);
         updateDocumentPageRightChildrenAndFlatNodes(pageId, pageChildren, pageFlatNodes);
       }
     }
@@ -221,7 +235,8 @@ const Start = () => {
           backgroundColor: page.backgroundColor,
           presentInVersionLeft: false,
           presentInVersionRight: false,
-          flatNodes: []
+          flatNodes: [],
+          boundingRect: { x: 0, y: 0, width: 0, height: 0 }
         };
       });
 
@@ -265,10 +280,8 @@ const Start = () => {
 
     await fetchPage(versionId, pageId, side);
 
-
-
-
     calculateDifferences(pageId);
+    setCanvasDimensionsAndOffset(pageId);
 
     drawVersionPresent(side, true);
 
@@ -328,6 +341,7 @@ const Start = () => {
       // console.log("page:")
       // console.log(page);
 
+
       let newNodesWithImages = page.children
         .filter((child: any) => allowedTypes.includes(child.type))
         .map((child: any) => ({
@@ -366,69 +380,20 @@ const Start = () => {
         });
 
 
-        // console.log("newNodesWithImages (again):")
-        // console.log(mapper);
-
-        let boundingBoxMaxX = 0;
-        let boundingBoxMinX = 0;
-        let boundingBoxMaxY = 0;
-        let boundingBoxMinY = 0;
-
-        mapper.forEach((nodeWithImage) => {
-          boundingBoxMaxX = Math.max(boundingBoxMaxX, nodeWithImage.child.absoluteBoundingBox.x + nodeWithImage.child.absoluteBoundingBox.width);
-          boundingBoxMinX = Math.min(boundingBoxMinX, nodeWithImage.child.absoluteBoundingBox.x);
-          boundingBoxMaxY = Math.max(boundingBoxMaxY, nodeWithImage.child.absoluteBoundingBox.y + nodeWithImage.child.absoluteBoundingBox.height);
-          boundingBoxMinY = Math.min(boundingBoxMinY, nodeWithImage.child.absoluteBoundingBox.y);
-        });
 
         let canvasMaxWidth, canvasMaxHeight = 0
 
 
-        // console.log("boundingBoxMinMaxX:" + boundingBoxMinX + "," + boundingBoxMaxX + " - boundingBoxMinMaxY:" + boundingBoxMinY + "," + boundingBoxMaxY);
-        // console.log("PageLeftMax:" + pageLeftMaxX + "," + pageLeftMaxY + " - PageRightMax:" + pageRightMaxX + "," + pageRightMaxY);
 
         if (side == Side.LEFT) {
           setVersionLeftNodesWithImages(mapper);
-          setPageLeftMaxX((boundingBoxMaxX + (-boundingBoxMinX)));
-          setPageLeftMaxY((boundingBoxMaxY + (-boundingBoxMinY)));
-
-          canvasMaxWidth = (Math.max((boundingBoxMaxX + (-boundingBoxMinX)), pageRightMaxX));
-          canvasMaxHeight = (Math.max((boundingBoxMaxY + (-boundingBoxMinY)), pageRightMaxY));
-
-          // console.log("setCanvasMaxWidth(L):" + Math.max((boundingBoxMaxX + (-boundingBoxMinX)), pageRightMaxX));
-          // console.log("setCanvasMaxHeight(L):" + Math.max((boundingBoxMaxY + (-boundingBoxMinY)), pageRightMaxY));
         }
         else if (side == Side.RIGHT) {
           setVersionRightNodesWithImages(mapper);
-          setPageRightMaxX((boundingBoxMaxX + (-boundingBoxMinX)));
-          setPageRightMaxY((boundingBoxMaxY + (-boundingBoxMinY)));
-
-          canvasMaxWidth = (Math.max((boundingBoxMaxX + (-boundingBoxMinX)), pageLeftMaxX));
-          canvasMaxHeight = (Math.max((boundingBoxMaxY + (-boundingBoxMinY)), pageLeftMaxY));
-
-          // console.log("setCanvasMaxWidth(R):" + Math.max((boundingBoxMaxX + (-boundingBoxMinX)), pageLeftMaxX));
-          // console.log("setCanvasMaxHeight(R):" + Math.max((boundingBoxMaxY + (-boundingBoxMinY)), pageLeftMaxY));
         }
 
 
-        setCanvasMaxWidth(canvasMaxWidth);
-        setCanvasMaxHeight(canvasMaxHeight);
 
-        setCanvasOffsetX(Math.min(boundingBoxMinX, canvasOffsetX));
-        setCanvasOffsetY(Math.min(boundingBoxMinY, canvasOffsetY));
-        // console.log("setCanvasOffsetX:" + boundingBoxMinX);
-        // console.log("setCanvasOffsetY:" + boundingBoxMinY);
-
-        if (canvasDiv.current) {
-          let scaleX = canvasDiv.current.clientWidth / canvasMaxWidth;
-          let scaleY = canvasDiv.current.clientHeight / canvasMaxHeight;
-
-
-          // console.log("Window:" + window.innerWidth + "," + window.innerHeight + " - Canvas:" + canvasMaxWidth + "," + canvasMaxHeight + ". Scale:" + scaleX + "," + scaleY);
-
-          (firstImage.current as any).setTransform(0, 0, Math.min(scaleX, scaleY), 0);
-          (secondImage.current as any).setTransform(0, 0, Math.min(scaleX, scaleY), 0);
-        }
       }
     }
 
@@ -497,6 +462,46 @@ const Start = () => {
   // #endregion
 
   // #region Helpers
+
+
+  function setCanvasDimensionsAndOffset(pageId: string) {
+    let pageLeftBounds = globalState.documentLeft.pages.find(page => page.id == pageId)?.boundingRect;
+    let pageRightBounds = globalState.documentRight.pages.find(page => page.id == pageId)?.boundingRect;
+
+    console.log("pageLeftBounds")
+    console.log(pageLeftBounds)
+    console.log("pageRightBounds")
+    console.log(pageRightBounds)
+
+    if (pageLeftBounds && pageRightBounds) {
+      let canvasMinX = Math.min(pageLeftBounds.x, pageRightBounds.x);
+      let canvasMinY = Math.min(pageLeftBounds.y, pageRightBounds.y);
+      let canvasMaxX = Math.max((pageLeftBounds.x + pageLeftBounds.width), (pageRightBounds.x + pageRightBounds.width));
+      let canvasMaxY = Math.max((pageLeftBounds.y + pageLeftBounds.height), (pageRightBounds.y + pageRightBounds.height));
+      let canvasWidth = canvasMaxX - canvasMinX;
+      let canvasHeight = canvasMaxY - canvasMinY;
+      let pageOffsetX = canvasMinX;
+      let pageOffsetY = canvasMinY;
+
+
+      setCanvasWidth(canvasWidth);
+      setCanvasHeight(canvasHeight);
+      setCanvasPageOffsetX(pageOffsetX);
+      setCanvasPageOffsetY(pageOffsetY);
+
+
+      if (canvasDiv.current) {
+        let scaleX = canvasDiv.current.clientWidth / canvasWidth;
+        let scaleY = canvasDiv.current.clientHeight / canvasHeight;
+
+
+        // console.log("Window:" + window.innerWidth + "," + window.innerHeight + " - Canvas:" + canvasMaxWidth + "," + canvasMaxHeight + ". Scale:" + scaleX + "," + scaleY);
+
+        (firstImage.current as any).setTransform(0, 0, Math.min(scaleX, scaleY), 0);
+        (secondImage.current as any).setTransform(0, 0, Math.min(scaleX, scaleY), 0);
+      }
+    }
+  }
 
   function calculateDifferences(pageId: string) {
 
@@ -612,7 +617,8 @@ const Start = () => {
         backgroundColor: page.backgroundColor,
         presentInVersionLeft: presentInVersionLeft,
         presentInVersionRight: presentInVersionRight,
-        flatNodes: page.flatNodes
+        flatNodes: page.flatNodes,
+        boundingRect: page.boundingRect
       };
       mergedArray.push(newPage);
     }
@@ -781,7 +787,7 @@ const Start = () => {
             <TransformWrapper ref={secondImage} onTransformed={handleTransform} minScale={0.01} limitToBounds={false}>
               <TransformComponent wrapperClass='verticalLayout leftcanvas' contentClass='verticalLayout'>
                 {isLeftPageAvailable ? (
-                  <Canvas2 name='LEFT' nodesWithImages={versionLeftNodesWithImages} differences={versionLeftDifferences} differenceTypes={differencesTypes} canvasWidth={canvasMaxWidth} canvasHeight={canvasMaxHeight} offsetX={canvasOffsetX} offsetY={canvasOffsetY} containerClass='innerCanvas' />
+                  <Canvas2 name='LEFT' nodesWithImages={versionLeftNodesWithImages} differences={versionLeftDifferences} differenceTypes={differencesTypes} canvasWidth={canvasWidth} canvasHeight={canvasHeight} offsetX={canvasPageOffsetX} offsetY={canvasPageOffsetY} containerClass='innerCanvas' />
                 ) : (
                   <span>Not available</span>
                 )}
@@ -792,7 +798,7 @@ const Start = () => {
             <TransformWrapper ref={firstImage} onTransformed={handleTransform} minScale={0.01} limitToBounds={false}>
               <TransformComponent wrapperClass='verticalLayout rightcanvas' contentClass='verticalLayout'>
                 {isRightPageAvailable ? (
-                  <Canvas2 name='RIGHT' nodesWithImages={versionRightNodesWithImages} differences={versionRightDifferences} differenceTypes={differencesTypes} canvasWidth={canvasMaxWidth} canvasHeight={canvasMaxHeight} offsetX={canvasOffsetX} offsetY={canvasOffsetY} containerClass='innerCanvas' />
+                  <Canvas2 name='RIGHT' nodesWithImages={versionRightNodesWithImages} differences={versionRightDifferences} differenceTypes={differencesTypes} canvasWidth={canvasWidth} canvasHeight={canvasHeight} offsetX={canvasPageOffsetX} offsetY={canvasPageOffsetY} containerClass='innerCanvas' />
                 ) : (
                   <span>Not available</span>
                 )}
@@ -820,6 +826,7 @@ const App = () => {
 };
 
 export default App;
+
 
 
 
