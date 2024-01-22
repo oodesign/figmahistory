@@ -1,3 +1,4 @@
+@import "./scss/_dimensions";
 @import "./scss/_media";
 @import "./scss/_colors";
 @import "./scss/_typography";
@@ -106,8 +107,16 @@ canvas {
   }
 }
 
-.innerCanvas{
+.innerCanvas {
   background-color: #28282A;
+}
+
+
+.canvasVersionOverlayTitle {
+  @include flex;  
+  padding: 8px 16px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: $cornerRadiusDefault;
 }
 
 

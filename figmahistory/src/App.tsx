@@ -14,19 +14,23 @@ import { User, Side, Color, Document, Version, Page, NodeWithImage, FigmaNode, N
 import Canvas2 from './Canvas2';
 import './App.css';
 import { timeout } from 'q';
+import { positional } from 'yargs';
+import { relative } from 'path';
 
 const Start = () => {
 
   const [popupWindow, setPopupWindow] = useState<Window | null>(null);
 
-  const firstImage = useRef<ReactZoomPanPinchRef>(null);
-  const secondImage = useRef<ReactZoomPanPinchRef>(null);
+  const rightImage = useRef<ReactZoomPanPinchRef>(null);
+  const leftImage = useRef<ReactZoomPanPinchRef>(null);
   const canvasDiv = useRef<HTMLDivElement | null>(null);
 
   // #region canvas drawing state variables 
 
   const [selectVersionLeftSelectedOption, setSelectVersionLeftSelectedOption] = useState<string>("");
   const [selectVersionRightSelectedOption, setSelectVersionRightSelectedOption] = useState<string>("");
+  const [selectedVersionLeft, setSelectedVersionLeft] = useState<string>("");
+  const [selectedVersionRight, setSelectedVersionRight] = useState<string>("");
 
   const [isLeftPageAvailable, setIsLeftPageAvailable] = useState<boolean>(true);
   const [isRightPageAvailable, setIsRightPageAvailable] = useState<boolean>(true);
@@ -36,7 +40,6 @@ const Start = () => {
 
   const [versionLeftNodesWithImages, setVersionLeftNodesWithImages] = useState<NodeWithImage[]>([]);
   const [versionRightNodesWithImages, setVersionRightNodesWithImages] = useState<NodeWithImage[]>([]);
-
 
   const [versionLeftDifferences, setVersionLeftDifferences] = useState<Difference[]>([]);
   const [versionRightDifferences, setVersionRightDifferences] = useState<Difference[]>([]);
@@ -50,6 +53,12 @@ const Start = () => {
 
   const [fileVersionsList, setFileVersionsList] = useState<Version[]>([]);
 
+  const [canvasLeftNamePosition, setCanvasLeftNamePosition] = useState(0);
+  const [canvasRightNamePosition, setCanvasRightNamePosition] = useState(0);
+  const [sliderPadding, setSliderPadding] = useState(100);
+  const [sliderPosition, setSliderPosition] = useState(50);
+  const [canvasLeftWidth, setCanvasLeftWidth] = useState(0);
+  const [canvasRightWidth, setCanvasRightWidth] = useState(0);
 
 
   // #endregion
@@ -108,7 +117,9 @@ const Start = () => {
     setFileVersionsList(allVersions);
 
     setSelectVersionLeftSelectedOption(allVersions[0].id);
+    setSelectedVersionLeft(allVersions[0].label);
     setSelectVersionRightSelectedOption(allVersions[1].id);
+    setSelectedVersionRight(allVersions[1].label);
 
     fetchDocumentVersion(allVersions[0].id, Side.LEFT);
     fetchDocumentVersion(allVersions[1].id, Side.RIGHT);
@@ -514,8 +525,8 @@ const Start = () => {
         let scaleX = (canvasDiv.current.clientWidth - canvasPadding) / canvasWidth;
         let scaleY = (canvasDiv.current.clientHeight - canvasPadding) / canvasHeight;
 
-        (firstImage.current as any).setTransform(canvasPadding / 2, canvasPadding / 2, Math.min(scaleX, scaleY), 0);
-        (secondImage.current as any).setTransform(canvasPadding / 2, canvasPadding / 2, Math.min(scaleX, scaleY), 0);
+        (rightImage.current as any).setTransform(canvasPadding / 2, canvasPadding / 2, Math.min(scaleX, scaleY), 0);
+        (leftImage.current as any).setTransform(canvasPadding / 2, canvasPadding / 2, Math.min(scaleX, scaleY), 0);
       }
     }
   }
@@ -610,14 +621,14 @@ const Start = () => {
 
   function handleTransform(ref: ReactZoomPanPinchRef, state: { scale: number; positionX: number; positionY: number; }): void {
 
-    if (secondImage.current) {
-      if (!(secondImage.current.instance.transformState.positionX == ref.state.positionX && secondImage.current.instance.transformState.positionY == ref.state.positionY && secondImage.current.instance.transformState.scale == ref.state.scale))
-        (secondImage.current as any).setTransform(ref.state.positionX, ref.state.positionY, ref.state.scale, 0);
+    if (leftImage.current) {
+      if (!(leftImage.current.instance.transformState.positionX == ref.state.positionX && leftImage.current.instance.transformState.positionY == ref.state.positionY && leftImage.current.instance.transformState.scale == ref.state.scale))
+        (leftImage.current as any).setTransform(ref.state.positionX, ref.state.positionY, ref.state.scale, 0);
     }
 
-    if (firstImage.current) {
-      if (!(firstImage.current.instance.transformState.positionX == ref.state.positionX && firstImage.current.instance.transformState.positionY == ref.state.positionY && firstImage.current.instance.transformState.scale == ref.state.scale))
-        (firstImage.current as any).setTransform(ref.state.positionX, ref.state.positionY, ref.state.scale, 0);
+    if (rightImage.current) {
+      if (!(rightImage.current.instance.transformState.positionX == ref.state.positionX && rightImage.current.instance.transformState.positionY == ref.state.positionY && rightImage.current.instance.transformState.scale == ref.state.scale))
+        (rightImage.current as any).setTransform(ref.state.positionX, ref.state.positionY, ref.state.scale, 0);
     }
   }
 
@@ -767,6 +778,25 @@ const Start = () => {
     });
   }
 
+  function onSliderPositionChange(position: number): void {
+    if (canvasDiv.current) {
+      let sliderPaddingPercentage = (sliderPadding / canvasDiv.current.clientWidth) * 100;
+
+      if ((position > sliderPaddingPercentage) && (position < (100 - sliderPaddingPercentage))) {
+        setSliderPosition(position)
+        setCanvasLeftWidth((position / 100) * canvasDiv.current.clientWidth);
+        setCanvasRightWidth((1 - (position / 100)) * canvasDiv.current.clientWidth);
+      }
+      // console.log("clientWidth:" + canvasDiv.current.clientWidth)
+      // console.log("Slider padding is (in abs percentage):" + sliderPaddingPercentage)
+
+      // if ((position > sliderPaddingPercentage) && (position < (100 - sliderPaddingPercentage))) {
+      //   setCanvasLeftNamePosition((position / 100) / 2 * canvasDiv.current.clientWidth);
+      //   setCanvasRightNamePosition(((1 - position / 100)) / 2 * canvasDiv.current.clientWidth);
+      // }
+    }
+  }
+
   return <div className='rowAvailable verticalLayout'>
     <div className='rowAuto'>
       <input id="figmaFileURL" type='text' placeholder='Paste your Figma URL here' defaultValue="https://www.figma.com/file/HTUxsQSO4pR1GCvv8Nvqd5/HistoryChecker?type=design&node-id=1%3A2&mode=design&t=ffdrgnmtJ92dZgeQ-1" />
@@ -805,20 +835,10 @@ const Start = () => {
         </div>
       </div>
       <div ref={canvasDiv} className="colAvailable verticalLayout">
-        <ReactCompareSlider className='extend'
+        <ReactCompareSlider className='extend' onPositionChange={onSliderPositionChange} boundsPadding={sliderPadding}
           onlyHandleDraggable={true}
           itemOne={
-            <TransformWrapper ref={secondImage} onTransformed={handleTransform} minScale={0.01} limitToBounds={false}>
-              <div
-                style={{
-                  position: "fixed",
-                  zIndex: 5,
-                  top: "50px",
-                  right: "50px",
-                }}
-              >
-                PAGE LEFT!
-              </div>
+            <TransformWrapper ref={leftImage} onTransformed={handleTransform} minScale={0.01} limitToBounds={false}>
               <TransformComponent wrapperClass='verticalLayout leftcanvas' contentClass='verticalLayout'>
                 {isLeftPageAvailable ? (
                   <Canvas2 name='LEFT' nodesWithImages={versionLeftNodesWithImages} differences={versionLeftDifferences} differenceTypes={differencesTypes} canvasWidth={canvasWidth} canvasHeight={canvasHeight} offsetX={canvasPageOffsetX} offsetY={canvasPageOffsetY} containerClass='innerCanvas' />
@@ -826,10 +846,20 @@ const Start = () => {
                   <span>Not available</span>
                 )}
               </TransformComponent>
+              <div className="alignFullCenter" style={{
+                position: 'absolute',
+                width: `${canvasLeftWidth}px`,
+                height: '24px',
+                top: '0px',
+              }}>
+                  <div className="canvasVersionOverlayTitle">
+                    {selectedVersionLeft}
+                  </div>
+              </div>
             </TransformWrapper>
           }
           itemTwo={
-            <TransformWrapper ref={firstImage} onTransformed={handleTransform} minScale={0.01} limitToBounds={false}>
+            <TransformWrapper ref={rightImage} onTransformed={handleTransform} minScale={0.01} limitToBounds={false}>
               <TransformComponent wrapperClass='verticalLayout rightcanvas' contentClass='verticalLayout'>
                 {isRightPageAvailable ? (
                   <Canvas2 name='RIGHT' nodesWithImages={versionRightNodesWithImages} differences={versionRightDifferences} differenceTypes={differencesTypes} canvasWidth={canvasWidth} canvasHeight={canvasHeight} offsetX={canvasPageOffsetX} offsetY={canvasPageOffsetY} containerClass='innerCanvas' />
@@ -837,6 +867,17 @@ const Start = () => {
                   <span>Not available</span>
                 )}
               </TransformComponent>
+              <div className="alignFullCenter" style={{
+                position: 'absolute',
+                width: `${canvasRightWidth}px`,
+                left: `${canvasLeftWidth}px`,
+                height: '24px',
+                top: '0px'
+              }}>
+                  <div className="canvasVersionOverlayTitle">
+                    {selectedVersionRight}
+                  </div>
+              </div>
             </TransformWrapper>
           }
         />
