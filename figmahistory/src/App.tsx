@@ -6,7 +6,7 @@ import ImageDiff from 'react-image-diff';
 import ReactCompareImage from 'react-compare-image';
 import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slider';
 import { TransformWrapper, TransformComponent, ReactZoomPanPinchRef } from "react-zoom-pan-pinch";
-import { globalState, setDocumentID, setAccessToken, setDocumentLeft, setDocumentRight, updateDocumentPageLeftChildrenAndFlatNodes, updateDocumentPageRightChildrenAndFlatNodes, setSelectedPageId, updateDocumentPageLeftFlatNodes, updateDocumentPageRightFlatNodes, updateDocumentPageRightBounds, updateDocumentPageLeftBounds, } from './globals';
+import { globalState, setDocumentID, setAccessToken, setDocumentLeft, setDocumentRight, updateDocumentPageLeftChildrenAndFlatNodes, updateDocumentPageRightChildrenAndFlatNodes, setSelectedPageId, updateDocumentPageLeftFlatNodes, updateDocumentPageRightFlatNodes, updateDocumentPageRightBounds, updateDocumentPageLeftBounds, setSelectedNodeId, } from './globals';
 import isEqual from 'lodash/isEqual';
 
 import { User, Side, Color, Document, Version, Page, NodeWithImage, FigmaNode, Node, Difference, Rect } from './types';
@@ -59,7 +59,7 @@ const Start = () => {
   async function fetchVersionList(): Promise<Version[]> {
     const versions: Version[] = [];
 
-    async function fetchPage(url: string | undefined): Promise<void> {
+    async function fetchVersionListPage(url: string | undefined): Promise<void> {
       if (url) {
         const response = await fetch(url, {
           method: 'GET',
@@ -70,13 +70,23 @@ const Start = () => {
 
         if (response.ok) {
           const data = await response.json();
+          let fetchedVersionList = data.versions;
+          for (const version of fetchedVersionList) {
+            versions.push({
+              id: version.id,
+              created_at: version.created_at,
+              label: version.label ? version.label : "Autosave",
+              description: version.description,
+              user: version.user,
+            });
+          }
           // console.log(data)
-          versions.push(...data.versions);
+          // versions.push(...data.versions);
 
           // Continue fetching if there is a previous page
           //console.log("-- Has more pages? NextPage is:" + data.pagination.next_page)
           if (data.pagination && data.pagination.next_page) {
-            await fetchPage(data.pagination.next_page);
+            await fetchVersionListPage(data.pagination.next_page);
           }
         } else {
           console.error(`Failed to fetch versions: ${response.statusText}`);
@@ -85,7 +95,7 @@ const Start = () => {
     }
 
     // Start fetching with the initial page (undefined for the first page)
-    await fetchPage('https://api.figma.com/v1/files/' + globalState.documentId + "/versions");
+    await fetchVersionListPage('https://api.figma.com/v1/files/' + globalState.documentId + "/versions");
 
     return versions;
   }
@@ -155,7 +165,7 @@ const Start = () => {
 
   async function fetchPage(versionId: string, pageId: string, side: Side) {
 
-    // console.log("Fetching page:" + pageId);
+    // console.log("Fetching page:" + pageId + " for side:" + side.valueOf());
     let depth = "";
     // let depth = "&depth=2";
 
@@ -170,6 +180,7 @@ const Start = () => {
       const responseJson = await getPageNode.json();
       // console.log("OK, Page is ready");
       // console.log(responseJson.nodes);
+      // console.log(responseJson.nodes[pageId]);
       // console.log(responseJson.nodes[pageId].document);
 
 
@@ -206,6 +217,8 @@ const Start = () => {
   async function fetchDocumentVersion(versionId: string, side: Side) {
 
     // console.log("Fetching version:" + versionId + " for side:" + side.valueOf());
+
+    // console.log("At this point, globalPageId is:" + globalState.selectedPageId);
 
     // let depth = "";
     let depth = "&depth=1";
@@ -256,9 +269,13 @@ const Start = () => {
         setPagesListVersionRight(pages);
       }
 
+      //If node-id retrieved from URL belongs to a page, and globalState.selectedPageId has not been set yet, set it to the retrieved id.
+      if (!globalState.selectedPageId && globalState.selectedNodeId) {
+        if (pages.some(page => page.id == globalState.selectedNodeId))
+          setSelectedPageId(globalState.selectedNodeId);
+      }
 
       let pageId = globalState.selectedPageId ? globalState.selectedPageId : versionDocument.pages[0].id;
-      // console.log("PageId is:" + pageId);
 
       drawPage(pageId, side);
 
@@ -412,12 +429,9 @@ const Start = () => {
 
   const handleFigmaAuthentication = async (code: string) => {
 
-    let figmaDocumentID = getFigmaDocumentID();
-    // console.log("Document IDs is:" + figmaDocumentID);
-    if (figmaDocumentID) {
-      setDocumentID(figmaDocumentID);
-    }
-
+    let figmaDocumentInfo = getFigmaDocumentInfo();
+    let figmaDocumentId = figmaDocumentInfo.id;
+    let figmaDocumentNodeId = figmaDocumentInfo.nodeId;
 
     // console.log("Try post call");
     fetch('http://localhost:5002/get-figma-access-token', {
@@ -432,7 +446,11 @@ const Start = () => {
         if (responseObject.figmaData.access_token)
           setAccessToken(responseObject.figmaData.access_token);
 
-        setDocumentID(figmaDocumentID);
+        setDocumentID(figmaDocumentId);
+
+        if (figmaDocumentNodeId)
+          setSelectedNodeId(figmaDocumentNodeId);
+
         fetchFigmaFiles();
       })
       .then(data => {
@@ -447,12 +465,19 @@ const Start = () => {
     //TODO Retrieve token from storage
     const token = "figu_c3F858MxN07ZBhWSXewYZglB_c_hGa4l0tx_MLrb";
 
-    let figmaDocumentID = getFigmaDocumentID();
+    let figmaDocumentInfo = getFigmaDocumentInfo();
+    let figmaDocumentId = figmaDocumentInfo.id;
+    let figmaDocumentNodeId = figmaDocumentInfo.nodeId;
 
-    if (token && figmaDocumentID) {
+
+    if (token && figmaDocumentId) {
       // console.log("Token is known")
       setAccessToken(token);
-      setDocumentID(figmaDocumentID);
+      setDocumentID(figmaDocumentId);
+
+      if (figmaDocumentNodeId)
+        setSelectedNodeId(figmaDocumentNodeId);
+
       fetchFigmaFiles()
     }
     else {
@@ -544,15 +569,22 @@ const Start = () => {
     return newDocumentFlatNodes;
   }
 
-  const getFigmaDocumentID = () => {
+  const getFigmaDocumentInfo = () => {
     const inputElement = document.getElementById("figmaFileURL") as HTMLInputElement;
     const inputURL = inputElement.value;
 
-    const regex = /^((http|https):\/\/)?(www\.)?figma.com\/file\/([a-zA-Z0-9]{22})(.*)?/
-    const matches = inputURL.match(regex)
-    if (matches === null) return "";
-    const id = matches[4]
-    return id || "";
+    const regex = /^((http|https):\/\/)?(www\.)?figma\.com\/file\/([a-zA-Z0-9]{22})(?:.*node-id=([0-9]+-[0-9]+))?/
+    const matches = inputURL.match(regex);
+
+    if (!matches) {
+      return { id: "", nodeId: "" };
+    }
+
+    const id = matches[4];
+    let nodeId = matches[5] || "";
+    nodeId = nodeId.replace("-", ":")
+
+    return { id, nodeId };
   }
 
   const openPopupWindow = () => {
@@ -777,6 +809,16 @@ const Start = () => {
           onlyHandleDraggable={true}
           itemOne={
             <TransformWrapper ref={secondImage} onTransformed={handleTransform} minScale={0.01} limitToBounds={false}>
+              <div
+                style={{
+                  position: "fixed",
+                  zIndex: 5,
+                  top: "50px",
+                  right: "50px",
+                }}
+              >
+                PAGE LEFT!
+              </div>
               <TransformComponent wrapperClass='verticalLayout leftcanvas' contentClass='verticalLayout'>
                 {isLeftPageAvailable ? (
                   <Canvas2 name='LEFT' nodesWithImages={versionLeftNodesWithImages} differences={versionLeftDifferences} differenceTypes={differencesTypes} canvasWidth={canvasWidth} canvasHeight={canvasHeight} offsetX={canvasPageOffsetX} offsetY={canvasPageOffsetY} containerClass='innerCanvas' />

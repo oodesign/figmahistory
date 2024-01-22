@@ -8,6 +8,7 @@ export interface GlobalState {
     documentLeft: Document;
     documentRight: Document;
     selectedPageId: string;
+    selectedNodeId: string;
 }
 
 export let globalState: GlobalState = {
@@ -24,6 +25,7 @@ export let globalState: GlobalState = {
         pages: [],
     },
     selectedPageId: "",
+    selectedNodeId:"",
 };
 
 export function setDocumentID(id: string) {
@@ -161,6 +163,10 @@ export function updateDocumentPageRightChildrenAndFlatNodes(pageId: string, page
 
 export function setSelectedPageId(id: string) {
     globalState = { ...globalState, selectedPageId: id };
+}
+
+export function setSelectedNodeId(id: string) {
+    globalState = { ...globalState, selectedNodeId: id };
 }
 
 
