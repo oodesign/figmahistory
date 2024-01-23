@@ -3,10 +3,10 @@ import React from 'react';
 interface LoaderProps {
 }
 
-const Loader: React.FC<LoaderProps> = ({ }) => {
-
+const Loader: React.ForwardRefRenderFunction<HTMLDivElement, LoaderProps> = (props, ref) => {
+    
     return (
-        <div>
+        <div ref={ref}>
             <div id="indeterminateLoader" className="verticalLayout alignFullCenter indeterminateLoader show">
                 <div className="dualRingLoader"></div>
             </div>
@@ -14,6 +14,6 @@ const Loader: React.FC<LoaderProps> = ({ }) => {
     );
 };
 
-export default Loader;
+export default React.forwardRef(Loader);
 
 
