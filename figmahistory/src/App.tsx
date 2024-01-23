@@ -526,6 +526,7 @@ const Start = () => {
       setCanvasPageOffsetX(pageOffsetX);
       setCanvasPageOffsetY(pageOffsetY);
 
+      fitIntoView();
 
       if (canvasDiv.current) {
         let scaleX = (canvasDiv.current.clientWidth - canvasPadding) / canvasWidth;
@@ -537,14 +538,20 @@ const Start = () => {
     }
   }
 
+  function fitIntoView() {
+    if (canvasDiv.current) {
+      let scaleX = (canvasDiv.current.clientWidth - canvasPadding) / canvasWidth;
+      let scaleY = (canvasDiv.current.clientHeight - canvasPadding) / canvasHeight;
+
+      (rightImage.current as any).setTransform(canvasPadding / 2, canvasPadding / 2, Math.min(scaleX, scaleY), 0);
+      (leftImage.current as any).setTransform(canvasPadding / 2, canvasPadding / 2, Math.min(scaleX, scaleY), 0);
+    }
+  }
+
   function calculateDifferences(pageId: string) {
 
     let pageLeftNodes = globalState.documentLeft.pages.find(page => page.id == pageId)?.flatNodes;
     let pageRightNodes = globalState.documentRight.pages.find(page => page.id == pageId)?.flatNodes;
-
-    // console.log(pageLeftNodes);
-    // console.log(pageRightNodes);
-    // console.log("CalculatingDifferences. At this point documentLeftFlatNodes is (" + documentLeftFlatNodes.length + ") and documentRightFlatNodes is (" + documentRightFlatNodes.length + ")")
 
     if (pageLeftNodes && pageLeftNodes.length > 0 && pageRightNodes && pageRightNodes.length > 0) {
 
@@ -803,6 +810,7 @@ const Start = () => {
     }
   }
 
+
   return <div className='rowAvailable verticalLayout'>
     <div className='rowAuto'>
       <input id="figmaFileURL" type='text' placeholder='Paste your Figma URL here' defaultValue="https://www.figma.com/file/HTUxsQSO4pR1GCvv8Nvqd5/HistoryChecker?type=design&node-id=1%3A2&mode=design&t=ffdrgnmtJ92dZgeQ-1" />
@@ -830,6 +838,8 @@ const Start = () => {
       <label>Rectangle</label>
       <input type="checkbox" value="TEXT" onChange={onDifferenceTypesChanged} checked={differencesTypes.includes('TEXT')} />
       <label>Text</label>
+
+      <button onClick={fitIntoView}>Fit into view</button>
 
 
 
@@ -912,4 +922,5 @@ export default App;
 function rgbaToString(color: Color) {
   return "rgba(" + Math.round(color.r * 255) + "," + Math.round(color.g * 255) + "," + Math.round(color.b * 255) + "," + Math.round(color.a * 255) + ")";
 }
+
 
