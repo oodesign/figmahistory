@@ -16,6 +16,8 @@ import './App.css';
 import { timeout } from 'q';
 import { positional } from 'yargs';
 import { relative } from 'path';
+import FigmaFileInput from './FigmaFileInput';
+import Loader from './Loader';
 
 const Start = () => {
 
@@ -813,8 +815,12 @@ const Start = () => {
 
   return <div className='rowAvailable verticalLayout'>
     <div className='rowAuto'>
-      <input id="figmaFileURL" type='text' placeholder='Paste your Figma URL here' defaultValue="https://www.figma.com/file/HTUxsQSO4pR1GCvv8Nvqd5/HistoryChecker?type=design&node-id=1%3A2&mode=design&t=ffdrgnmtJ92dZgeQ-1" />
-      <button onClick={getData}>Load</button>
+      
+
+      <FigmaFileInput getData={getData} />
+      <Loader/>
+
+
       <select id="selectVersion1" value={selectVersionLeftSelectedOption} onChange={onVersion1Changed}>
         {renderOptions()}
       </select>
