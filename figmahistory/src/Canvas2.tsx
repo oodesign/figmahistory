@@ -11,9 +11,10 @@ interface Canvas2Props {
     offsetY: number;
     containerClass: string;
     differenceTypes: string[];
+    background: string;
 }
 
-const Canvas2: React.FC<Canvas2Props> = ({ name, nodesWithImages, differences, canvasWidth, canvasHeight, offsetX, offsetY, containerClass, differenceTypes }) => {
+const Canvas2: React.FC<Canvas2Props> = ({ name, nodesWithImages, differences, canvasWidth, canvasHeight, offsetX, offsetY, containerClass, differenceTypes, background }) => {
     const [containerWidth, setContainerWidth] = useState(canvasWidth);
     const [containerHeight, setContainerHeight] = useState(canvasHeight);
 
@@ -77,7 +78,7 @@ const Canvas2: React.FC<Canvas2Props> = ({ name, nodesWithImages, differences, c
     };
 
     return (
-        <div style={{ width: `${containerWidth}px`, height: `${containerHeight}px` }} className={`displayFlex pageCanvas ${containerClass}`}>
+        <div style={{ width: `${containerWidth}px`, height: `${containerHeight}px`, backgroundColor: `${background}` }} className={`displayFlex pageCanvas ${containerClass}`}>
             {renderNodes()}
             {renderDifferences()}
         </div>

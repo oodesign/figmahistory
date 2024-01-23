@@ -29,8 +29,11 @@ const Start = () => {
 
   const [selectVersionLeftSelectedOption, setSelectVersionLeftSelectedOption] = useState<string>("");
   const [selectVersionRightSelectedOption, setSelectVersionRightSelectedOption] = useState<string>("");
-  const [selectedVersionLeft, setSelectedVersionLeft] = useState<string>("");
-  const [selectedVersionRight, setSelectedVersionRight] = useState<string>("");
+  const [selectedVersionNameLeft, setSelectedVersionNameLeft] = useState<string>("");
+  const [selectedVersionNameRight, setSelectedVersionNameRight] = useState<string>("");
+  const [selectedPageColorLeft, setSelectedPageColorLeft] = useState<string>("#FFFFFF");
+  const [selectedPageColorRight, setSelectedPageColorRight] = useState<string>("#FFFFFF");
+
 
   const [isLeftPageAvailable, setIsLeftPageAvailable] = useState<boolean>(true);
   const [isRightPageAvailable, setIsRightPageAvailable] = useState<boolean>(true);
@@ -40,6 +43,8 @@ const Start = () => {
 
   const [versionLeftNodesWithImages, setVersionLeftNodesWithImages] = useState<NodeWithImage[]>([]);
   const [versionRightNodesWithImages, setVersionRightNodesWithImages] = useState<NodeWithImage[]>([]);
+
+
 
   const [versionLeftDifferences, setVersionLeftDifferences] = useState<Difference[]>([]);
   const [versionRightDifferences, setVersionRightDifferences] = useState<Difference[]>([]);
@@ -53,8 +58,6 @@ const Start = () => {
 
   const [fileVersionsList, setFileVersionsList] = useState<Version[]>([]);
 
-  const [canvasLeftNamePosition, setCanvasLeftNamePosition] = useState(0);
-  const [canvasRightNamePosition, setCanvasRightNamePosition] = useState(0);
   const [sliderPadding, setSliderPadding] = useState(100);
   const [sliderPosition, setSliderPosition] = useState(50);
   const [canvasLeftWidth, setCanvasLeftWidth] = useState(0);
@@ -117,9 +120,9 @@ const Start = () => {
     setFileVersionsList(allVersions);
 
     setSelectVersionLeftSelectedOption(allVersions[0].id);
-    setSelectedVersionLeft(allVersions[0].label);
+    setSelectedVersionNameLeft(allVersions[0].label);
     setSelectVersionRightSelectedOption(allVersions[1].id);
-    setSelectedVersionRight(allVersions[1].label);
+    setSelectedVersionNameRight(allVersions[1].label);
 
     fetchDocumentVersion(allVersions[0].id, Side.LEFT);
     fetchDocumentVersion(allVersions[1].id, Side.RIGHT);
@@ -197,6 +200,7 @@ const Start = () => {
 
       let pageChildren = responseJson.nodes[pageId].document.children;
       let pageFlatNodes = flattenNodes(responseJson.nodes[pageId].document);
+      let pageBackground: Color = responseJson.nodes[pageId].document.backgroundColor;
 
       let minX = 0, minY = 0, maxX = 0, maxY = 0;
       for (const node of pageFlatNodes) {
@@ -217,10 +221,12 @@ const Start = () => {
       if (side == Side.LEFT) {
         updateDocumentPageLeftBounds(pageId, pageDimensions);
         updateDocumentPageLeftChildrenAndFlatNodes(pageId, pageChildren, pageFlatNodes);
+        setSelectedPageColorLeft(rgbaToString(pageBackground));
       }
       else if (side == Side.RIGHT) {
         updateDocumentPageRightBounds(pageId, pageDimensions);
         updateDocumentPageRightChildrenAndFlatNodes(pageId, pageChildren, pageFlatNodes);
+        setSelectedPageColorRight(rgbaToString(pageBackground));
       }
     }
   }
@@ -841,7 +847,7 @@ const Start = () => {
             <TransformWrapper ref={leftImage} onTransformed={handleTransform} minScale={0.01} limitToBounds={false}>
               <TransformComponent wrapperClass='verticalLayout leftcanvas' contentClass='verticalLayout'>
                 {isLeftPageAvailable ? (
-                  <Canvas2 name='LEFT' nodesWithImages={versionLeftNodesWithImages} differences={versionLeftDifferences} differenceTypes={differencesTypes} canvasWidth={canvasWidth} canvasHeight={canvasHeight} offsetX={canvasPageOffsetX} offsetY={canvasPageOffsetY} containerClass='innerCanvas' />
+                  <Canvas2 name='LEFT' nodesWithImages={versionLeftNodesWithImages} differences={versionLeftDifferences} differenceTypes={differencesTypes} canvasWidth={canvasWidth} canvasHeight={canvasHeight} offsetX={canvasPageOffsetX} offsetY={canvasPageOffsetY} background={selectedPageColorLeft} containerClass='innerCanvas' />
                 ) : (
                   <span>Not available</span>
                 )}
@@ -849,12 +855,11 @@ const Start = () => {
               <div className="alignFullCenter" style={{
                 position: 'absolute',
                 width: `${canvasLeftWidth}px`,
-                height: '24px',
                 top: '0px',
               }}>
-                  <div className="canvasVersionOverlayTitle">
-                    {selectedVersionLeft}
-                  </div>
+                <div className="canvasVersionOverlayTitle">
+                  {selectedVersionNameLeft}
+                </div>
               </div>
             </TransformWrapper>
           }
@@ -862,7 +867,7 @@ const Start = () => {
             <TransformWrapper ref={rightImage} onTransformed={handleTransform} minScale={0.01} limitToBounds={false}>
               <TransformComponent wrapperClass='verticalLayout rightcanvas' contentClass='verticalLayout'>
                 {isRightPageAvailable ? (
-                  <Canvas2 name='RIGHT' nodesWithImages={versionRightNodesWithImages} differences={versionRightDifferences} differenceTypes={differencesTypes} canvasWidth={canvasWidth} canvasHeight={canvasHeight} offsetX={canvasPageOffsetX} offsetY={canvasPageOffsetY} containerClass='innerCanvas' />
+                  <Canvas2 name='RIGHT' nodesWithImages={versionRightNodesWithImages} differences={versionRightDifferences} differenceTypes={differencesTypes} canvasWidth={canvasWidth} canvasHeight={canvasHeight} offsetX={canvasPageOffsetX} offsetY={canvasPageOffsetY} background={selectedPageColorRight} containerClass='innerCanvas' />
                 ) : (
                   <span>Not available</span>
                 )}
@@ -871,12 +876,11 @@ const Start = () => {
                 position: 'absolute',
                 width: `${canvasRightWidth}px`,
                 left: `${canvasLeftWidth}px`,
-                height: '24px',
                 top: '0px'
               }}>
-                  <div className="canvasVersionOverlayTitle">
-                    {selectedVersionRight}
-                  </div>
+                <div className="canvasVersionOverlayTitle">
+                  {selectedVersionNameRight}
+                </div>
               </div>
             </TransformWrapper>
           }
@@ -904,4 +908,8 @@ export default App;
 
 
 
+
+function rgbaToString(color: Color) {
+  return "rgba(" + Math.round(color.r * 255) + "," + Math.round(color.g * 255) + "," + Math.round(color.b * 255) + "," + Math.round(color.a * 255) + ")";
+}
 
