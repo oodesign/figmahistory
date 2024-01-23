@@ -190,6 +190,21 @@ $headerSidesDistance: 18px;
     height: 100%;
 }
 
+.gridExtender{
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+    width: 100%;
+    height: 100%;
+
+    .singleCellExtend{
+        grid-row: 1;
+        grid-column: 1;
+        width: 100%;
+        height: 100%;
+    }
+}
+
 .flexGhostElement {
     @include flex;
     flex: 1 1 250px;

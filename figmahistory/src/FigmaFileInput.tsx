@@ -34,14 +34,30 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
     }
 
     return (
-        <div className={props.className}>
-            <input
-                id="figmaFileURL"
-                type="text"
-                placeholder="Paste your Figma URL here"
-                defaultValue="https://www.figma.com/file/HTUxsQSO4pR1GCvv8Nvqd5/HistoryChecker?type=design&node-id=1%3A2&mode=design&t=ffdrgnmtJ92dZgeQ-1"
-            />
-            <button onClick={getFigmaDocumentInfo}>Load</button>
+
+        <div className={`${props.className} verticalLayout`}>
+
+            <div className="rowAuto logo">
+                <img src="./figmahistory/images/logo.png" />
+            </div>
+            <div className="rowAvailable ">
+                <div className="alignFullCenter verticalLayout">
+                    <div className="rowAuto">
+                        <input
+                            id="figmaFileURL"
+                            type="text"
+                            placeholder="Paste your Figma URL here"
+                            defaultValue="https://www.figma.com/file/HTUxsQSO4pR1GCvv8Nvqd5/HistoryChecker?type=design&node-id=1%3A2&mode=design&t=ffdrgnmtJ92dZgeQ-1"
+                        />
+                        <button onClick={getFigmaDocumentInfo}>Load</button>
+                    </div>
+                    <div className="rowAuto secondaryText">
+                        Access to your designs is solely used for comparison rendering.<br/>
+                        We do not (and will never) store, analyze, or share your designs, not even for analytics. <br/>
+                        Your designs are, and will continue to be, just for your eyes.
+                    </div>
+                </div>
+            </div>
         </div>
     );
 };

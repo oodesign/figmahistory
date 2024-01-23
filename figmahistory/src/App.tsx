@@ -143,11 +143,12 @@ const Start = () => {
 
 
 
-  return <div className='extend'>
+  return <div className='gridExtender'>
 
-    <FigmaFileInput ref={figmaFileInputRef} getData={getData} className={`animatedDiv visible ${onInputState ? 'fadeIn' : 'fadeOut'}`} />
-    <Loader ref={loaderRef} className={`animatedDiv invisible ${onLoadingState ? 'fadeIn' : 'fadeOut'}`} />
-    <Comparer ref={comparerRef} className={`animatedDiv invisible ${onComparerState ? 'fadeIn' : 'fadeOut'}`} />
+    <FigmaFileInput ref={figmaFileInputRef} getData={getData} className={`singleCellExtend animatedDiv visible ${onInputState ? 'fadeIn' : 'fadeOut'}`} />
+    <Loader ref={loaderRef} className={`singleCellExtend animatedDiv invisible ${onLoadingState ? 'fadeIn' : 'fadeOut'}`} />
+    <Comparer ref={comparerRef} className={`singleCellExtend animatedDiv invisible ${onComparerState ? 'fadeIn' : 'fadeOut'}`} />
+    
 
   </div>
 };
