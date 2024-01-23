@@ -920,7 +920,7 @@ export default App;
 
 
 function rgbaToString(color: Color) {
-  return "rgba(" + Math.round(color.r * 255) + "," + Math.round(color.g * 255) + "," + Math.round(color.b * 255) + "," + Math.round(color.a * 255) + ")";
+  return "rgba(" + Math.round(color.r * 255) + "," + Math.round(color.g * 255) + "," + Math.round(color.b * 255) + "," + Math.round(color.a) + ")";
 }
 
 

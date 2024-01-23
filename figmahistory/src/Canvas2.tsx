@@ -27,7 +27,7 @@ const Canvas2: React.FC<Canvas2Props> = ({ name, nodesWithImages, differences, c
         //console.log("Drawing canvas: " + name + ". Offset:" + offsetX + "," + offsetY);
         return nodesWithImages.map((nodeWithImage, index) => (
             <img
-                key={index}
+                key={`Image ${index}`}
                 src={nodeWithImage.imageUrl}
                 alt={`Image ${index}`}
                 style={{
@@ -38,6 +38,29 @@ const Canvas2: React.FC<Canvas2Props> = ({ name, nodesWithImages, differences, c
                     height: `${nodeWithImage.child.absoluteBoundingBox.height}px`,
                 }}
             />
+        ));
+    };
+
+
+
+    const renderArtboards = (): React.ReactNode => {
+        //console.log("Drawing canvas: " + name + ". Offset:" + offsetX + "," + offsetY);
+        return differences.map((difference, index) => (
+            (difference.type == "FRAME" && !difference.isChildOfFrame) ?
+                <div key={`Frame${index}`}>
+                    <div className={`negativeText`}
+                        style={{
+                            position: 'absolute',
+                            left: `${(difference.boundingRect.x + (-offsetX))}px`,
+                            top: `${(difference.boundingRect.y + (-offsetY))}px`,
+                            width: `${difference.boundingRect.width}px`,
+                            height: `${difference.boundingRect.height}px`,
+                            backgroundColor: `rgba(255,255,255,0.05)`
+                        }}
+                    />
+                </div>
+
+                : ""
         ));
     };
 
@@ -79,6 +102,7 @@ const Canvas2: React.FC<Canvas2Props> = ({ name, nodesWithImages, differences, c
 
     return (
         <div style={{ width: `${containerWidth}px`, height: `${containerHeight}px`, backgroundColor: `${background}` }} className={`displayFlex pageCanvas ${containerClass}`}>
+            {renderArtboards()}
             {renderNodes()}
             {renderDifferences()}
         </div>
