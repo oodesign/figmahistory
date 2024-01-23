@@ -2,9 +2,10 @@ import React from 'react';
 
 interface FigmaFileInputProps {
     getData: (id: string, nodeId: string) => void;
+    className: string;
 }
 
-const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileInputProps> = ({ getData }, ref) => {
+const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileInputProps> = (props, ref) => {
 
     const getFigmaDocumentInfo = () => {
         const inputElement = document.getElementById("figmaFileURL") as HTMLInputElement;
@@ -23,7 +24,7 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
             nodeId = nodeId.replace("-", ":")
 
             if (id) {
-                getData(id, nodeId);
+                props.getData(id, nodeId);
             }
             else {
                 //TODO Handle incorrect format error
@@ -33,7 +34,7 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
     }
 
     return (
-        <div>
+        <div className={props.className}>
             <input
                 id="figmaFileURL"
                 type="text"

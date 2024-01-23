@@ -2047,23 +2047,25 @@ body {
   opacity: 0;
 }
 
-.animatedDiv .yFadeIn {
-  transition: visibility 0s, transform 0.3s ease-out, opacity 0.3s ease-out !important;
-  visibility: visible !important;
+.animatedDiv.visible {
+  transition: visibility 0s, opacity 0s;
+  visibility: visible;
+  opacity: 1;
+}
+.animatedDiv.invisible {
+  transition: visibility 0s, opacity 0s;
+  visibility: hidden;
+  opacity: 0;
+}
+.animatedDiv.fadeOut {
+  transition: opacity 0.5s linear, visibility 0s 0.5s !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+.animatedDiv.fadeIn {
+  transition: visibility 0s, opacity 0.5s linear !important;
   opacity: 1 !important;
-  transform: translate(-50%, 0px) !important;
-}
-.animatedDiv .yFadeUp {
-  transition: transform 0.3s ease-out, opacity 0.3s ease-out, visibility 0s 0.3s !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
-  transform: translate(-50%, -50px) !important;
-}
-.animatedDiv .yFadeDown {
-  transition: transform 0.3s ease-out, opacity 0.3s ease-out, visibility 0s 0.3s !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
-  transform: translate(-50%, 50px) !important;
+  visibility: visible !important;
 }
 
 @media (prefers-color-scheme: light) {

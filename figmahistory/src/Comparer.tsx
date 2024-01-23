@@ -7,6 +7,7 @@ import isEqual from 'lodash/isEqual';
 import Canvas2 from './Canvas2';
 
 interface ComparerProps {
+    className: string;
 }
 
 export interface ComparerRef {
@@ -682,7 +683,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
     // #endregion
 
     return (
-        <div className='rowAvailable verticalLayout'>
+        <div className={`rowAvailable verticalLayout ${props.className}`}>
             <div className='rowAuto'>
 
                 <select id="selectVersion1" value={selectVersionLeftSelectedOption} onChange={onVersion1Changed}>

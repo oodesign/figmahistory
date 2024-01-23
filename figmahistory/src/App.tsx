@@ -28,6 +28,9 @@ const Start = () => {
   const loaderRef = useRef<HTMLDivElement>(null);
   const comparerRef = useRef<ComparerRef>(null);
 
+  const [onInputState, setOnInputState] = useState<boolean>(true);
+  const [onLoadingState, setOnLoadingState] = useState<boolean>(false);
+  const [onComparerState, setOnComparerState] = useState<boolean>(false);
 
   // #region Authentication and access
 
@@ -66,7 +69,10 @@ const Start = () => {
 
 
   const getData = (id: string, nodeId: string) => {
-    console.log("Getting data! id:"+id+", nodeId:"+nodeId)
+    console.log("Getting data! id:" + id + ", nodeId:" + nodeId)
+    setOnInputState(false);
+    setOnLoadingState(true);
+    setOnComparerState(true);
     //TODO Retrieve token from storage
     const token = "figu_c3F858MxN07ZBhWSXewYZglB_c_hGa4l0tx_MLrb";
 
@@ -137,15 +143,12 @@ const Start = () => {
 
 
 
-  return <div className='rowAvailable verticalLayout'>
-    <div className='rowAuto'>
+  return <div className='extend'>
 
+    <FigmaFileInput ref={figmaFileInputRef} getData={getData} className={`animatedDiv visible ${onInputState ? 'fadeIn' : 'fadeOut'}`} />
+    <Loader ref={loaderRef} className={`animatedDiv invisible ${onLoadingState ? 'fadeIn' : 'fadeOut'}`} />
+    <Comparer ref={comparerRef} className={`animatedDiv invisible ${onComparerState ? 'fadeIn' : 'fadeOut'}`} />
 
-      <FigmaFileInput ref={figmaFileInputRef} getData={getData} />
-      <Loader ref={loaderRef} />
-      <Comparer ref={comparerRef} />
-
-    </div>
   </div>
 };
 
