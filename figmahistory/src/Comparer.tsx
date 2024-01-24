@@ -352,6 +352,26 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
             versionId = globalState.documentRight.version;
         }
 
+        if (side == Side.LEFT) {
+            setIsLoadingLeftPage(true);
+            setIsLoadingLeftImages(true);
+            setTimeout(() => {
+                setVersionLeftNodesWithImages([]);
+                setVersionLeftDifferences([]);
+                setSelectedPageColorLeft("transparent");
+            }, 500)
+
+        }
+        if (side == Side.RIGHT) {
+            setIsLoadingRightPage(true);
+            setIsLoadingRightImages(true);
+            setTimeout(() => {
+                setVersionRightNodesWithImages([]);
+                setVersionRightDifferences([]);
+                setSelectedPageColorRight("transparent");
+            }, 500)
+        }
+
         await fetchPage(versionId, pageId, side);
 
         calculateDifferences(pageId);
@@ -454,19 +474,15 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                 });
 
 
-
-                let canvasMaxWidth, canvasMaxHeight = 0
-
-
-
                 if (side == Side.LEFT) {
+
+                    setIsLoadingLeftPage(false);
                     setVersionLeftNodesWithImages(mapper);
                 }
                 else if (side == Side.RIGHT) {
+                    setIsLoadingRightPage(false);
                     setVersionRightNodesWithImages(mapper);
                 }
-
-
 
             }
         }
