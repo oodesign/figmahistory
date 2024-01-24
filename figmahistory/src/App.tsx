@@ -33,7 +33,7 @@ const Start = () => {
   const [onComparerState, setOnComparerState] = useState<boolean>(false);
 
 
-  const [loaderMessage, setLoaderMessage] = useState<string>("Loading");
+  const [loaderMessage, setLoaderMessage] = useState<string>("Connecting to Figma");
 
 
   // #region Authentication and access

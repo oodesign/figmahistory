@@ -999,6 +999,10 @@ h5 {
   margin-bottom: 56px;
 }
 
+.loader .dualRingLoader {
+  margin-bottom: 16px;
+}
+
 @font-face {
   font-family: AvenirNextLTPro-Medium;
   src: url(./fonts/AvenirNextLTPro-Medium.ttf) format("truetype");
