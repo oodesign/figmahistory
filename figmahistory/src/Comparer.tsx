@@ -251,6 +251,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
             globalState.isDocumentLeftLoaded = false;
             setTimeout(() => {
                 setVersionLeftNodesWithImages([]);
+                setVersionLeftDifferences([]);
                 setSelectedPageColorLeft("transparent");
             }, 500)
 
@@ -261,6 +262,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
             globalState.isDocumentRightLoaded = false;
             setTimeout(() => {
                 setVersionRightNodesWithImages([]);
+                setVersionRightDifferences([]);
                 setSelectedPageColorRight("transparent");
             }, 500)
         }
