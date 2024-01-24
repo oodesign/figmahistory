@@ -8,6 +8,8 @@ import Canvas2 from './Canvas2';
 
 interface ComparerProps {
     className: string;
+
+    gotDocumentName: (name: string) => void;
 }
 
 export interface ComparerRef {
@@ -64,6 +66,23 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
 
     // #region Fetching files, versions
 
+    async function getDocumentName(): Promise<string> {
+
+        const response = await fetch('https://api.figma.com/v1/files/' + globalState.documentId + "?depth=1", {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${globalState.accessToken}`
+            }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            return data.name;
+        }
+        else
+            return "";
+    }
+
     async function fetchVersionList(): Promise<Version[]> {
         const versions: Version[] = [];
 
@@ -109,10 +128,12 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
     }
 
     const fetchFigmaFiles = async () => {
-        console.log("FETCHING VERSIONS")
+
+        const documentName: string = await getDocumentName();
+
+        props.gotDocumentName(documentName);
 
         const allVersions: Version[] = await fetchVersionList();
-
 
         setFileVersionsList(allVersions);
 
@@ -128,7 +149,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
 
     useImperativeHandle(ref, () => ({
         fetchFigmaFiles,
-      }));
+    }));
 
     function flattenNodes(node: FigmaNode): Node[] {
         let flatNodes: Node[] = [];

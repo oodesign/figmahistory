@@ -32,6 +32,10 @@ const Start = () => {
   const [onLoadingState, setOnLoadingState] = useState<boolean>(false);
   const [onComparerState, setOnComparerState] = useState<boolean>(false);
 
+
+  const [loaderMessage, setLoaderMessage] = useState<string>("Loading");
+
+
   // #region Authentication and access
 
   const handleFigmaAuthentication = async (code: string) => {
@@ -68,11 +72,16 @@ const Start = () => {
   };
 
 
-  const getData = (id: string, nodeId: string) => {
+  const gotDocumentName = (name: string) => {
+    setLoaderMessage("Loading " + name);
+  }
+
+
+  const getDocument = (id: string, nodeId: string) => {
     console.log("Getting data! id:" + id + ", nodeId:" + nodeId)
     setOnInputState(false);
     setOnLoadingState(true);
-    setOnComparerState(true);
+    setOnComparerState(false);
     //TODO Retrieve token from storage
     const token = "figu_c3F858MxN07ZBhWSXewYZglB_c_hGa4l0tx_MLrb";
 
@@ -145,10 +154,10 @@ const Start = () => {
 
   return <div className='gridExtender'>
 
-    <FigmaFileInput ref={figmaFileInputRef} getData={getData} className={`singleCellExtend animatedDiv visible ${onInputState ? 'fadeIn' : 'fadeOut'}`} />
-    <Loader ref={loaderRef} className={`singleCellExtend animatedDiv invisible ${onLoadingState ? 'fadeIn' : 'fadeOut'}`} />
-    <Comparer ref={comparerRef} className={`singleCellExtend animatedDiv invisible ${onComparerState ? 'fadeIn' : 'fadeOut'}`} />
-    
+    <FigmaFileInput ref={figmaFileInputRef} getDocument={getDocument} className={`singleCellExtend animatedDiv visible ${onInputState ? 'fadeIn' : 'fadeOut'}`} />
+    <Loader ref={loaderRef} message={loaderMessage} className={`singleCellExtend animatedDiv invisible ${onLoadingState ? 'fadeIn' : 'fadeOut'}`} />
+    <Comparer ref={comparerRef} gotDocumentName={gotDocumentName} className={`singleCellExtend animatedDiv invisible ${onComparerState ? 'fadeIn' : 'fadeOut'}`} />
+
 
   </div>
 };

@@ -1,7 +1,7 @@
 import React from 'react';
 
 interface FigmaFileInputProps {
-    getData: (id: string, nodeId: string) => void;
+    getDocument: (id: string, nodeId: string) => void;
     className: string;
 }
 
@@ -24,7 +24,7 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
             nodeId = nodeId.replace("-", ":")
 
             if (id) {
-                props.getData(id, nodeId);
+                props.getDocument(id, nodeId);
             }
             else {
                 //TODO Handle incorrect format error
