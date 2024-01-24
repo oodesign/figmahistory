@@ -1068,8 +1068,17 @@ body {
   }
 }
 
-.innerCanvas {
-  background-color: #28282A;
+@media (prefers-color-scheme: light) {
+  .innerCanvas {
+    background-color: #F9F9F9;
+    color: #323232;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .innerCanvas {
+    background-color: #212123;
+    color: #ffffff;
+  }
 }
 
 .canvasVersionOverlayTitle {
@@ -1248,6 +1257,11 @@ body {
 .logo img {
   width: 124px;
   height: 28px;
+}
+
+.logoSlider {
+  width: 470px;
+  height: 124px;
 }
 
 @media (prefers-color-scheme: light) {

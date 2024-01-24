@@ -108,7 +108,15 @@ canvas {
 }
 
 .innerCanvas {
-  background-color: #28282A;
+  @include for-theme(light) {
+    background-color: $light_backgroundColor;
+    color: $light_primaryColor;
+  }
+
+  @include for-theme(dark) {
+    background-color: $dark_backgroundColor;
+    color: $dark_primaryColor;
+  }
 }
 
 
@@ -277,9 +285,17 @@ canvas {
   padding: 16px;
 
   img {
-    width:124px;
+    width: 124px;
     height: 28px;
   }
+}
+
+
+.logoSlider {
+
+  width: 470px;
+  height: 124px;
+
 }
 
 // #endregion

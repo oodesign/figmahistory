@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { SyntheticEvent, useRef } from 'react';
+import { ReactCompareSlider, useReactCompareSliderRef } from 'react-compare-slider';
 
 interface FigmaFileInputProps {
     getDocument: (id: string, nodeId: string) => void;
@@ -6,6 +7,9 @@ interface FigmaFileInputProps {
 }
 
 const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileInputProps> = (props, ref) => {
+
+
+    const reactCompareSliderRef = useReactCompareSliderRef();
 
     const getFigmaDocumentInfo = () => {
         const inputElement = document.getElementById("figmaFileURL") as HTMLInputElement;
@@ -33,6 +37,17 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
         }
     }
 
+
+
+    function setSliderPosition(event: SyntheticEvent<HTMLDivElement, Event>): void {
+        if (reactCompareSliderRef.current) {
+            reactCompareSliderRef.current.setPosition(50);
+            setTimeout(() => {
+                reactCompareSliderRef.current.setPosition(75);
+            }, 500);
+        }
+    }
+
     return (
 
         <div className={`${props.className} verticalLayout`}>
@@ -40,8 +55,23 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
             <div className="rowAuto logo">
                 <img src="./figmahistory/images/logo.png" />
             </div>
-            <div className="rowAvailable ">
+            <div className="rowAvailable">
                 <div className="alignFullCenter verticalLayout">
+                    <div className='rowAuto logoSlider'>
+                        <ReactCompareSlider ref={reactCompareSliderRef} onLoad={setSliderPosition} transition="0.5s ease-in-out" position={100}
+                            onlyHandleDraggable={true}
+                            itemOne={
+                                <div className="extend innerCanvas">
+                                    <img src="./figmahistory/images/logoSlider.png" />
+                                </div>
+                            }
+                            itemTwo={
+                                <div className="extend innerCanvas">
+                                    <img src="./figmahistory/images/logoSlider2.png" />
+                                </div>
+                            }
+                        />
+                    </div>
                     <div className="rowAuto">
                         <input
                             id="figmaFileURL"
@@ -52,8 +82,8 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                         <button onClick={getFigmaDocumentInfo}>Load</button>
                     </div>
                     <div className="rowAuto secondaryText">
-                        Access to your designs is solely used for comparison rendering.<br/>
-                        We do not (and will never) store, analyze, or share your designs, not even for analytics. <br/>
+                        Access to your designs is solely used for comparison rendering.<br />
+                        We do not (and will never) store, analyze, or share your designs, not even for analytics. <br />
                         Your designs are, and will continue to be, just for your eyes.
                     </div>
                 </div>
