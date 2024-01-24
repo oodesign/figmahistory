@@ -10,7 +10,7 @@ import { globalState, setDocumentID, setAccessToken, setDocumentLeft, setDocumen
 
 import { User, Side, Color, Document, Version, Page, NodeWithImage, FigmaNode, Node, Difference, Rect } from './types';
 
-import Canvas2 from './Canvas2';
+import Canvas from './Canvas';
 import './App.css';
 import { timeout } from 'q';
 import { positional } from 'yargs';

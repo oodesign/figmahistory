@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState, SyntheticEvent } from 'react';
 import { NodeWithImage, Difference } from './types';
 
-interface Canvas2Props {
+interface CanvasProps {
     name: string;
     nodesWithImages: NodeWithImage[];
     differences: Difference[];
@@ -16,7 +16,7 @@ interface Canvas2Props {
     allImagesLoaded: () => void;
 }
 
-const Canvas2: React.FC<Canvas2Props> = (props) => {
+const Canvas: React.FC<CanvasProps> = (props) => {
     const [containerWidth, setContainerWidth] = useState(props.canvasWidth);
     const [containerHeight, setContainerHeight] = useState(props.canvasHeight);
 
@@ -120,4 +120,4 @@ const Canvas2: React.FC<Canvas2Props> = (props) => {
     );
 };
 
-export default Canvas2;
+export default Canvas;
