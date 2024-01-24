@@ -50,7 +50,7 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
 
     return (
 
-        <form className={`${props.className} verticalLayout figmaFileInput`}  onSubmit={getFigmaDocumentInfo}>
+        <div className={`${props.className} verticalLayout figmaFileInput`}>
 
             <div className="rowAuto logo">
                 <img src="./figmahistory/images/logo.png" />
@@ -59,7 +59,7 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                 <div className="alignFullCenter verticalLayout">
                     <div className='rowAuto logoSlider'>
                         <ReactCompareSlider ref={reactCompareSliderRef} onLoad={setSliderPosition} transition="1s ease-in-out" position={100}
-                            
+
                             itemOne={
                                 <div className="extend innerCanvas">
                                     <img src="./figmahistory/images/logoSlider.png" />
@@ -78,7 +78,7 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                             Paste your Figma file link below
                         </div>
                         <div className="rowAuto horizontalLayout">
-                            <div className="colAvailable displayFlex">
+                            <form className="colAvailable displayFlex" onSubmit={getFigmaDocumentInfo}>
                                 <input
                                     id="figmaFileURL"
                                     type="text"
@@ -87,7 +87,7 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                                     className='linkUrlInput displayFlex colAvailable'
                                     defaultValue="https://www.figma.com/file/HTUxsQSO4pR1GCvv8Nvqd5/HistoryChecker?type=design&node-id=1%3A2&mode=design&t=ffdrgnmtJ92dZgeQ-1"
                                 />
-                            </div>
+                            </form>
                             <div className="colAuto">
                                 <button className='btnPrimary large' onClick={getFigmaDocumentInfo}>Compare</button>
                             </div>
@@ -100,7 +100,7 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                     </div>
                 </div>
             </div>
-        </form>
+        </div>
     );
 };
 
