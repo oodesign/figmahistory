@@ -8,6 +8,7 @@
 @import "./scss/_input";
 @import "./scss/_icons";
 @import "./scss/_tooltip";
+@import "./scss/_pages";
 
 // #region Font
 
@@ -148,6 +149,7 @@ canvas {
 @mixin primaryText {
   font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 14px;
+  line-height: 19px;
 
   @include for-theme(light) {
     color: $light_primaryColor;
@@ -203,7 +205,8 @@ canvas {
 
 @mixin secondaryText {
   font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 13px;
+  font-size: 14px;
+  line-height: 19px;
 
   @include for-theme(light) {
     color: $light_secondaryColor;
@@ -282,7 +285,7 @@ canvas {
 // #region Logo
 .logo {
 
-  padding: 16px;
+  padding: 16px 24px;
 
   img {
     width: 124px;
@@ -290,13 +293,6 @@ canvas {
   }
 }
 
-
-.logoSlider {
-
-  width: 470px;
-  height: 124px;
-
-}
 
 // #endregion
 
@@ -328,20 +324,15 @@ canvas {
 
 @mixin btnPrimary {
   border: none;
-  width: 150px;
-  height: 34px;
-  border-radius: 17px;
-  background-origin: border-box;
-  background-clip: content-box, border-box;
-  @include alignHorizontalCenter;
+  border-radius: $cornerRadiusDefault;
   outline: none;
   font-family: AvenirNextLTPro-Demi, -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 13px;
+  font-size: 14px;
   background-color: $accentColor;
-  transition: all 0.1s ease-out;
+  transition: all 0.15s ease-out;
   color: $dark_inverseColor;
-  margin-left: 5px;
-  line-height: 38px;
+  padding: 6px 24px;
+  height: $componentHeightDefault;
 
   &:hover {
     background-color: $accentColorHover;
@@ -365,12 +356,8 @@ canvas {
 .btnPrimary {
   @include btnPrimary;
 
-  &.xl {
-    width: 170px;
-  }
-
-  &.xxl {
-    width: 210px;
+  &.large {
+    height: $componentHeightLarge;
   }
 }
 
@@ -1208,10 +1195,10 @@ textarea {
 input[type="text"] {
   padding: 8px 12px;
   width: 305px;
-  height: 34px;
+  height: $componentHeightDefault;
   margin: 0 0 8px 0;
   box-sizing: border-box;
-  border-radius: 3px;
+  border-radius: $cornerRadiusDefault;
   outline: none;
   @include primaryText;
 
@@ -1223,6 +1210,10 @@ input[type="text"] {
   @include for-theme(dark) {
     background-color: $dark_inputBackgroundColor;
     border: 1px solid $dark_gray_300;
+  }
+
+  &.large {
+    height: $componentHeightLarge;
   }
 
   &.hasMessage {

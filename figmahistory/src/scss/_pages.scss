@@ -1,0 +1,29 @@
+.figmaFileInput {
+
+    .alignFullCenter {
+        bottom: 60px;
+    }
+
+    .logoSlider {
+        width: 446px;
+        height: 112px;
+        margin-bottom: 64px;
+    }
+
+    .label{
+        width:50%;
+        text-align: left;
+        margin-bottom: 8px;
+    }
+
+    .linkUrlInput {
+        @include flex;
+        height: $componentHeightLarge;
+        margin-right: $horizontalSeparationDefault;
+    }
+
+    .inputForm {
+        width:55%;
+        margin-bottom: 56px;
+    }
+}

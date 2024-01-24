@@ -44,13 +44,13 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
             reactCompareSliderRef.current.setPosition(50);
             setTimeout(() => {
                 reactCompareSliderRef.current.setPosition(75);
-            }, 500);
+            }, 1000);
         }
     }
 
     return (
 
-        <div className={`${props.className} verticalLayout`}>
+        <form className={`${props.className} verticalLayout figmaFileInput`}  onSubmit={getFigmaDocumentInfo}>
 
             <div className="rowAuto logo">
                 <img src="./figmahistory/images/logo.png" />
@@ -58,8 +58,8 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
             <div className="rowAvailable">
                 <div className="alignFullCenter verticalLayout">
                     <div className='rowAuto logoSlider'>
-                        <ReactCompareSlider ref={reactCompareSliderRef} onLoad={setSliderPosition} transition="0.5s ease-in-out" position={100}
-                            onlyHandleDraggable={true}
+                        <ReactCompareSlider ref={reactCompareSliderRef} onLoad={setSliderPosition} transition="1s ease-in-out" position={100}
+                            
                             itemOne={
                                 <div className="extend innerCanvas">
                                     <img src="./figmahistory/images/logoSlider.png" />
@@ -72,23 +72,35 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                             }
                         />
                     </div>
-                    <div className="rowAuto">
-                        <input
-                            id="figmaFileURL"
-                            type="text"
-                            placeholder="Paste your Figma URL here"
-                            defaultValue="https://www.figma.com/file/HTUxsQSO4pR1GCvv8Nvqd5/HistoryChecker?type=design&node-id=1%3A2&mode=design&t=ffdrgnmtJ92dZgeQ-1"
-                        />
-                        <button onClick={getFigmaDocumentInfo}>Load</button>
+
+                    <div className="rowAuto inputForm">
+                        <div className="rowAuto label secondaryText">
+                            Paste your Figma file link below
+                        </div>
+                        <div className="rowAuto horizontalLayout">
+                            <div className="colAvailable displayFlex">
+                                <input
+                                    id="figmaFileURL"
+                                    type="text"
+                                    autoFocus
+                                    placeholder="In Figma, click 'Share' and 'Copy link', and paste the link here"
+                                    className='linkUrlInput displayFlex colAvailable'
+                                    defaultValue="https://www.figma.com/file/HTUxsQSO4pR1GCvv8Nvqd5/HistoryChecker?type=design&node-id=1%3A2&mode=design&t=ffdrgnmtJ92dZgeQ-1"
+                                />
+                            </div>
+                            <div className="colAuto">
+                                <button className='btnPrimary large' onClick={getFigmaDocumentInfo}>Compare</button>
+                            </div>
+                        </div>
                     </div>
                     <div className="rowAuto secondaryText">
                         Access to your designs is solely used for comparison rendering.<br />
-                        We do not (and will never) store, analyze, or share your designs, not even for analytics. <br />
+                        We do not (and will never) store, analyze, or share your designs. We do not track analytics. <br />
                         Your designs are, and will continue to be, just for your eyes.
                     </div>
                 </div>
             </div>
-        </div>
+        </form>
     );
 };
 
