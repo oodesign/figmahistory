@@ -25,6 +25,8 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
 
     const [isLoadingLeftPage, setIsLoadingLeftPage] = useState<boolean>(true);
     const [isLoadingRightPage, setIsLoadingRightPage] = useState<boolean>(true);
+    const [isLoadingLeftImages, setIsLoadingLeftImages] = useState<boolean>(true);
+    const [isLoadingRightImages, setIsLoadingRightImages] = useState<boolean>(true);
 
     // #region canvas drawing state variables 
 
@@ -245,11 +247,22 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
 
         if (side == Side.LEFT) {
             setIsLoadingLeftPage(true);
+            setIsLoadingLeftImages(true);
             globalState.isDocumentLeftLoaded = false;
+            setTimeout(() => {
+                setVersionLeftNodesWithImages([]);
+                setSelectedPageColorLeft("transparent");
+            }, 500)
+
         }
         if (side == Side.RIGHT) {
             setIsLoadingRightPage(true);
+            setIsLoadingRightImages(true);
             globalState.isDocumentRightLoaded = false;
+            setTimeout(() => {
+                setVersionRightNodesWithImages([]);
+                setSelectedPageColorRight("transparent");
+            }, 500)
         }
 
         // console.log("Fetching version:" + versionId + " for side:" + side.valueOf());
@@ -717,6 +730,14 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
         fetchDocumentVersion(event.target.value, Side.RIGHT);
     }
 
+    function canvasLeftAllImagesLoaded(): void {
+        setIsLoadingLeftImages(false);
+    }
+
+    function canvasRightAllImagesLoaded(): void {
+        setIsLoadingRightImages(false);
+    }
+
     // #endregion
 
     return (
@@ -764,11 +785,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                         itemOne={
                             <TransformWrapper ref={leftImage} onTransformed={handleTransform} minScale={0.01} limitToBounds={false}>
                                 <TransformComponent wrapperClass='verticalLayout leftcanvas' contentClass='verticalLayout'>
-                                    {isLeftPageAvailable ? (
-                                        <Canvas2 name='LEFT' isLoadingPage={isLoadingLeftPage} nodesWithImages={versionLeftNodesWithImages} differences={versionLeftDifferences} differenceTypes={differencesTypes} canvasWidth={canvasWidth} canvasHeight={canvasHeight} offsetX={canvasPageOffsetX} offsetY={canvasPageOffsetY} background={selectedPageColorLeft} containerClass='innerCanvas' />
-                                    ) : (
-                                        <span>Not available</span>
-                                    )}
+                                    <Canvas2 name='LEFT' allImagesLoaded={canvasLeftAllImagesLoaded} nodesWithImages={versionLeftNodesWithImages} differences={versionLeftDifferences} differenceTypes={differencesTypes} canvasWidth={canvasWidth} canvasHeight={canvasHeight} offsetX={canvasPageOffsetX} offsetY={canvasPageOffsetY} background={selectedPageColorLeft} containerClass={`innerCanvas animatedDiv invisible ${isLoadingLeftPage ? 'fadeOut' : 'fadeIn'}`} />
                                 </TransformComponent>
                                 <div className="alignFullCenter" style={{
                                     position: 'absolute',
@@ -779,16 +796,27 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                                         {selectedVersionNameLeft}
                                     </div>
                                 </div>
+
+                                <div className={`animatedDiv invisible ${(!isLoadingLeftImages && !isLoadingLeftPage) ? 'fadeOut' : 'fadeIn'}`} style={{
+                                    position: 'absolute',
+                                    width: `${canvasLeftWidth}px`,
+                                    height: '100%',
+                                    top: '0px',
+                                }}>
+                                    <div id="indeterminateLoader" className="verticalLayout alignFullCenter indeterminateLoader show">
+                                        <div className="dualRingLoader"></div>
+                                        <div className="loaderMessage">
+                                            Loading stuff - {isLoadingLeftImages ? "loadingLeftImages" : "notLoadingLeftImages"} - {isLoadingLeftPage ? "loadingLeftPage" : "notLoadingLeftPage"}
+                                        </div>
+                                    </div>
+                                </div>
                             </TransformWrapper>
                         }
                         itemTwo={
                             <TransformWrapper ref={rightImage} onTransformed={handleTransform} minScale={0.01} limitToBounds={false}>
                                 <TransformComponent wrapperClass='verticalLayout rightcanvas' contentClass='verticalLayout'>
-                                    {isRightPageAvailable ? (
-                                        <Canvas2 name='RIGHT' isLoadingPage={isLoadingRightPage} nodesWithImages={versionRightNodesWithImages} differences={versionRightDifferences} differenceTypes={differencesTypes} canvasWidth={canvasWidth} canvasHeight={canvasHeight} offsetX={canvasPageOffsetX} offsetY={canvasPageOffsetY} background={selectedPageColorRight} containerClass='innerCanvas' />
-                                    ) : (
-                                        <span>Not available</span>
-                                    )}
+                                    <Canvas2 name='RIGHT' allImagesLoaded={canvasRightAllImagesLoaded} nodesWithImages={versionRightNodesWithImages} differences={versionRightDifferences} differenceTypes={differencesTypes} canvasWidth={canvasWidth} canvasHeight={canvasHeight} offsetX={canvasPageOffsetX} offsetY={canvasPageOffsetY} background={selectedPageColorRight} containerClass={`innerCanvas animatedDiv invisible ${isLoadingRightPage ? 'fadeOut' : 'fadeIn'}`} />
+
                                 </TransformComponent>
                                 <div className="alignFullCenter" style={{
                                     position: 'absolute',
@@ -798,6 +826,22 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                                 }}>
                                     <div className="canvasVersionOverlayTitle">
                                         {selectedVersionNameRight}
+                                    </div>
+                                </div>
+
+
+                                <div className={`animatedDiv invisible ${(!isLoadingRightImages && !isLoadingRightPage) ? 'fadeOut' : 'fadeIn'}`} style={{
+                                    position: 'absolute',
+                                    width: `${canvasRightWidth}px`,
+                                    left: `${canvasLeftWidth}px`,
+                                    height: '100%',
+                                    top: '0px',
+                                }}>
+                                    <div id="indeterminateLoader" className="verticalLayout alignFullCenter indeterminateLoader show">
+                                        <div className="dualRingLoader"></div>
+                                        <div className="loaderMessage">
+                                            Loading stuff - {isLoadingRightImages ? "loadingRightImages" : "notLoadingRightImages"} - {isLoadingRightPage ? "loadingRightPage" : "notLoadingRightPage"}
+                                        </div>
                                     </div>
                                 </div>
                             </TransformWrapper>

@@ -12,14 +12,14 @@ interface Canvas2Props {
     containerClass: string;
     differenceTypes: string[];
     background: string;
-    isLoadingPage: boolean;
+
+    allImagesLoaded: () => void;
 }
 
 const Canvas2: React.FC<Canvas2Props> = (props) => {
     const [containerWidth, setContainerWidth] = useState(props.canvasWidth);
     const [containerHeight, setContainerHeight] = useState(props.canvasHeight);
 
-    const [allImagesLoaded, setAllImagesLoaded] = useState<boolean>(false);
 
     useEffect(() => {
         setContainerWidth(props.canvasWidth);
@@ -28,12 +28,12 @@ const Canvas2: React.FC<Canvas2Props> = (props) => {
 
     const renderNodes = (): React.ReactNode => {
         let imagesLoaded = 0;
-        
+
         function imageLoaded(event: SyntheticEvent<HTMLImageElement, Event>): void {
             imagesLoaded++;
-            console.log("Image loaded");
+            // console.log(props.name +" - Image loaded");
             if (imagesLoaded >= props.nodesWithImages.length)
-                setAllImagesLoaded(true);
+                props.allImagesLoaded();
         }
 
         //console.log("Drawing canvas: " + name + ". Offset:" + offsetX + "," + offsetY);
@@ -53,8 +53,6 @@ const Canvas2: React.FC<Canvas2Props> = (props) => {
             />
         ));
     };
-
-
 
     const renderArtboards = (): React.ReactNode => {
         //console.log("Drawing canvas: " + name + ". Offset:" + offsetX + "," + offsetY);
@@ -115,14 +113,9 @@ const Canvas2: React.FC<Canvas2Props> = (props) => {
 
     return (
         <div style={{ width: `${containerWidth}px`, height: `${containerHeight}px`, backgroundColor: `${props.background}` }} className={`displayFlex pageCanvas ${props.containerClass}`}>
-            <div className={`animatedDiv invisible ${props.isLoadingPage ? 'fadeOut' : 'fadeIn'}`}>
-                {renderArtboards()}
-                {renderNodes()}
-                {renderDifferences()}
-            </div>
-            <div className={`pageLoader animatedDiv visible ${(!props.isLoadingPage && allImagesLoaded) ? 'fadeOut' : 'fadeIn'}`}>
-                Loading stuff...
-            </div>
+            {renderArtboards()}
+            {renderNodes()}
+            {renderDifferences()}
         </div>
     );
 };
