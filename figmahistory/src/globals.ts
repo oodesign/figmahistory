@@ -9,6 +9,8 @@ export interface GlobalState {
     documentRight: Document;
     selectedPageId: string;
     selectedNodeId: string;
+    isDocumentLeftLoaded: boolean;
+    isDocumentRightLoaded: boolean;
 }
 
 export let globalState: GlobalState = {
@@ -26,6 +28,8 @@ export let globalState: GlobalState = {
     },
     selectedPageId: "",
     selectedNodeId:"",
+    isDocumentLeftLoaded:false,
+    isDocumentRightLoaded:false
 };
 
 export function setDocumentID(id: string) {

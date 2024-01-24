@@ -76,9 +76,14 @@ const Start = () => {
     setLoaderMessage("Loading " + name);
   }
 
+  const initialLoadComplete = () => {
+    setOnInputState(false);
+    setOnLoadingState(false);
+    setOnComparerState(true);
+  }
+
 
   const getDocument = (id: string, nodeId: string) => {
-    console.log("Getting data! id:" + id + ", nodeId:" + nodeId)
     setOnInputState(false);
     setOnLoadingState(true);
     setOnComparerState(false);
@@ -156,7 +161,7 @@ const Start = () => {
 
     <FigmaFileInput ref={figmaFileInputRef} getDocument={getDocument} className={`singleCellExtend animatedDiv visible ${onInputState ? 'fadeIn' : 'fadeOut'}`} />
     <Loader ref={loaderRef} message={loaderMessage} className={`singleCellExtend animatedDiv invisible ${onLoadingState ? 'fadeIn' : 'fadeOut'}`} />
-    <Comparer ref={comparerRef} gotDocumentName={gotDocumentName} className={`singleCellExtend animatedDiv invisible ${onComparerState ? 'fadeIn' : 'fadeOut'}`} />
+    <Comparer ref={comparerRef} gotDocumentName={gotDocumentName} initialLoadComplete={initialLoadComplete} className={`singleCellExtend animatedDiv invisible ${onComparerState ? 'fadeIn' : 'fadeOut'}`} />
 
 
   </div>

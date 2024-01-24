@@ -10,6 +10,7 @@ interface ComparerProps {
     className: string;
 
     gotDocumentName: (name: string) => void;
+    initialLoadComplete: () => void;
 }
 
 export interface ComparerRef {
@@ -40,8 +41,6 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
 
     const [versionLeftNodesWithImages, setVersionLeftNodesWithImages] = useState<NodeWithImage[]>([]);
     const [versionRightNodesWithImages, setVersionRightNodesWithImages] = useState<NodeWithImage[]>([]);
-
-
 
     const [versionLeftDifferences, setVersionLeftDifferences] = useState<Difference[]>([]);
     const [versionRightDifferences, setVersionRightDifferences] = useState<Difference[]>([]);
@@ -241,6 +240,13 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
 
     async function fetchDocumentVersion(versionId: string, side: Side) {
 
+        if (side == Side.LEFT) {
+            globalState.isDocumentLeftLoaded = false;
+        }
+        if (side == Side.RIGHT) {
+            globalState.isDocumentRightLoaded = false;
+        }
+
         // console.log("Fetching version:" + versionId + " for side:" + side.valueOf());
 
         // console.log("At this point, globalPageId is:" + globalState.selectedPageId);
@@ -288,10 +294,14 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
             if (side == Side.LEFT) {
                 setDocumentLeft(versionDocument);
                 setPagesListVersionLeft(pages);
+                globalState.isDocumentLeftLoaded = true;
+                if (globalState.isDocumentRightLoaded) props.initialLoadComplete();
             }
             if (side == Side.RIGHT) {
                 setDocumentRight(versionDocument);
                 setPagesListVersionRight(pages);
+                globalState.isDocumentRightLoaded = true;
+                if (globalState.isDocumentLeftLoaded) props.initialLoadComplete();
             }
 
             //If node-id retrieved from URL belongs to a page, and globalState.selectedPageId has not been set yet, set it to the retrieved id.
