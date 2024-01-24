@@ -23,6 +23,9 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
     const leftImage = useRef<ReactZoomPanPinchRef>(null);
     const canvasDiv = useRef<HTMLDivElement | null>(null);
 
+    const [isLoadingLeftPage, setIsLoadingLeftPage] = useState<boolean>(true);
+    const [isLoadingRightPage, setIsLoadingRightPage] = useState<boolean>(true);
+
     // #region canvas drawing state variables 
 
     const [selectVersionLeftSelectedOption, setSelectVersionLeftSelectedOption] = useState<string>("");
@@ -241,14 +244,15 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
     async function fetchDocumentVersion(versionId: string, side: Side) {
 
         if (side == Side.LEFT) {
+            setIsLoadingLeftPage(true);
             globalState.isDocumentLeftLoaded = false;
         }
         if (side == Side.RIGHT) {
+            setIsLoadingRightPage(true);
             globalState.isDocumentRightLoaded = false;
         }
 
         // console.log("Fetching version:" + versionId + " for side:" + side.valueOf());
-
         // console.log("At this point, globalPageId is:" + globalState.selectedPageId);
 
         // let depth = "";
@@ -294,12 +298,14 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
             if (side == Side.LEFT) {
                 setDocumentLeft(versionDocument);
                 setPagesListVersionLeft(pages);
+                setIsLoadingLeftPage(false);
                 globalState.isDocumentLeftLoaded = true;
                 if (globalState.isDocumentRightLoaded) props.initialLoadComplete();
             }
             if (side == Side.RIGHT) {
                 setDocumentRight(versionDocument);
                 setPagesListVersionRight(pages);
+                setIsLoadingRightPage(false);
                 globalState.isDocumentRightLoaded = true;
                 if (globalState.isDocumentLeftLoaded) props.initialLoadComplete();
             }
@@ -759,7 +765,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                             <TransformWrapper ref={leftImage} onTransformed={handleTransform} minScale={0.01} limitToBounds={false}>
                                 <TransformComponent wrapperClass='verticalLayout leftcanvas' contentClass='verticalLayout'>
                                     {isLeftPageAvailable ? (
-                                        <Canvas2 name='LEFT' nodesWithImages={versionLeftNodesWithImages} differences={versionLeftDifferences} differenceTypes={differencesTypes} canvasWidth={canvasWidth} canvasHeight={canvasHeight} offsetX={canvasPageOffsetX} offsetY={canvasPageOffsetY} background={selectedPageColorLeft} containerClass='innerCanvas' />
+                                        <Canvas2 name='LEFT' isLoadingPage={isLoadingLeftPage} nodesWithImages={versionLeftNodesWithImages} differences={versionLeftDifferences} differenceTypes={differencesTypes} canvasWidth={canvasWidth} canvasHeight={canvasHeight} offsetX={canvasPageOffsetX} offsetY={canvasPageOffsetY} background={selectedPageColorLeft} containerClass='innerCanvas' />
                                     ) : (
                                         <span>Not available</span>
                                     )}
@@ -779,7 +785,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                             <TransformWrapper ref={rightImage} onTransformed={handleTransform} minScale={0.01} limitToBounds={false}>
                                 <TransformComponent wrapperClass='verticalLayout rightcanvas' contentClass='verticalLayout'>
                                     {isRightPageAvailable ? (
-                                        <Canvas2 name='RIGHT' nodesWithImages={versionRightNodesWithImages} differences={versionRightDifferences} differenceTypes={differencesTypes} canvasWidth={canvasWidth} canvasHeight={canvasHeight} offsetX={canvasPageOffsetX} offsetY={canvasPageOffsetY} background={selectedPageColorRight} containerClass='innerCanvas' />
+                                        <Canvas2 name='RIGHT' isLoadingPage={isLoadingRightPage} nodesWithImages={versionRightNodesWithImages} differences={versionRightDifferences} differenceTypes={differencesTypes} canvasWidth={canvasWidth} canvasHeight={canvasHeight} offsetX={canvasPageOffsetX} offsetY={canvasPageOffsetY} background={selectedPageColorRight} containerClass='innerCanvas' />
                                     ) : (
                                         <span>Not available</span>
                                     )}
