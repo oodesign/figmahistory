@@ -1,3 +1,33 @@
+.app {
+    .logo {
+
+        position: absolute;
+        top: 16px;
+        left: 24px;
+
+        img {
+            width: 124px;
+            height: 28px;
+        }
+    }
+
+    .userData {
+
+        position: absolute;
+        bottom: 16px;
+        left: 24px;
+
+        img {
+            width: 24px;
+            height: 24px;
+            border-radius: 24px;
+            margin-right: 8px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border:none;
+        }
+    }
+}
+
 .figmaFileInput {
 
     .alignFullCenter {
@@ -10,8 +40,8 @@
         margin-bottom: 64px;
     }
 
-    .label{
-        width:50%;
+    .label {
+        width: 50%;
         text-align: left;
         margin-bottom: 8px;
     }
@@ -23,13 +53,17 @@
     }
 
     .inputForm {
-        width:55%;
+        width: 55%;
         margin-bottom: 56px;
     }
 }
 
-.loader{
-    .dualRingLoader{
-        margin-bottom:16px;
+.loader {
+    .alignFullCenter {
+        bottom: 24px;
+    }
+
+    .dualRingLoader {
+        margin-bottom: 16px;
     }
 }

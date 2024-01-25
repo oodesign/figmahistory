@@ -11,6 +11,7 @@ export interface GlobalState {
     selectedNodeId: string;
     isDocumentLeftLoaded: boolean;
     isDocumentRightLoaded: boolean;
+    user: User;
 }
 
 export let globalState: GlobalState = {
@@ -27,9 +28,15 @@ export let globalState: GlobalState = {
         pages: [],
     },
     selectedPageId: "",
-    selectedNodeId:"",
-    isDocumentLeftLoaded:false,
-    isDocumentRightLoaded:false
+    selectedNodeId: "",
+    isDocumentLeftLoaded: false,
+    isDocumentRightLoaded: false,
+    user: {
+        id: "",
+        handle: "",
+        img_url: "",
+        email: ""
+    },
 };
 
 export function setDocumentID(id: string) {
@@ -171,6 +178,10 @@ export function setSelectedPageId(id: string) {
 
 export function setSelectedNodeId(id: string) {
     globalState = { ...globalState, selectedNodeId: id };
+}
+
+export function setUser(user: User) {
+    globalState = { ...globalState, user: user };
 }
 
 

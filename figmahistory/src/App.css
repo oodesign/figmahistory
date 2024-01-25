@@ -976,6 +976,29 @@ h5 {
   opacity: 1;
 }
 
+.app .logo {
+  position: absolute;
+  top: 16px;
+  left: 24px;
+}
+.app .logo img {
+  width: 124px;
+  height: 28px;
+}
+.app .userData {
+  position: absolute;
+  bottom: 16px;
+  left: 24px;
+}
+.app .userData img {
+  width: 24px;
+  height: 24px;
+  border-radius: 24px;
+  margin-right: 8px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: none;
+}
+
 .figmaFileInput .alignFullCenter {
   bottom: 60px;
 }
@@ -999,6 +1022,9 @@ h5 {
   margin-bottom: 56px;
 }
 
+.loader .alignFullCenter {
+  bottom: 24px;
+}
 .loader .dualRingLoader {
   margin-bottom: 16px;
 }
@@ -1282,14 +1308,6 @@ body {
   .layoutPanel {
     background-color: #28282A;
   }
-}
-
-.logo {
-  padding: 16px 24px;
-}
-.logo img {
-  width: 124px;
-  height: 28px;
 }
 
 @media (prefers-color-scheme: light) {

@@ -6,7 +6,7 @@ import ImageDiff from 'react-image-diff';
 import ReactCompareImage from 'react-compare-image';
 import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slider';
 import { TransformWrapper, TransformComponent, ReactZoomPanPinchRef } from "react-zoom-pan-pinch";
-import { globalState, setDocumentID, setAccessToken, setDocumentLeft, setDocumentRight, updateDocumentPageLeftChildrenAndFlatNodes, updateDocumentPageRightChildrenAndFlatNodes, setSelectedPageId, updateDocumentPageLeftFlatNodes, updateDocumentPageRightFlatNodes, updateDocumentPageRightBounds, updateDocumentPageLeftBounds, setSelectedNodeId, } from './globals';
+import { globalState, setDocumentID, setAccessToken, setDocumentLeft, setDocumentRight, updateDocumentPageLeftChildrenAndFlatNodes, updateDocumentPageRightChildrenAndFlatNodes, setSelectedPageId, updateDocumentPageLeftFlatNodes, updateDocumentPageRightFlatNodes, updateDocumentPageRightBounds, updateDocumentPageLeftBounds, setSelectedNodeId, setUser } from './globals';
 
 import { User, Side, Color, Document, Version, Page, NodeWithImage, FigmaNode, Node, Difference, Rect } from './types';
 
@@ -34,6 +34,9 @@ const Start = () => {
 
 
   const [loaderMessage, setLoaderMessage] = useState<string>("Connecting to Figma");
+
+
+  const [userData, setUserData] = useState<User>();
 
 
   // #region Authentication and access
@@ -87,16 +90,12 @@ const Start = () => {
     setOnInputState(false);
     setOnLoadingState(true);
     setOnComparerState(false);
-    //TODO Retrieve token from storage
-    const token = "figu_c3F858MxN07ZBhWSXewYZglB_c_hGa4l0tx_MLrb";
 
     let figmaDocumentId = id;
     let figmaDocumentNodeId = nodeId;
 
 
-    if (token && figmaDocumentId) {
-      // console.log("Token is known")
-      setAccessToken(token);
+    if (globalState.accessToken && figmaDocumentId) {
       setDocumentID(figmaDocumentId);
 
       if (figmaDocumentNodeId)
@@ -107,6 +106,22 @@ const Start = () => {
     }
     else {
       openPopupWindow();
+    }
+  }
+
+  async function getUser(): Promise<void> {
+
+    const response = await fetch('https://api.figma.com/v1/me/', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${globalState.accessToken}`
+      }
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      setUser(data);
+      setUserData(data);
     }
   }
 
@@ -133,6 +148,13 @@ const Start = () => {
   // #endregion
 
 
+  useEffect(() => {
+
+    //TODO Retrieve token from storage
+    const token = "figu_c3F858MxN07ZBhWSXewYZglB_c_hGa4l0tx_MLrb";
+    setAccessToken(token);
+    getUser();
+  }, []);
 
 
 
@@ -157,12 +179,20 @@ const Start = () => {
 
 
 
-  return <div className='gridExtender'>
+  return <div className='gridExtender app'>
 
     <Loader ref={loaderRef} message={loaderMessage} className={`singleCellExtend animatedDiv invisible ${onLoadingState ? 'fadeIn' : 'fadeOut'}`} />
     <Comparer ref={comparerRef} gotDocumentName={gotDocumentName} initialLoadComplete={initialLoadComplete} className={`singleCellExtend animatedDiv invisible ${onComparerState ? 'fadeIn' : 'fadeOut'}`} />
     <FigmaFileInput ref={figmaFileInputRef} getDocument={getDocument} className={`singleCellExtend animatedDiv visible ${onInputState ? 'fadeIn' : 'fadeOut'}`} />
 
+    <div className="logo">
+      <img src="./figmahistory/images/logo.png" />
+    </div>
+
+    <div className={`userData alignVerticalCenter animatedDiv invisible ${userData ? 'fadeIn' : 'fadeOut'}`}>
+      <img src={userData?.img_url} />
+      <span className='primaryText'>{userData?.handle}</span>
+    </div>
   </div>
 };
 
