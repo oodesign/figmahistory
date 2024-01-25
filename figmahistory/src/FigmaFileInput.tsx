@@ -44,7 +44,7 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
             reactCompareSliderRef.current.setPosition(50);
             setTimeout(() => {
                 reactCompareSliderRef.current.setPosition(75);
-            }, 1000);
+            }, 750);
         }
     }
 
@@ -53,7 +53,7 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
         <div className={`${props.className} verticalLayout figmaFileInput`}>
             <div className="alignFullCenter verticalLayout">
                 <div className='rowAuto logoSlider'>
-                    <ReactCompareSlider ref={reactCompareSliderRef} onLoad={setSliderPosition} transition="1s ease-in-out" position={100}
+                    <ReactCompareSlider ref={reactCompareSliderRef} onLoad={setSliderPosition} transition="0.75s ease-in-out" position={100}
 
                         itemOne={
                             <div className="extend innerCanvas">

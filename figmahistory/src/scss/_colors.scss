@@ -23,8 +23,6 @@ $light_inverseColor: #ffffff;
 $light_bottomBarBackgroundColor: #F0F0F0;
 $light_bottomBarBorderColor: #DDDDDD;
 
-$light_inputBorderColor: #D6D6E3;
-
 $light_btnSecondaryBorderColor: #9797A9;
 $light_btnSecondaryBackgroundHover: rgba($accentColor, 0.1);
 $light_btnSecondaryBackgroundActive: rgba($accentColor, 0.2);
@@ -37,7 +35,6 @@ $light_scrollThumbColorActive: #a9a9a9;
 $light_tooltipColor: #FFFFFF;
 
 $light_inputBackgroundColor: #FFFFFF;
-$light_inputBorderColor: #A9A9A9;
 
 
 $negativeTextColor: #000000;
@@ -92,5 +89,5 @@ $dark_selectedColor: $accentColor;
 
 $light_inputBorderColor: #D6D6E3;
 $dark_inputBorderColor: #6A6A78;
-$light_inputBorderColorHover: #B6A8E4;
-$dark_inputBorderColorHover: #ffffff;
+$light_inputBorderColorHover: #D6D6E3;
+$dark_inputBorderColorHover: #8d8d97;

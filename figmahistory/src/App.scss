@@ -321,7 +321,8 @@ canvas {
   padding: 6px 24px;
   height: $componentHeightDefault;
 
-  &:hover {
+  &:hover,
+  &:focus {
     background-color: $accentColorHover;
     outline: none;
   }
@@ -1188,6 +1189,7 @@ input[type="text"] {
   border-radius: $cornerRadiusDefault;
   outline: none;
   @include primaryText;
+  transition: all 0.15s ease-out;
 
   @include for-theme(light) {
     background-color: $light_inputBackgroundColor;
@@ -1196,7 +1198,18 @@ input[type="text"] {
 
   @include for-theme(dark) {
     background-color: $dark_inputBackgroundColor;
-    border: 1px solid $dark_gray_300;
+    border: 1px solid $dark_inputBorderColor;
+  }
+
+  &:focus,
+  &:hover {
+    @include for-theme(light) {
+      border: 1px solid $light_inputBorderColorHover;
+    }
+
+    @include for-theme(dark) {
+      border: 1px solid $dark_inputBorderColorHover;
+    }
   }
 
   &.large {

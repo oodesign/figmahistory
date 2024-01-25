@@ -1347,7 +1347,7 @@ body {
   padding: 6px 24px;
   height: 32px;
 }
-.btnPrimary:hover {
+.btnPrimary:hover, .btnPrimary:focus {
   background-color: #A648F1;
   outline: none;
 }
@@ -1874,7 +1874,7 @@ body {
   height: 32px;
   width: 200px;
 }
-.btnGetItNow:hover {
+.btnGetItNow:hover, .btnGetItNow:focus {
   background-color: #A648F1;
   outline: none;
 }
@@ -2506,6 +2506,7 @@ input[type=text] {
   font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 14px;
   line-height: 19px;
+  transition: all 0.15s ease-out;
 }
 @media (prefers-color-scheme: light) {
   input[type=text] {
@@ -2526,7 +2527,17 @@ input[type=text] {
 @media (prefers-color-scheme: dark) {
   input[type=text] {
     background-color: #28282A;
-    border: 1px solid #6A6A6A;
+    border: 1px solid #6A6A78;
+  }
+}
+@media (prefers-color-scheme: light) {
+  input[type=text]:focus, input[type=text]:hover {
+    border: 1px solid #D6D6E3;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  input[type=text]:focus, input[type=text]:hover {
+    border: 1px solid #8d8d97;
   }
 }
 input[type=text].large {
