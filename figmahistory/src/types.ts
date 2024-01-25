@@ -42,6 +42,7 @@ export interface Version {
     label: string;
     description: string;
     user: User;
+    value: string;
 };
 
 export interface NodeWithImage {

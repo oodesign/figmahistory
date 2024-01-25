@@ -121,14 +121,6 @@ canvas {
 }
 
 
-.canvasVersionOverlayTitle {
-  @include flex;
-  padding: 8px 16px;
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: $cornerRadiusDefault;
-}
-
-
 *,
 *:before,
 *:after {

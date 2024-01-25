@@ -1029,6 +1029,15 @@ h5 {
   margin-bottom: 16px;
 }
 
+.comparer .canvasVersionOverlay {
+  display: flex;
+  width: 300px;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+.comparer .canvasVersionOverlay .select {
+  width: 100%;
+}
+
 @font-face {
   font-family: AvenirNextLTPro-Medium;
   src: url(./fonts/AvenirNextLTPro-Medium.ttf) format("truetype");
@@ -1132,13 +1141,6 @@ body {
     background-color: #19191C;
     color: #ffffff;
   }
-}
-
-.canvasVersionOverlayTitle {
-  display: flex;
-  padding: 8px 16px;
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 6px;
 }
 
 *,

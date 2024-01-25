@@ -5,6 +5,7 @@ import { globalState, setDocumentID, setAccessToken, setDocumentLeft, setDocumen
 import { ReactCompareSlider } from 'react-compare-slider';
 import isEqual from 'lodash/isEqual';
 import Canvas from './Canvas';
+import Select, { ActionMeta, ControlProps, components } from 'react-select'
 
 interface ComparerProps {
     className: string;
@@ -30,8 +31,8 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
 
     // #region canvas drawing state variables 
 
-    const [selectVersionLeftSelectedOption, setSelectVersionLeftSelectedOption] = useState<string>("");
-    const [selectVersionRightSelectedOption, setSelectVersionRightSelectedOption] = useState<string>("");
+    const [selectVersionLeftSelectedOption, setSelectVersionLeftSelectedOption] = useState<Version>();
+    const [selectVersionRightSelectedOption, setSelectVersionRightSelectedOption] = useState<Version>();
     const [selectedVersionNameLeft, setSelectedVersionNameLeft] = useState<string>("");
     const [selectedVersionNameRight, setSelectedVersionNameRight] = useState<string>("");
     const [selectedPageColorLeft, setSelectedPageColorLeft] = useState<string>("#FFFFFF");
@@ -65,10 +66,32 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
     const [canvasRightWidth, setCanvasRightWidth] = useState(0);
 
 
+    const CustomOption = ({ innerProps, label, data }) => (
+        <div {...innerProps} style={{ backgroundColor: "black" }} className='primaryText'>
+            {label} - {data.created_at}
+        </div>
+    );
+
+    const customComponents = {
+        Option: CustomOption,
+    };
+
     // #endregion
 
 
     // #region Fetching files, versions
+
+    const formatDate = (inputDate) => {
+        const date = new Date(inputDate);
+      
+        const month = new Intl.DateTimeFormat('en-US', { month: 'short' }).format(date);
+        const day = new Intl.DateTimeFormat('en-US', { day: 'numeric' }).format(date);
+        const year = new Intl.DateTimeFormat('en-US', { year: 'numeric' }).format(date);
+        const hour = new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: false }).format(date);
+        const minute = new Intl.DateTimeFormat('en-US', { minute: 'numeric' }).format(date);
+      
+        return `${month} ${day}, ${year}, ${hour}.${minute} ${date.getHours() < 12 ? 'AM' : 'PM'}`;
+      };
 
     async function getDocumentName(): Promise<string> {
 
@@ -105,10 +128,11 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                     for (const version of fetchedVersionList) {
                         versions.push({
                             id: version.id,
-                            created_at: version.created_at,
+                            created_at: formatDate(version.created_at),
                             label: version.label ? version.label : "Autosave",
                             description: version.description,
                             user: version.user,
+                            value: version.id,
                         });
                     }
                     // console.log(data)
@@ -141,9 +165,9 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
 
         setFileVersionsList(allVersions);
 
-        setSelectVersionLeftSelectedOption(allVersions[0].id);
+        setSelectVersionLeftSelectedOption(allVersions[0]);
         setSelectedVersionNameLeft(allVersions[0].label);
-        setSelectVersionRightSelectedOption(allVersions[1].id);
+        setSelectVersionRightSelectedOption(allVersions[1]);
         setSelectedVersionNameRight(allVersions[1].label);
 
         fetchDocumentVersion(allVersions[0].id, Side.LEFT);
@@ -737,16 +761,16 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
 
     // #region UIEvent handlers
 
-    function onVersion1Changed(event: ChangeEvent<HTMLSelectElement>): void {
-        // console.log("Changed v1 to version:" + event.target.value);
-        setSelectVersionLeftSelectedOption(event.target.value);
-        fetchDocumentVersion(event.target.value, Side.LEFT);
-    }
-    function onVersion2Changed(event: ChangeEvent<HTMLSelectElement>): void {
-        // console.log("Changed v2 to version:" + event.target.value);
-        setSelectVersionRightSelectedOption(event.target.value);
-        fetchDocumentVersion(event.target.value, Side.RIGHT);
-    }
+    // function onVersion1Changed(event: ChangeEvent<HTMLSelectElement>): void {
+    //     // console.log("Changed v1 to version:" + event.target.value);
+    //     setSelectVersionLeftSelectedOption(event.target.value);
+    //     fetchDocumentVersion(event.target.value, Side.LEFT);
+    // }
+    // function onVersion2Changed(event: ChangeEvent<HTMLSelectElement>): void {
+    //     // console.log("Changed v2 to version:" + event.target.value);
+    //     setSelectVersionRightSelectedOption(event.target.value);
+    //     fetchDocumentVersion(event.target.value, Side.RIGHT);
+    // }
 
     function canvasLeftAllImagesLoaded(): void {
         setIsLoadingLeftImages(false);
@@ -756,18 +780,28 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
         setIsLoadingRightImages(false);
     }
 
+    function onVersion1Changed(newValue: any, actionMeta: ActionMeta<any>): void {
+        setSelectVersionLeftSelectedOption(newValue);
+        fetchDocumentVersion(newValue.id, Side.LEFT);
+    }
+
+    function onVersion2Changed(newValue: any, actionMeta: ActionMeta<any>): void {
+        setSelectVersionRightSelectedOption(newValue);
+        fetchDocumentVersion(newValue.id, Side.RIGHT);
+    }
+
     // #endregion
 
     return (
-        <div className={`rowAvailable verticalLayout ${props.className}`}>
+        <div className={`comparer rowAvailable verticalLayout ${props.className}`}>
             <div className='rowAuto'>
 
-                <select id="selectVersion1" value={selectVersionLeftSelectedOption} onChange={onVersion1Changed}>
+                {/* <select id="selectVersion1" value={selectVersionLeftSelectedOption} onChange={onVersion1Changed}>
                     {renderOptions()}
                 </select>
                 <select id="selectVersion2" value={selectVersionRightSelectedOption} onChange={onVersion2Changed}>
                     {renderOptions()}
-                </select>
+                </select> */}
 
                 <input type="checkbox" value="SECTION" onChange={onDifferenceTypesChanged} checked={differencesTypes.includes('SECTION')} />
                 <label>Section</label>
@@ -810,8 +844,8 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                                     width: `${canvasLeftWidth}px`,
                                     top: '0px',
                                 }}>
-                                    <div className="canvasVersionOverlayTitle">
-                                        {selectedVersionNameLeft}
+                                    <div className="canvasVersionOverlay">
+                                        <Select className='select' options={fileVersionsList} components={customComponents} onChange={onVersion1Changed} value={selectVersionLeftSelectedOption} />
                                     </div>
                                 </div>
 
@@ -842,8 +876,8 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                                     left: `${canvasLeftWidth}px`,
                                     top: '0px'
                                 }}>
-                                    <div className="canvasVersionOverlayTitle">
-                                        {selectedVersionNameRight}
+                                    <div className="canvasVersionOverlay">
+                                        <Select className='select' options={fileVersionsList} components={customComponents} onChange={onVersion2Changed} value={selectVersionRightSelectedOption} />
                                     </div>
                                 </div>
 
