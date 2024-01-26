@@ -10,91 +10,58 @@ $light_inputBorderColorHover: #D6D6E3;
 $dark_inputBorderColorHover: #8d8d97;
 
 
-
-
-
-
-
-$accentComplementaryColor: #0C8CE9;
-$complementaryColor: #52CF67;
-
-
 $light_backgroundColor: #F9F9F9;
-$light_backgroundColor_300: #DFDFDF;
-$light_backgroundColor_200: #E9E9E9;
-$light_gray_900: #646464;
-$light_gray_500: #BBBBBB;
-$light_gray_500_hover: #CCCCCC;
-$light_gray_500_pressed: #AAAAAA;
+$dark_backgroundColor: #19191C;
+
+
 
 $light_primaryColor: #323232;
 $light_secondaryColor: #868688;
+$dark_primaryColor: #ffffff;
+$dark_secondaryColor: #949494;
 
-$light_inverseColor: #ffffff;
 
 $light_bottomBarBackgroundColor: #F0F0F0;
 $light_bottomBarBorderColor: #DDDDDD;
+$dark_bottomBarBackgroundColor: #28282D;
+$dark_bottomBarBorderColor: #4D4D4D;
 
 $light_btnSecondaryBorderColor: #9797A9;
 $light_btnSecondaryBackgroundHover: rgba($accentColor, 0.1);
 $light_btnSecondaryBackgroundActive: rgba($accentColor, 0.2);
+$dark_btnSecondaryBorderColor: #9595A8;
+$dark_btnSecondaryBackgroundHover: rgba($accentColor, 0.1);
+$dark_btnSecondaryBackgroundActive: rgba($accentColor, 0.2);
 
 
 $light_scrollThumbColor: #C9C9C9;
 $light_scrollThumbColorHover: #B9b9b9;
 $light_scrollThumbColorActive: #a9a9a9;
-
-$light_tooltipColor: #FFFFFF;
-
-$light_inputBackgroundColor: #FFFFFF;
-
-
-$negativeTextColor: #000000;
-
-$dark_backgroundColor: #19191C;
-
-$dark_backgroundColor_600: #242426;
-$dark_backgroundColor_500: #28282A;
-$dark_backgroundColor_400: #2F2F32;
-$dark_backgroundColor_300: #37373A;
-$dark_backgroundColor_300_hover: #434346;
-$dark_backgroundColor_300_pressed: #303033;
-$dark_backgroundColor_200: #3e3b3b;
-
-$dark_gray_500: #454649;
-$dark_gray_500_hover: #545558;
-$dark_gray_500_pressed: #35363a;
-$dark_gray_400: #515255;
-$dark_gray_300: #6A6A6A;
-
-$dark_primaryColor: #ffffff;
-$dark_secondaryColor: #949494;
-
-$dark_inverseColor: #ffffff;
-
-$dark_bottomBarBackgroundColor: #28282D;
-$dark_bottomBarBorderColor: #4D4D4D;
-
-$dark_btnSecondaryBorderColor: #9595A8;
-$dark_btnSecondaryBackgroundHover: rgba($accentColor, 0.1);
-$dark_btnSecondaryBackgroundActive: rgba($accentColor, 0.2);
-
 $dark_scrollThumbColor: #424242;
 $dark_scrollThumbColorHover: #606060;
 $dark_scrollThumbColorActive: #323232;
 
+$light_tooltipColor: #FFFFFF;
 $dark_tooltipColor: #39393E;
 
+$light_inputBackgroundColor: #FFFFFF;
 $dark_inputBackgroundColor: #28282A;
 
-$warningColor: #FF6D6D;
-$confirmationColor: #9AEF6F;
-
-
 $light_leftListItemHoverBackgroundColor: #E9E9E9;
-$dark_leftListItemHoverBackgroundColor: #35353C;
 $light_leftListItemSelectedBackgroundColor: #DFDFDF;
+$dark_leftListItemHoverBackgroundColor: #35353C;
 $dark_leftListItemSelectedBackgroundColor: #474750;
 
-$light_selectedColor: $accentColor;
-$dark_selectedColor: $accentColor;
+
+
+
+
+//TODO Check if colors are still needed or need to be refactored
+$accentComplementaryColor: #0C8CE9;
+$dark_backgroundColor_500: #28282A;
+$dark_backgroundColor_300: #37373A;
+$light_backgroundColor_300: #DFDFDF;
+
+
+
+
