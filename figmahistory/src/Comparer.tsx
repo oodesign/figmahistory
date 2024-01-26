@@ -67,8 +67,13 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
 
 
     const CustomOption = ({ innerProps, label, data }) => (
-        <div {...innerProps} style={{ backgroundColor: "black" }} className='primaryText'>
-            {label} - {data.created_at}
+        <div {...innerProps} className='versionOption verticalLayout'>
+            <div className="rowAuto primaryText">{label}</div>
+            <div className="rowAuto secondaryText small">{data.created_at}</div>
+            <div className="rowAuto alignVerticalCenter">
+                <img src={data.user.img_url} />
+                <span className='secondaryText small'>{data.user.handle}</span>
+            </div>
         </div>
     );
 
@@ -83,15 +88,16 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
 
     const formatDate = (inputDate) => {
         const date = new Date(inputDate);
-      
+
         const month = new Intl.DateTimeFormat('en-US', { month: 'short' }).format(date);
         const day = new Intl.DateTimeFormat('en-US', { day: 'numeric' }).format(date);
         const year = new Intl.DateTimeFormat('en-US', { year: 'numeric' }).format(date);
-        const hour = new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: false }).format(date);
-        const minute = new Intl.DateTimeFormat('en-US', { minute: 'numeric' }).format(date);
-      
+        const rawHour = date.getHours();
+        const hour = (rawHour % 12 || 12).toString().padStart(2, '0');
+        const minute = date.getMinutes().toString().padStart(2, '0');
+
         return `${month} ${day}, ${year}, ${hour}.${minute} ${date.getHours() < 12 ? 'AM' : 'PM'}`;
-      };
+    };
 
     async function getDocumentName(): Promise<string> {
 
@@ -845,7 +851,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                                     top: '0px',
                                 }}>
                                     <div className="canvasVersionOverlay">
-                                        <Select className='select' options={fileVersionsList} components={customComponents} onChange={onVersion1Changed} value={selectVersionLeftSelectedOption} />
+                                        <Select className='select' options={fileVersionsList} defaultMenuIsOpen={true} components={customComponents} onChange={onVersion1Changed} value={selectVersionLeftSelectedOption} />
                                     </div>
                                 </div>
 
@@ -855,7 +861,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                                     height: '100%',
                                     top: '0px',
                                 }}>
-                                    <div id="indeterminateLoader" className="verticalLayout alignFullCenter indeterminateLoader show">
+                                    <div id="indeterminateLoader" className="verticalLayout alignFullCenterAndCenterText indeterminateLoader show">
                                         <div className="dualRingLoader"></div>
                                         <div className="loaderMessage">
                                             Loading stuff - {isLoadingLeftImages ? "loadingLeftImages" : "notLoadingLeftImages"} - {isLoadingLeftPage ? "loadingLeftPage" : "notLoadingLeftPage"}
@@ -889,7 +895,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                                     height: '100%',
                                     top: '0px',
                                 }}>
-                                    <div id="indeterminateLoader" className="verticalLayout alignFullCenter indeterminateLoader show">
+                                    <div id="indeterminateLoader" className="verticalLayout alignFullCenterAndCenterText indeterminateLoader show">
                                         <div className="dualRingLoader"></div>
                                         <div className="loaderMessage">
                                             Loading stuff - {isLoadingRightImages ? "loadingRightImages" : "notLoadingRightImages"} - {isLoadingRightPage ? "loadingRightPage" : "notLoadingRightPage"}

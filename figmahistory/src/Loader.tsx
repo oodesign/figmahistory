@@ -9,7 +9,7 @@ const Loader: React.ForwardRefRenderFunction<HTMLDivElement, LoaderProps> = (pro
 
     return (
         <div ref={ref} className={`${props.className} loader`}>
-            <div id="indeterminateLoader" className="verticalLayout alignFullCenter indeterminateLoader show">
+            <div id="indeterminateLoader" className="verticalLayout alignFullCenterAndCenterText indeterminateLoader show">
                 <div className="dualRingLoader"></div>
                 <div className="secondaryText">
                     {props.message}

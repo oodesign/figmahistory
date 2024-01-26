@@ -71,11 +71,52 @@
 .comparer {
     .canvasVersionOverlay {
         @include flex;
-        width:300px;
+        width: 300px;
         background-color: rgba(255, 255, 255, 0.1);
-     
-        .select{
-            width:100%;
+
+        .select {
+            width: 100%;
+        }
+    }
+
+    .versionOption {
+
+        padding: 8px 12px;
+        transition: all 0.1s ease-out;
+
+        @include for-theme(light) {
+            background-color: $light_backgroundColor;
+            border-bottom: 1px solid $light_backgroundColor_300;
+            color: $light_primaryColor;
+        }
+
+        @include for-theme(dark) {
+            background-color: $dark_backgroundColor;
+            border-bottom: 1px solid $dark_backgroundColor_500;
+            color: $dark_primaryColor;
+        }
+
+        &:hover {
+            @include for-theme(light) {
+                background-color: $light_leftListItemHoverBackgroundColor;
+            }
+    
+            @include for-theme(dark) {
+                background-color: $dark_leftListItemHoverBackgroundColor;
+            }
+        }
+
+        img {
+            width: 16px;
+            height: 16px;
+            border-radius: 16px;
+            margin-right: 8px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: none;
+        }
+
+        .small{
+            font-size: 13px;
         }
     }
 }

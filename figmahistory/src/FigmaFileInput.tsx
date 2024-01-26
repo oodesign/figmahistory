@@ -51,7 +51,7 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
     return (
 
         <div className={`${props.className} verticalLayout figmaFileInput`}>
-            <div className="alignFullCenter verticalLayout">
+            <div className="alignFullCenterAndCenterText verticalLayout">
                 <div className='rowAuto logoSlider'>
                     <ReactCompareSlider ref={reactCompareSliderRef} onLoad={setSliderPosition} transition="0.75s ease-in-out" position={100}
 
