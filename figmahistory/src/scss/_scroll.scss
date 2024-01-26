@@ -1,0 +1,41 @@
+div::-webkit-scrollbar-track {
+    border-radius: 5px;
+    background-color: transparent;
+}
+
+div::-webkit-scrollbar {
+    width: 5px;
+    background-color: transparent;
+}
+
+div::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+
+    @include for-theme(light) {
+        background-color: $light_scrollThumbColor;
+    }
+
+    @include for-theme(dark) {
+        background-color: $dark_scrollThumbColor;
+    }
+
+    &:hover {
+        @include for-theme(light) {
+            background-color: $light_scrollThumbColorHover;
+        }
+
+        @include for-theme(dark) {
+            background-color: $dark_scrollThumbColorHover;
+        }
+    }
+
+    &:active {
+        @include for-theme(light) {
+            background-color: $light_scrollThumbColorActive;
+        }
+
+        @include for-theme(dark) {
+            background-color: $dark_scrollThumbColorActive;
+        }
+    }
+}

@@ -1,0 +1,115 @@
+input,
+textarea {
+    -webkit-user-select: auto;
+    user-select: auto;
+}
+
+.inputLabel {
+    @include secondaryText;
+    text-align: left;
+    margin: 0 0 8px 0;
+}
+
+.inputMessage {
+    @include secondaryText;
+    text-align: left;
+    margin: 0 0 24px 0;
+}
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: none;
+
+    .tooltipText {
+        visibility: hidden;
+        width: 240px;
+
+        @include for-theme(light) {
+            background-color: $light_tooltipColor;
+        }
+
+        @include for-theme(dark) {
+            background-color: $dark_tooltipColor;
+        }
+
+        border-radius: 6px;
+        padding: 5px 10px;
+        position: absolute;
+        z-index: 1;
+        bottom: 150%;
+        left: 7px;
+        margin-left: -120px;
+        opacity: 0;
+        transition: opacity 0.3s;
+        box-shadow: 0px 2px 11px rgba(0, 0, 0, 0.2);
+
+        &::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+
+            @include for-theme(light) {
+                border-color: $light_tooltipColor transparent transparent transparent;
+            }
+
+            @include for-theme(dark) {
+                border-color: $dark_tooltipColor transparent transparent transparent;
+            }
+        }
+
+        span {
+            @include primaryText;
+        }
+    }
+
+    &:hover .tooltipText {
+        visibility: visible;
+        opacity: 1;
+    }
+}
+
+input[type="text"] {
+    padding: 8px 12px;
+    width: 305px;
+    height: $componentHeightDefault;
+    margin: 0 0 8px 0;
+    box-sizing: border-box;
+    border-radius: $cornerRadiusDefault;
+    outline: none;
+    @include primaryText;
+    transition: all 0.15s ease-out;
+
+    @include for-theme(light) {
+        background-color: $light_inputBackgroundColor;
+        border: 1px solid $light_inputBorderColor;
+    }
+
+    @include for-theme(dark) {
+        background-color: $dark_inputBackgroundColor;
+        border: 1px solid $dark_inputBorderColor;
+    }
+
+    &:focus,
+    &:hover {
+        @include for-theme(light) {
+            border: 1px solid $light_inputBorderColorHover;
+        }
+
+        @include for-theme(dark) {
+            border: 1px solid $dark_inputBorderColorHover;
+        }
+    }
+
+    &.large {
+        height: $componentHeightLarge;
+    }
+
+    &.hasMessage {
+        margin: 0;
+    }
+}

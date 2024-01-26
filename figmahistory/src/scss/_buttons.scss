@@ -1,0 +1,165 @@
+@mixin btnPrimary {
+    border: none;
+    border-radius: $cornerRadiusDefault;
+    outline: none;
+    font-family: AvenirNextLTPro-Demi, -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 14px;
+    background-color: $accentColor;
+    transition: all 0.15s ease-out;
+
+    @include for-theme(light) {
+        color: $light_primaryColor;
+    }
+
+    @include for-theme(dark) {
+        color: $dark_primaryColor;
+    }
+
+    padding: 6px 24px;
+    height: $componentHeightDefault;
+
+    &:hover,
+    &:focus {
+        background-color: $accentColorHover;
+        outline: none;
+    }
+
+    &:active {
+        background-color: $accentColorActive;
+        border-color: $accentColorActive;
+        outline: none;
+    }
+
+    &:disabled {
+        background-color: $accentColor;
+        border-color: $accentColor;
+        outline: none;
+        opacity: 0.3;
+    }
+}
+
+.btnPrimary {
+    @include btnPrimary;
+
+    &.large {
+        height: $componentHeightLarge;
+    }
+}
+
+@mixin btnSecondary {
+    @include for-theme(light) {
+        border: 1px solid $light_btnSecondaryBorderColor;
+    }
+
+    @include for-theme(dark) {
+        border: 1px solid $dark_btnSecondaryBorderColor;
+    }
+
+    background-color: transparent;
+    width: 100px;
+    height: 34px;
+    border-radius: 17px;
+    background-origin: border-box;
+    background-clip: content-box,
+    border-box;
+    @include alignHorizontalCenter;
+    outline: none;
+    font-family: AvenirNextLTPro-Demi,
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
+    font-size: 13px;
+    transition: all 0.1s ease-out;
+    line-height: 34px;
+
+    @include for-theme(light) {
+        color: $light_primaryColor;
+    }
+
+    @include for-theme(dark) {
+        color: $dark_primaryColor;
+    }
+
+    &:hover {
+        @include for-theme(light) {
+            background-color: $light_btnSecondaryBackgroundHover;
+            border-color: $accentColorHover;
+            color: $accentColorDarkText;
+        }
+
+        @include for-theme(dark) {
+            background-color: $dark_btnSecondaryBackgroundHover;
+            border-color: $accentColorHover;
+        }
+
+        outline: none;
+    }
+
+    &:active {
+        @include for-theme(light) {
+            background-color: $light_btnSecondaryBackgroundActive;
+            border-color: $accentColorActive;
+        }
+
+        @include for-theme(dark) {
+            background-color: $dark_btnSecondaryBackgroundActive;
+            border-color: $accentColorActive;
+        }
+
+        outline: none;
+    }
+}
+
+
+@mixin btnTertiary {
+    border: 1px solid transparent;
+    background-color: transparent;
+    width: 100px;
+    height: 34px;
+    border-radius: 17px;
+    background-origin: border-box;
+    background-clip: content-box, border-box;
+    @include alignHorizontalCenter;
+    outline: none;
+    font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 13px;
+    transition: all 0.1s ease-out;
+
+    @include for-theme(light) {
+        color: $light_secondaryColor;
+    }
+
+    @include for-theme(dark) {
+        color: $dark_secondaryColor;
+    }
+
+    &:hover {
+        @include for-theme(light) {
+            border-color: $accentColorHover;
+            color: $accentColorDarkText;
+        }
+
+        @include for-theme(dark) {
+            border-color: $accentColorHover;
+            color: $dark_primaryColor;
+        }
+
+        outline: none;
+    }
+
+    &:active {
+        @include for-theme(light) {
+            border-color: $accentColorActive;
+        }
+
+        @include for-theme(dark) {
+            border-color: $accentColorActive;
+        }
+
+        outline: none;
+    }
+}
+
+.btnTertiary {
+    @include btnTertiary;
+}
