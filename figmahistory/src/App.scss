@@ -105,11 +105,11 @@ body {
   background-position: -19px -19px;
 
   @include for-theme(light) {
-    background-image: radial-gradient($light_backgroundColor_300 1px, transparent 0);
+    background-image: radial-gradient($light_backgroundColor2 1px, transparent 0);
   }
 
   @include for-theme(dark) {
-    background-image: radial-gradient($dark_backgroundColor_300 1px, transparent 0);
+    background-image: radial-gradient($dark_backgroundColor2 1px, transparent 0);
   }
 }
 

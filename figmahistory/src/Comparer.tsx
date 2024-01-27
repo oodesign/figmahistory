@@ -63,7 +63,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
 
     const [fileVersionsList, setFileVersionsList] = useState<Version[]>([]);
 
-    const [sliderPadding, setSliderPadding] = useState(100);
+    const [sliderPadding, setSliderPadding] = useState(200);
     const [sliderPosition, setSliderPosition] = useState(50);
     const [canvasLeftWidth, setCanvasLeftWidth] = useState(0);
     const [canvasRightWidth, setCanvasRightWidth] = useState(0);

@@ -991,12 +991,12 @@ body {
 }
 @media (prefers-color-scheme: light) {
   .dotted {
-    background-image: radial-gradient(#DFDFDF 1px, transparent 0);
+    background-image: radial-gradient(#e4e4e8 1px, transparent 0);
   }
 }
 @media (prefers-color-scheme: dark) {
   .dotted {
-    background-image: radial-gradient(#37373A 1px, transparent 0);
+    background-image: radial-gradient(#242428 1px, transparent 0);
   }
 }
 
