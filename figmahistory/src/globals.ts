@@ -1,6 +1,6 @@
 // globals.ts
 
-import { User, Side, Color, Document, Version, Page, FigmaNode, Node, Rect } from './types';
+import { User, Side, Color, Document, Version, Page, FigmaNode, Node, Rect, ViewDiffs } from './types';
 
 export interface GlobalState {
     documentId: string;
@@ -12,6 +12,7 @@ export interface GlobalState {
     isDocumentLeftLoaded: boolean;
     isDocumentRightLoaded: boolean;
     user: User;
+    viewDiffs: ViewDiffs
 }
 
 export let globalState: GlobalState = {
@@ -37,6 +38,9 @@ export let globalState: GlobalState = {
         img_url: "",
         email: ""
     },
+    viewDiffs: {
+        showShapes: false
+    }
 };
 
 export function setDocumentID(id: string) {
@@ -182,6 +186,10 @@ export function setSelectedNodeId(id: string) {
 
 export function setUser(user: User) {
     globalState = { ...globalState, user: user };
+}
+
+export function setViewDiffs(viewDiffs: ViewDiffs) {
+    globalState = { ...globalState, viewDiffs: viewDiffs };
 }
 
 

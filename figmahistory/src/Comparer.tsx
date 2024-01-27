@@ -1,7 +1,7 @@
 import React, { ChangeEvent, useImperativeHandle, useRef, useState } from 'react';
 import { ReactZoomPanPinchRef, TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
-import { User, Side, Color, Document, Version, Page, NodeWithImage, FigmaNode, Node, Difference, Rect } from './types';
-import { globalState, setDocumentID, setAccessToken, setDocumentLeft, setDocumentRight, updateDocumentPageLeftChildrenAndFlatNodes, updateDocumentPageRightChildrenAndFlatNodes, setSelectedPageId, updateDocumentPageLeftFlatNodes, updateDocumentPageRightFlatNodes, updateDocumentPageRightBounds, updateDocumentPageLeftBounds, setSelectedNodeId, } from './globals';
+import { User, Side, Color, Document, Version, Page, NodeWithImage, FigmaNode, Node, Difference, Rect, ViewDiffs } from './types';
+import { globalState, setDocumentID, setAccessToken, setDocumentLeft, setDocumentRight, updateDocumentPageLeftChildrenAndFlatNodes, updateDocumentPageRightChildrenAndFlatNodes, setSelectedPageId, updateDocumentPageLeftFlatNodes, updateDocumentPageRightFlatNodes, updateDocumentPageRightBounds, updateDocumentPageLeftBounds, setSelectedNodeId, setViewDiffs, } from './globals';
 import { ReactCompareSlider } from 'react-compare-slider';
 import isEqual from 'lodash/isEqual';
 import Canvas from './Canvas';
@@ -31,6 +31,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
     const [isLoadingRightPage, setIsLoadingRightPage] = useState<boolean>(true);
     const [isLoadingLeftImages, setIsLoadingLeftImages] = useState<boolean>(true);
     const [isLoadingRightImages, setIsLoadingRightImages] = useState<boolean>(true);
+
 
     // #region canvas drawing state variables 
 
@@ -806,30 +807,8 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                 setCanvasLeftWidth((position / 100) * canvasDiv.current.clientWidth);
                 setCanvasRightWidth((1 - (position / 100)) * canvasDiv.current.clientWidth);
             }
-            // console.log("clientWidth:" + canvasDiv.current.clientWidth)
-            // console.log("Slider padding is (in abs percentage):" + sliderPaddingPercentage)
-
-            // if ((position > sliderPaddingPercentage) && (position < (100 - sliderPaddingPercentage))) {
-            //   setCanvasLeftNamePosition((position / 100) / 2 * canvasDiv.current.clientWidth);
-            //   setCanvasRightNamePosition(((1 - position / 100)) / 2 * canvasDiv.current.clientWidth);
-            // }
         }
     }
-
-
-
-    // #region UIEvent handlers
-
-    // function onVersion1Changed(event: ChangeEvent<HTMLSelectElement>): void {
-    //     // console.log("Changed v1 to version:" + event.target.value);
-    //     setSelectVersionLeftSelectedOption(event.target.value);
-    //     fetchDocumentVersion(event.target.value, Side.LEFT);
-    // }
-    // function onVersion2Changed(event: ChangeEvent<HTMLSelectElement>): void {
-    //     // console.log("Changed v2 to version:" + event.target.value);
-    //     setSelectVersionRightSelectedOption(event.target.value);
-    //     fetchDocumentVersion(event.target.value, Side.RIGHT);
-    // }
 
     function canvasLeftAllImagesLoaded(): void {
         setIsLoadingLeftImages(false);
@@ -849,6 +828,22 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
         console.log("Changed right version");
         setSelectVersionRightSelectedOption(newValue);
         fetchDocumentVersion(newValue.id, Side.RIGHT);
+    }
+
+    function onDiffChange(type: string): void {
+
+        const currentShowShapes = globalState.viewDiffs.showShapes
+
+        switch (type) {
+            case 'shapes':
+                globalState.viewDiffs.showShapes = !globalState.viewDiffs.showShapes;
+                break;
+        }
+
+        let newDifferences: string[] = [];
+        if (globalState.viewDiffs.showShapes) newDifferences.push("RECTANGLE", "VECTOR", "STAR", "LINE", "ELLIPSE", "REGULAR_POLYGON");
+
+        setDifferencesTypes(newDifferences);
     }
 
     // #endregion
@@ -933,6 +928,14 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                 </div>
                 <div className='rowAuto bottomBar'>
 
+                    <div className="horizontalLayout leftElements">
+                        <button className={`btnSecondary iconButton ${globalState.viewDiffs.showShapes ? 'checked' : ''}`} onClick={() => onDiffChange('shapes')}>
+                            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="6.65" y="6.65" width="10.7" height="10.7" stroke="white" stroke-width="1.3" />
+                                <path opacity="0.5" fill-rule="evenodd" clip-rule="evenodd" d="M6 10.6C3.45949 10.6 1.4 8.54051 1.4 6C1.4 3.45949 3.45949 1.4 6 1.4C8.54051 1.4 10.6 3.45949 10.6 6H12C12 2.68629 9.31371 0 6 0C2.68629 0 0 2.68629 0 6C0 9.31371 2.68629 12 6 12V10.6Z" fill="white" />
+                            </svg>
+                        </button>
+                    </div>
                     <input type="checkbox" value="SECTION" onChange={onDifferenceTypesChanged} checked={differencesTypes.includes('SECTION')} />
                     <label>Section</label>
                     <input type="checkbox" value="FRAME" onChange={onDifferenceTypesChanged} checked={differencesTypes.includes('FRAME')} />
@@ -950,7 +953,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                     <input type="checkbox" value="TEXT" onChange={onDifferenceTypesChanged} checked={differencesTypes.includes('TEXT')} />
                     <label>Text</label>
 
-                    <button className='btnSecondary' onClick={fitIntoView}>Fit into view</button>
+                    <button className='btnSecondary centerElements' onClick={fitIntoView}>Fit into view</button>
 
 
 

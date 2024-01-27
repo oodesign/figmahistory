@@ -80,3 +80,7 @@ export interface Difference{
     boundingRect: Rect;
     isChildOfFrame: boolean;
 }
+
+export interface ViewDiffs{
+    showShapes: boolean;
+}

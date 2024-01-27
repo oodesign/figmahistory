@@ -322,7 +322,7 @@ div::-webkit-scrollbar-thumb {
   }
 }
 .btnPrimary:hover, .btnPrimary:focus {
-  background-color: #A648F1;
+  background-color: #ad51f8;
   outline: none;
 }
 .btnPrimary:active {
@@ -352,7 +352,6 @@ div::-webkit-scrollbar-thumb {
   font-family: AvenirNextLTPro-Demi, -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 13px;
   transition: all 0.1s ease-out;
-  line-height: 34px;
 }
 @media (prefers-color-scheme: light) {
   .btnSecondary {
@@ -380,14 +379,14 @@ div::-webkit-scrollbar-thumb {
 @media (prefers-color-scheme: light) {
   .btnSecondary:hover {
     background-color: rgba(144, 26, 237, 0.1);
-    border-color: #A648F1;
+    border-color: #ad51f8;
     color: #901AED;
   }
 }
 @media (prefers-color-scheme: dark) {
   .btnSecondary:hover {
     background-color: rgba(144, 26, 237, 0.1);
-    border-color: #A648F1;
+    border-color: #ad51f8;
   }
 }
 .btnSecondary:active {
@@ -435,13 +434,13 @@ div::-webkit-scrollbar-thumb {
 }
 @media (prefers-color-scheme: light) {
   .btnTertiary:hover {
-    border-color: #A648F1;
+    border-color: #ad51f8;
     color: #901AED;
   }
 }
 @media (prefers-color-scheme: dark) {
   .btnTertiary:hover {
-    border-color: #A648F1;
+    border-color: #ad51f8;
     color: #ffffff;
   }
 }
@@ -986,6 +985,41 @@ input[type=text].hasMessage {
     background-color: #19191C;
     border-top: 1px solid #242428;
   }
+}
+.comparer .bottomBar .btnSecondary {
+  height: 36px;
+}
+.comparer .bottomBar .btnSecondary.iconButton {
+  width: 36px;
+}
+@media (prefers-color-scheme: light) {
+  .comparer .bottomBar .btnSecondary.iconButton.checked {
+    border-color: #901AED;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .comparer .bottomBar .btnSecondary.iconButton.checked {
+    border-color: #901AED;
+  }
+}
+@media (prefers-color-scheme: light) {
+  .comparer .bottomBar .btnSecondary.iconButton.checked:hover {
+    border-color: #ad51f8;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .comparer .bottomBar .btnSecondary.iconButton.checked:hover {
+    border-color: #ad51f8;
+  }
+}
+.comparer .bottomBar .leftElements {
+  grid-column: 1;
+}
+.comparer .bottomBar .centerElements {
+  grid-column: 2;
+}
+.comparer .bottomBar .rightElements {
+  grid-column: 3;
 }
 
 @font-face {

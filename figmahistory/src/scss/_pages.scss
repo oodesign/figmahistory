@@ -206,6 +206,7 @@
 
         // height:60px;
         padding: 12px;
+
         @include for-theme(light) {
             background-color: $light_backgroundColor;
             border-top: 1px solid $light_backgroundColor2;
@@ -218,6 +219,48 @@
 
         display: grid;
         grid-template-columns: 2fr 1fr 2fr;
+
+        .btnSecondary {
+            height: 36px;
+
+            &.iconButton {
+                width: 36px;
+
+                &.checked {
+                    @include for-theme(light) {
+                        border-color: $accentColor;
+                    }
+
+                    @include for-theme(dark) {
+                        border-color: $accentColor;
+                    }
+
+                    &:hover {
+                        @include for-theme(light) {
+                            border-color: $accentColorHover;
+                        }
+
+                        @include for-theme(dark) {
+                            border-color: $accentColorHover;
+                        }
+                    }
+                }
+            }
+
+
+        }
+
+        .leftElements {
+            grid-column: 1;
+        }
+
+        .centerElements {
+            grid-column: 2;
+        }
+
+        .rightElements {
+            grid-column: 3;
+        }
     }
 
     // #endregion

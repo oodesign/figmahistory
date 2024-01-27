@@ -70,7 +70,6 @@
     sans-serif;
     font-size: 13px;
     transition: all 0.1s ease-out;
-    line-height: 34px;
 
     @include for-theme(light) {
         color: $light_primaryColor;
