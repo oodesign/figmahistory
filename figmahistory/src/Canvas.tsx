@@ -77,6 +77,7 @@ const Canvas: React.FC<CanvasProps> = (props) => {
 
     const renderDifferences = (): React.ReactNode => {
         //console.log("Drawing canvas: " + name + ". Offset:" + offsetX + "," + offsetY);
+        console.log(props.differences)
         return props.differences.map((difference, index) => (
             (props.differenceTypes.includes(difference.type) ?
                 ((difference.type != "FRAME") || (difference.type == "FRAME" && !difference.isChildOfFrame) ?

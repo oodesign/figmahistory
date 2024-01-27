@@ -347,7 +347,6 @@ div::-webkit-scrollbar-thumb {
   border-radius: 6px;
   background-origin: border-box;
   background-clip: content-box, border-box;
-  margin: 0 auto;
   outline: none;
   font-family: AvenirNextLTPro-Demi, -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 13px;
@@ -991,6 +990,17 @@ input[type=text].hasMessage {
 }
 .comparer .bottomBar .btnSecondary.iconButton {
   width: 36px;
+  margin-right: 8px;
+}
+@media (prefers-color-scheme: light) {
+  .comparer .bottomBar .btnSecondary.iconButton:hover {
+    border-color: #797979;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .comparer .bottomBar .btnSecondary.iconButton:hover {
+    border-color: #797979;
+  }
 }
 @media (prefers-color-scheme: light) {
   .comparer .bottomBar .btnSecondary.iconButton.checked {
@@ -1014,6 +1024,9 @@ input[type=text].hasMessage {
 }
 .comparer .bottomBar .leftElements {
   grid-column: 1;
+}
+.comparer .bottomBar .leftElements span {
+  margin-right: 8px;
 }
 .comparer .bottomBar .centerElements {
   grid-column: 2;

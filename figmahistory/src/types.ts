@@ -68,19 +68,25 @@ export interface Node {
     isChildOfFrame: boolean;
 }
 
-export interface Rect{
-    x:number;
-    y:number;
-    width:number;
-    height:number;
+export interface Rect {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
 }
 
-export interface Difference{
-    type:string;
+export interface Difference {
+    type: string;
     boundingRect: Rect;
     isChildOfFrame: boolean;
 }
 
-export interface ViewDiffs{
+export interface ViewDiffs {
+    showSections: boolean;
+    showFrames: boolean;
+    showComponents: boolean;
+    showInstances: boolean;
+    showGroups: boolean;
+    showText: boolean;
     showShapes: boolean;
 }

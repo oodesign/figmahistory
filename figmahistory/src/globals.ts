@@ -39,7 +39,13 @@ export let globalState: GlobalState = {
         email: ""
     },
     viewDiffs: {
-        showShapes: false
+        showSections:true,
+        showFrames: true,
+        showComponents:true,
+        showInstances:true,
+        showGroups: false,
+        showText: false,
+        showShapes: false,
     }
 };
 

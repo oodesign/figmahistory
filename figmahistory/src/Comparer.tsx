@@ -7,6 +7,7 @@ import isEqual from 'lodash/isEqual';
 import Canvas from './Canvas';
 import Select, { ActionMeta, ControlProps, DropdownIndicatorProps, ValueContainerProps, components } from 'react-select'
 import { Tooltip as ReactTooltip } from "react-tooltip";
+import { ReactSVG } from 'react-svg'
 
 interface ComparerProps {
     className: string;
@@ -86,9 +87,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
     ) => {
         return (
             <components.DropdownIndicator {...props}>
-                <svg width="14" height="8" viewBox="0 0 14 8" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd" clip-rule="evenodd" d="M0.258134 0.328945C0.628463 -0.0801298 1.26082 -0.112016 1.67055 0.257724L7.21259 5.25893L12.3004 0.285044C12.695 -0.100734 13.3281 -0.0940805 13.7145 0.299906C14.1009 0.693893 14.0942 1.32602 13.6996 1.7118L7.26742 8L0.329468 1.73912C-0.0802572 1.36937 -0.112195 0.73802 0.258134 0.328945Z" fill="white" />
-                </svg>
+                <ReactSVG src="./figmahistory/images/chevronDown.svg" />
             </components.DropdownIndicator>
         );
     };
@@ -224,6 +223,8 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
         const allVersions: Version[] = await fetchVersionList();
 
         setFileVersionsList(allVersions);
+
+        setViewDifferences();
 
         setSelectVersionLeftSelectedOption(allVersions[0]);
         setSelectedVersionNameLeft(allVersions[0].label);
@@ -660,7 +661,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                 nodeId: node1.nodeId,
                 isPresentInOtherVersion: isPresentInOtherVersion,
                 isEqualToOtherVersion: isEqualToOtherVersion,
-                type: node1.type,
+                type: node1.type + ((node1.type == "FRAME" && node1.isChildOfFrame) ? "GROUP" : ""),
                 figmaNode: node1.figmaNode,
                 isChildOfFrame: node1.isChildOfFrame
             });
@@ -830,20 +831,45 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
         fetchDocumentVersion(newValue.id, Side.RIGHT);
     }
 
+    function setViewDifferences() {
+        let newDifferences: string[] = [];
+        if (globalState.viewDiffs.showSections) newDifferences.push("SECTION");
+        if (globalState.viewDiffs.showFrames) newDifferences.push("FRAME");
+        if (globalState.viewDiffs.showComponents) newDifferences.push("COMPONENT", "COMPONENT_SET");
+        if (globalState.viewDiffs.showInstances) newDifferences.push("INSTANCE");
+        if (globalState.viewDiffs.showGroups) newDifferences.push("GROUP", "FRAMEGROUP");
+        if (globalState.viewDiffs.showText) newDifferences.push("TEXT");
+        if (globalState.viewDiffs.showShapes) newDifferences.push("RECTANGLE", "VECTOR", "STAR", "LINE", "ELLIPSE", "REGULAR_POLYGON");
+
+        setDifferencesTypes(newDifferences);
+    }
+
     function onDiffChange(type: string): void {
 
-        const currentShowShapes = globalState.viewDiffs.showShapes
-
         switch (type) {
+            case 'sections':
+                globalState.viewDiffs.showSections = !globalState.viewDiffs.showSections;
+                break;
+            case 'frames':
+                globalState.viewDiffs.showFrames = !globalState.viewDiffs.showFrames;
+                break;
+            case 'components':
+                globalState.viewDiffs.showComponents = !globalState.viewDiffs.showComponents;
+                break;
+            case 'instances':
+                globalState.viewDiffs.showInstances = !globalState.viewDiffs.showInstances;
+                break;
+            case 'groups':
+                globalState.viewDiffs.showGroups = !globalState.viewDiffs.showGroups;
+                break;
+            case 'text':
+                globalState.viewDiffs.showText = !globalState.viewDiffs.showText;
+                break;
             case 'shapes':
                 globalState.viewDiffs.showShapes = !globalState.viewDiffs.showShapes;
                 break;
         }
-
-        let newDifferences: string[] = [];
-        if (globalState.viewDiffs.showShapes) newDifferences.push("RECTANGLE", "VECTOR", "STAR", "LINE", "ELLIPSE", "REGULAR_POLYGON");
-
-        setDifferencesTypes(newDifferences);
+        setViewDifferences();
     }
 
     // #endregion
@@ -929,38 +955,42 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                 <div className='rowAuto bottomBar'>
 
                     <div className="horizontalLayout leftElements">
-                        <button className={`btnSecondary iconButton ${globalState.viewDiffs.showShapes ? 'checked' : ''}`} onClick={() => onDiffChange('shapes')} data-tooltip-id="showDiffShapesTooltip">
-                            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <rect x="6.65" y="6.65" width="10.7" height="10.7" stroke="white" stroke-width="1.3" />
-                                <path opacity="0.5" fill-rule="evenodd" clip-rule="evenodd" d="M6 10.6C3.45949 10.6 1.4 8.54051 1.4 6C1.4 3.45949 3.45949 1.4 6 1.4C8.54051 1.4 10.6 3.45949 10.6 6H12C12 2.68629 9.31371 0 6 0C2.68629 0 0 2.68629 0 6C0 9.31371 2.68629 12 6 12V10.6Z" fill="white" />
-                            </svg>
+                        <span className="colAuto secondaryText alignVerticalCenter">
+                            Show changes in
+                        </span>
+                        <button className={`colAuto btnSecondary iconButton ${globalState.viewDiffs.showSections ? 'checked' : ''}`} onClick={() => onDiffChange('sections')} data-tooltip-id="showDiffSectionsTooltip">
+                            <ReactSVG src="./figmahistory/images/sectionIcon.svg" />
+                        </button>
+                        <button className={`colAuto btnSecondary iconButton ${globalState.viewDiffs.showFrames ? 'checked' : ''}`} onClick={() => onDiffChange('frames')} data-tooltip-id="showDiffFramesTooltip">
+                            <ReactSVG src="./figmahistory/images/frameIcon.svg" />
+                        </button>
+                        <button className={`colAuto btnSecondary iconButton ${globalState.viewDiffs.showComponents ? 'checked' : ''}`} onClick={() => onDiffChange('components')} data-tooltip-id="showDiffComponentsTooltip">
+                            <ReactSVG src="./figmahistory/images/componentIcon.svg" />
+                        </button>
+                        <button className={`colAuto btnSecondary iconButton ${globalState.viewDiffs.showInstances ? 'checked' : ''}`} onClick={() => onDiffChange('instances')} data-tooltip-id="showDiffInstancesTooltip">
+                            <ReactSVG src="./figmahistory/images/instanceIcon.svg" />
+                        </button>
+                        <button className={`colAuto btnSecondary iconButton ${globalState.viewDiffs.showGroups ? 'checked' : ''}`} onClick={() => onDiffChange('groups')} data-tooltip-id="showDiffGroupsTooltip">
+                            <ReactSVG src="./figmahistory/images/groupIcon.svg" />
+                        </button>
+                        <button className={`colAuto btnSecondary iconButton ${globalState.viewDiffs.showText ? 'checked' : ''}`} onClick={() => onDiffChange('text')} data-tooltip-id="showDiffTextTooltip">
+                            <ReactSVG src="./figmahistory/images/textIcon.svg" />
+                        </button>
+                        <button className={`colAuto btnSecondary iconButton ${globalState.viewDiffs.showShapes ? 'checked' : ''}`} onClick={() => onDiffChange('shapes')} data-tooltip-id="showDiffShapesTooltip">
+                            <ReactSVG src="./figmahistory/images/shapesIcon.svg" />
                         </button>
                     </div>
-                    <input type="checkbox" value="SECTION" onChange={onDifferenceTypesChanged} checked={differencesTypes.includes('SECTION')} />
-                    <label>Section</label>
-                    <input type="checkbox" value="FRAME" onChange={onDifferenceTypesChanged} checked={differencesTypes.includes('FRAME')} />
-                    <label>Frame</label>
-                    <input type="checkbox" value="COMPONENT_SET" onChange={onDifferenceTypesChanged} checked={differencesTypes.includes('COMPONENT_SET')} />
-                    <label>Component sets</label>
-                    <input type="checkbox" value="COMPONENT" onChange={onDifferenceTypesChanged} checked={differencesTypes.includes('COMPONENT')} />
-                    <label>Components</label>
-                    <input type="checkbox" value="INSTANCE" onChange={onDifferenceTypesChanged} checked={differencesTypes.includes('INSTANCE')} />
-                    <label>Instances</label>
-                    <input type="checkbox" value="GROUP" onChange={onDifferenceTypesChanged} checked={differencesTypes.includes('GROUP')} />
-                    <label>Groups</label>
-                    <input type="checkbox" value="RECTANGLE" onChange={onDifferenceTypesChanged} checked={differencesTypes.includes('RECTANGLE')} />
-                    <label>Rectangle</label>
-                    <input type="checkbox" value="TEXT" onChange={onDifferenceTypesChanged} checked={differencesTypes.includes('TEXT')} />
-                    <label>Text</label>
 
-                    <button className='btnSecondary centerElements' onClick={fitIntoView}>Fit into view</button>
 
-                    <ReactTooltip
-                        id="showDiffShapesTooltip"
-                        place="top"
-                        content="Shapes"
-                    />
+                    <button className='btnSecondary alignHorizontalCenter centerElements' onClick={fitIntoView}>Fit into view</button>
 
+                    <ReactTooltip id="showDiffSectionsTooltip" place="top" content="Sections" />
+                    <ReactTooltip id="showDiffFramesTooltip" place="top" content="Frames" />
+                    <ReactTooltip id="showDiffComponentsTooltip" place="top" content="Components" />
+                    <ReactTooltip id="showDiffInstancesTooltip" place="top" content="Instances" />
+                    <ReactTooltip id="showDiffGroupsTooltip" place="top" content="Groups" />
+                    <ReactTooltip id="showDiffTextTooltip" place="top" content="Text" />
+                    <ReactTooltip id="showDiffShapesTooltip" place="top" content="Shapes" />
                 </div>
             </div>
 

@@ -225,6 +225,17 @@
 
             &.iconButton {
                 width: 36px;
+                margin-right: 8px;
+
+                &:hover {
+                    @include for-theme(light) {
+                        border-color: $light_btnSecondaryBackgroundHover2;
+                    }
+
+                    @include for-theme(dark) {
+                        border-color: $dark_btnSecondaryBackgroundHover2;
+                    }
+                }
 
                 &.checked {
                     @include for-theme(light) {
@@ -252,6 +263,9 @@
 
         .leftElements {
             grid-column: 1;
+            span{
+                margin-right:8px;
+            }
         }
 
         .centerElements {
