@@ -202,6 +202,42 @@
 
     // #region Bottom Bar
 
+    .sidePanel {
+        width: 200px;
+
+        @include for-theme(light) {
+            background-color: $light_backgroundColor2;
+        }
+
+        @include for-theme(dark) {
+            background-color: $dark_backgroundColor2;
+        }
+
+        padding-top:80px;
+
+        .title {
+            @include primaryText;
+            margin-left: 24px;
+            margin-bottom: 32px;
+            font-size: 16px;
+        }
+
+        .header {
+            @include secondaryText;
+            margin-left: 24px;
+            margin-bottom: 16px;
+        }
+
+        .listItem{
+
+            padding: 8px 24px;
+        }
+    }
+
+    // #endregion
+
+    // #region Bottom Bar
+
     .bottomBar {
 
         // height:60px;
@@ -261,11 +297,12 @@
 
         }
 
+        span {
+            margin-right: 8px;
+        }
+
         .leftElements {
             grid-column: 1;
-            span{
-                margin-right:8px;
-            }
         }
 
         .centerElements {
@@ -274,6 +311,7 @@
 
         .rightElements {
             grid-column: 3;
+            justify-content: flex-end;
         }
     }
 

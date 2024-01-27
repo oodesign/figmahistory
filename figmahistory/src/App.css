@@ -654,7 +654,6 @@ input[type=text].hasMessage {
   align-content: center;
   align-items: center;
   padding: 4px 8px;
-  border-radius: 4px;
   margin-bottom: 1px;
   margin-right: 4px;
   cursor: pointer;
@@ -968,6 +967,56 @@ input[type=text].hasMessage {
 .comparer .versionOption .small {
   font-size: 13px;
 }
+.comparer .sidePanel {
+  width: 200px;
+  padding-top: 80px;
+}
+@media (prefers-color-scheme: light) {
+  .comparer .sidePanel {
+    background-color: #e4e4e8;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .comparer .sidePanel {
+    background-color: #242428;
+  }
+}
+.comparer .sidePanel .title {
+  font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  margin-left: 24px;
+  margin-bottom: 32px;
+  font-size: 16px;
+}
+@media (prefers-color-scheme: light) {
+  .comparer .sidePanel .title {
+    color: #323232;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .comparer .sidePanel .title {
+    color: #ffffff;
+  }
+}
+.comparer .sidePanel .header {
+  font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px;
+  margin-left: 24px;
+  margin-bottom: 16px;
+}
+@media (prefers-color-scheme: light) {
+  .comparer .sidePanel .header {
+    color: #868688;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .comparer .sidePanel .header {
+    color: #949494;
+  }
+}
+.comparer .sidePanel .listItem {
+  padding: 8px 24px;
+}
 .comparer .bottomBar {
   padding: 12px;
   display: grid;
@@ -1022,17 +1071,18 @@ input[type=text].hasMessage {
     border-color: #ad51f8;
   }
 }
+.comparer .bottomBar span {
+  margin-right: 8px;
+}
 .comparer .bottomBar .leftElements {
   grid-column: 1;
-}
-.comparer .bottomBar .leftElements span {
-  margin-right: 8px;
 }
 .comparer .bottomBar .centerElements {
   grid-column: 2;
 }
 .comparer .bottomBar .rightElements {
   grid-column: 3;
+  justify-content: flex-end;
 }
 
 @font-face {

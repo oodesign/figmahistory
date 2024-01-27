@@ -876,8 +876,14 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
 
     return (
         <div className={`comparer rowAvailable horizontalLayout ${props.className}`}>
-            <div className="colAuto">
+            <div className="colAuto sidePanel">
                 <div className="verticalLayout">
+                    <div className="rowAuto title">
+                        {globalState.documentName}
+                    </div>
+                    <div className="rowAuto header">
+                        Pages
+                    </div>
                     {renderPageList()}
                 </div>
             </div>
@@ -954,7 +960,12 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                 </div>
                 <div className='rowAuto bottomBar'>
 
-                    <div className="horizontalLayout leftElements">
+
+
+                    <button className='btnSecondary alignHorizontalCenter centerElements' onClick={fitIntoView}>Fit into view</button>
+
+
+                    <div className="horizontalLayout rightElements">
                         <span className="colAuto secondaryText alignVerticalCenter">
                             Show changes in
                         </span>
@@ -980,9 +991,6 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                             <ReactSVG src="./figmahistory/images/shapesIcon.svg" />
                         </button>
                     </div>
-
-
-                    <button className='btnSecondary alignHorizontalCenter centerElements' onClick={fitIntoView}>Fit into view</button>
 
                     <ReactTooltip id="showDiffSectionsTooltip" place="top" content="Sections" />
                     <ReactTooltip id="showDiffFramesTooltip" place="top" content="Frames" />

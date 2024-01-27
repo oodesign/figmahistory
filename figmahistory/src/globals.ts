@@ -4,6 +4,7 @@ import { User, Side, Color, Document, Version, Page, FigmaNode, Node, Rect, View
 
 export interface GlobalState {
     documentId: string;
+    documentName: string;
     accessToken: string;
     documentLeft: Document;
     documentRight: Document;
@@ -17,6 +18,7 @@ export interface GlobalState {
 
 export let globalState: GlobalState = {
     documentId: "",
+    documentName:"",
     accessToken: "",
     documentLeft: {
         name: "",
@@ -196,6 +198,10 @@ export function setUser(user: User) {
 
 export function setViewDiffs(viewDiffs: ViewDiffs) {
     globalState = { ...globalState, viewDiffs: viewDiffs };
+}
+
+export function setDocumentName(name: string) {
+    globalState = { ...globalState, documentName: name };
 }
 
 
