@@ -101,6 +101,18 @@
                 background-color: $dark_componentSecondaryColorHover;
             }
         }
+
+        svg {
+            path {
+                @include for-theme(light) {
+                    fill: $light_secondaryColor;
+                }
+
+                @include for-theme(dark) {
+                    fill: $dark_secondaryColor;
+                }
+            }
+        }
     }
 
 
@@ -124,6 +136,10 @@
 
     .reactselect__menu-list {
         padding: 0 4px 0 0;
+    }
+
+    .reactselect__indicators {
+        width: 32px;
     }
 
     .versionContainer {
@@ -157,7 +173,7 @@
         transition: all 0.1s ease-out;
         border-radius: 2px;
 
-        
+
 
         &:hover {
             @include for-theme(light) {

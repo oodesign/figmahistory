@@ -5,7 +5,7 @@ import { globalState, setDocumentID, setAccessToken, setDocumentLeft, setDocumen
 import { ReactCompareSlider } from 'react-compare-slider';
 import isEqual from 'lodash/isEqual';
 import Canvas from './Canvas';
-import Select, { ActionMeta, ControlProps, ValueContainerProps, components } from 'react-select'
+import Select, { ActionMeta, ControlProps, DropdownIndicatorProps, ValueContainerProps, components } from 'react-select'
 import MultiValue from 'react-select/dist/declarations/src/components/MultiValue';
 
 interface ComparerProps {
@@ -80,6 +80,18 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
         </div>
     );
 
+    const DropdownIndicator = (
+        props
+    ) => {
+        return (
+            <components.DropdownIndicator {...props}>
+                <svg width="14" height="8" viewBox="0 0 14 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M0.258134 0.328945C0.628463 -0.0801298 1.26082 -0.112016 1.67055 0.257724L7.21259 5.25893L12.3004 0.285044C12.695 -0.100734 13.3281 -0.0940805 13.7145 0.299906C14.1009 0.693893 14.0942 1.32602 13.6996 1.7118L7.26742 8L0.329468 1.73912C-0.0802572 1.36937 -0.112195 0.73802 0.258134 0.328945Z" fill="white" />
+                </svg>
+            </components.DropdownIndicator>
+        );
+    };
+
     const ValueContainer = ({
         children,
         ...props
@@ -119,6 +131,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
     const customComponents = {
         Option: CustomOption,
         ValueContainer: ValueContainer,
+        DropdownIndicator: DropdownIndicator
     };
 
     // #endregion

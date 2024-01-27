@@ -820,7 +820,17 @@ input[type=text].hasMessage {
 }
 @media (prefers-color-scheme: dark) {
   .comparer .reactselect__control:hover {
-    background-color: #454547;
+    background-color: #35353C;
+  }
+}
+@media (prefers-color-scheme: light) {
+  .comparer .reactselect__control svg path {
+    fill: #868688;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .comparer .reactselect__control svg path {
+    fill: #949494;
   }
 }
 .comparer .reactselect__menu {
@@ -843,6 +853,9 @@ input[type=text].hasMessage {
 }
 .comparer .reactselect__menu-list {
   padding: 0 4px 0 0;
+}
+.comparer .reactselect__indicators {
+  width: 32px;
 }
 .comparer .versionContainer {
   padding: 8px 12px;
@@ -877,7 +890,7 @@ input[type=text].hasMessage {
 }
 @media (prefers-color-scheme: dark) {
   .comparer .versionOption:hover {
-    background-color: #454547;
+    background-color: #35353C;
   }
 }
 .comparer .versionOption img {
