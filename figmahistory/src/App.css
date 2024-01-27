@@ -796,37 +796,88 @@ input[type=text].hasMessage {
 .comparer .canvasVersionOverlay {
   display: flex;
   width: 300px;
-  background-color: rgba(255, 255, 255, 0.1);
 }
 .comparer .canvasVersionOverlay .select {
   width: 100%;
 }
-.comparer .versionOption {
-  padding: 8px 12px;
-  transition: all 0.1s ease-out;
+.comparer .reactselect__control {
+  border-radius: 6px;
 }
 @media (prefers-color-scheme: light) {
-  .comparer .versionOption {
-    background-color: #F9F9F9;
-    border-bottom: 1px solid #DFDFDF;
-    color: #323232;
-  }
-}
-@media (prefers-color-scheme: dark) {
-  .comparer .versionOption {
-    background-color: #19191C;
-    border-bottom: 1px solid #28282A;
-    color: #ffffff;
-  }
-}
-@media (prefers-color-scheme: light) {
-  .comparer .versionOption:hover {
+  .comparer .reactselect__control {
     background-color: #E9E9E9;
   }
 }
 @media (prefers-color-scheme: dark) {
+  .comparer .reactselect__control {
+    background-color: #28282a;
+  }
+}
+@media (prefers-color-scheme: light) {
+  .comparer .reactselect__control:hover {
+    background-color: #DFDFDF;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .comparer .reactselect__control:hover {
+    background-color: #454547;
+  }
+}
+.comparer .reactselect__menu {
+  border-radius: 6px;
+  overflow: hidden;
+  margin-top: 2px;
+  padding: 4px;
+}
+@media (prefers-color-scheme: light) {
+  .comparer .reactselect__menu {
+    background-color: #F9F9F9;
+    border: 1px solid #E9E9E9;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .comparer .reactselect__menu {
+    background-color: #19191C;
+    border: 1px solid #28282a;
+  }
+}
+.comparer .reactselect__menu-list {
+  padding: 0 4px 0 0;
+}
+.comparer .versionContainer {
+  padding: 8px 12px;
+  transition: all 0.1s ease-out;
+}
+.comparer .versionContainer img {
+  width: 16px;
+  height: 16px;
+  border-radius: 16px;
+  margin-right: 8px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: none;
+}
+.comparer .versionContainer .small {
+  font-size: 13px;
+}
+.comparer .versionContainer .dummy-input-wrapper {
+  position: absolute;
+  opacity: 0;
+  left: 0;
+  top: 0;
+}
+.comparer .versionOption {
+  padding: 8px 8px;
+  transition: all 0.1s ease-out;
+  border-radius: 2px;
+}
+@media (prefers-color-scheme: light) {
   .comparer .versionOption:hover {
-    background-color: #35353C;
+    background-color: #FFFFFF;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .comparer .versionOption:hover {
+    background-color: #454547;
   }
 }
 .comparer .versionOption img {

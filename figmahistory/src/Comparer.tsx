@@ -5,7 +5,8 @@ import { globalState, setDocumentID, setAccessToken, setDocumentLeft, setDocumen
 import { ReactCompareSlider } from 'react-compare-slider';
 import isEqual from 'lodash/isEqual';
 import Canvas from './Canvas';
-import Select, { ActionMeta, ControlProps, components } from 'react-select'
+import Select, { ActionMeta, ControlProps, ValueContainerProps, components } from 'react-select'
+import MultiValue from 'react-select/dist/declarations/src/components/MultiValue';
 
 interface ComparerProps {
     className: string;
@@ -23,6 +24,8 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
     const rightImage = useRef<ReactZoomPanPinchRef>(null);
     const leftImage = useRef<ReactZoomPanPinchRef>(null);
     const canvasDiv = useRef<HTMLDivElement | null>(null);
+
+    const selectPrefix = "reactselect";
 
     const [isLoadingLeftPage, setIsLoadingLeftPage] = useState<boolean>(true);
     const [isLoadingRightPage, setIsLoadingRightPage] = useState<boolean>(true);
@@ -66,9 +69,9 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
     const [canvasRightWidth, setCanvasRightWidth] = useState(0);
 
 
-    const CustomOption = ({ innerProps, label, data }) => (
+    const CustomOption = ({ innerProps, data }) => (
         <div {...innerProps} className='versionOption verticalLayout'>
-            <div className="rowAuto primaryText">{label}</div>
+            <div className="rowAuto primaryText">{data.label}</div>
             <div className="rowAuto secondaryText small">{data.created_at}</div>
             <div className="rowAuto alignVerticalCenter">
                 <img src={data.user.img_url} />
@@ -77,8 +80,45 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
         </div>
     );
 
+    const ValueContainer = ({
+        children,
+        ...props
+    }: ValueContainerProps<Version>) => {
+        const { selectProps } = props;
+        const selectedOption = selectProps.value;
+
+        return (
+            <components.ValueContainer {...props}>
+                {(selectedOption && 'label' in selectedOption) ?
+                    <div className='versionContainer'>
+                        <div className='verticalLayout'>
+                            <div className="rowAuto primaryText">{selectedOption.label}</div>
+                            <div className="rowAuto secondaryText small">{selectedOption.created_at}</div>
+                            <div className="rowAuto alignVerticalCenter">
+                                <img src={selectedOption.user.img_url} alt="User Avatar" />
+                                <span className='secondaryText small'>{selectedOption.user.handle}</span>
+                            </div>
+                        </div>
+                        <div className="dummy-input-wrapper">
+                            {children}
+                        </div>
+                    </div>
+                    : <div>No label</div>}
+            </components.ValueContainer>
+        )
+        // }
+    };
+
+
+    const colourStyles = {
+        control: styles => ({ ...styles, backgroundColor: '#ff00ff' }),
+    };
+
+
+
     const customComponents = {
         Option: CustomOption,
+        ValueContainer: ValueContainer,
     };
 
     // #endregion
@@ -787,11 +827,13 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
     }
 
     function onVersion1Changed(newValue: any, actionMeta: ActionMeta<any>): void {
+        console.log("Changed left version");
         setSelectVersionLeftSelectedOption(newValue);
         fetchDocumentVersion(newValue.id, Side.LEFT);
     }
 
     function onVersion2Changed(newValue: any, actionMeta: ActionMeta<any>): void {
+        console.log("Changed right version");
         setSelectVersionRightSelectedOption(newValue);
         fetchDocumentVersion(newValue.id, Side.RIGHT);
     }
@@ -851,11 +893,11 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                                     top: '0px',
                                 }}>
                                     <div className="canvasVersionOverlay">
-                                        <Select className='select' options={fileVersionsList} defaultMenuIsOpen={true} components={customComponents} onChange={onVersion1Changed} value={selectVersionLeftSelectedOption} />
+                                        <Select className='select' classNamePrefix={selectPrefix} defaultMenuIsOpen options={fileVersionsList} isMulti={false} unstyled components={customComponents} isSearchable={false} onChange={onVersion1Changed} value={selectVersionLeftSelectedOption} />
                                     </div>
                                 </div>
 
-                                <div className={`animatedDiv invisible ${(!isLoadingLeftImages && !isLoadingLeftPage) ? 'fadeOut' : 'fadeIn'}`} style={{
+                                <div className={`animatedDiv invisible ${(!isLoadingLeftImages && !isLoadingLeftPage) ? 'fadeOut' : 'fadeOut'}`} style={{
                                     position: 'absolute',
                                     width: `${canvasLeftWidth}px`,
                                     height: '100%',
@@ -883,12 +925,12 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                                     top: '0px'
                                 }}>
                                     <div className="canvasVersionOverlay">
-                                        <Select className='select' options={fileVersionsList} components={customComponents} onChange={onVersion2Changed} value={selectVersionRightSelectedOption} />
+                                        <Select className='select' classNamePrefix={selectPrefix} options={fileVersionsList} isMulti={false} unstyled components={customComponents} isSearchable={false} onChange={onVersion2Changed} value={selectVersionRightSelectedOption} />
                                     </div>
                                 </div>
 
 
-                                <div className={`animatedDiv invisible ${(!isLoadingRightImages && !isLoadingRightPage) ? 'fadeOut' : 'fadeIn'}`} style={{
+                                <div className={`animatedDiv invisible ${(!isLoadingRightImages && !isLoadingRightPage) ? 'fadeOut' : 'fadeOut'}`} style={{
                                     position: 'absolute',
                                     width: `${canvasRightWidth}px`,
                                     left: `${canvasLeftWidth}px`,

@@ -71,38 +71,101 @@
 .comparer {
     .canvasVersionOverlay {
         @include flex;
+
+
         width: 300px;
-        background-color: rgba(255, 255, 255, 0.1);
 
         .select {
             width: 100%;
         }
     }
 
-    .versionOption {
 
-        padding: 8px 12px;
-        transition: all 0.1s ease-out;
+    .reactselect__control {
+        border-radius: $cornerRadiusDefault;
 
         @include for-theme(light) {
-            background-color: $light_backgroundColor;
-            border-bottom: 1px solid $light_backgroundColor_300;
-            color: $light_primaryColor;
+            background-color: $light_componentSecondaryColor;
         }
 
         @include for-theme(dark) {
-            background-color: $dark_backgroundColor;
-            border-bottom: 1px solid $dark_backgroundColor_500;
-            color: $dark_primaryColor;
+            background-color: $dark_componentSecondaryColor;
         }
 
         &:hover {
             @include for-theme(light) {
-                background-color: $light_leftListItemHoverBackgroundColor;
+                background-color: $light_componentSecondaryColorActive;
             }
-    
+
             @include for-theme(dark) {
-                background-color: $dark_leftListItemHoverBackgroundColor;
+                background-color: $dark_componentSecondaryColorHover;
+            }
+        }
+    }
+
+
+    .reactselect__menu {
+        border-radius: $cornerRadiusDefault;
+        overflow: hidden;
+        margin-top: 2px;
+        padding: 4px;
+
+        @include for-theme(light) {
+            background-color: $light_backgroundColor;
+            border: 1px solid $light_componentSecondaryColor;
+        }
+
+        @include for-theme(dark) {
+            background-color: $dark_backgroundColor;
+            border: 1px solid $dark_componentSecondaryColor;
+        }
+
+    }
+
+    .reactselect__menu-list {
+        padding: 0 4px 0 0;
+    }
+
+    .versionContainer {
+        padding: 8px 12px;
+        transition: all 0.1s ease-out;
+
+        img {
+            width: 16px;
+            height: 16px;
+            border-radius: 16px;
+            margin-right: 8px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: none;
+        }
+
+        .small {
+            font-size: 13px;
+        }
+
+        .dummy-input-wrapper {
+            position: absolute;
+            opacity: 0;
+            left: 0;
+            top: 0;
+        }
+    }
+
+    .versionOption {
+
+        padding: 8px 8px;
+        transition: all 0.1s ease-out;
+        border-radius: 2px;
+
+        
+
+        &:hover {
+            @include for-theme(light) {
+                background-color: $light_componentSecondaryColorHover;
+            }
+
+            @include for-theme(dark) {
+                background-color: $dark_componentSecondaryColorHover;
             }
         }
 
@@ -115,7 +178,7 @@
             border: none;
         }
 
-        .small{
+        .small {
             font-size: 13px;
         }
     }
