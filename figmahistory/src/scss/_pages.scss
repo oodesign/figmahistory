@@ -175,7 +175,8 @@
 
 
 
-        &:hover {
+        &:hover,
+        &:focus {
             @include for-theme(light) {
                 background-color: $light_componentSecondaryColorHover;
             }
@@ -198,4 +199,26 @@
             font-size: 13px;
         }
     }
+
+    // #region Bottom Bar
+
+    .bottomBar {
+
+        // height:60px;
+        padding: 12px;
+        @include for-theme(light) {
+            background-color: $light_backgroundColor;
+            border-top: 1px solid $light_backgroundColor2;
+        }
+
+        @include for-theme(dark) {
+            background-color: $dark_backgroundColor;
+            border-top: 1px solid $dark_backgroundColor2;
+        }
+
+        display: grid;
+        grid-template-columns: 2fr 1fr 2fr;
+    }
+
+    // #endregion
 }

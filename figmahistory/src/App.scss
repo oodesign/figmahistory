@@ -115,23 +115,7 @@ body {
 
 // #endregion
 
-// #region Bottom Bar
 
-.bottomBar {
-
-  // height:60px;
-  @include for-theme(light) {
-    background-color: $light_bottomBarBackgroundColor;
-    border-top: 1px solid $light_bottomBarBorderColor;
-  }
-
-  @include for-theme(dark) {
-    background-color: $dark_bottomBarBackgroundColor;
-    border-top: 1px solid $dark_bottomBarBorderColor;
-  }
-}
-
-// #endregion
 
 // #region Animations (fades)
 

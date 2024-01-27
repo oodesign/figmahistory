@@ -58,7 +58,7 @@
     background-color: transparent;
     width: 100px;
     height: 34px;
-    border-radius: 17px;
+    border-radius: $cornerRadiusDefault;
     background-origin: border-box;
     background-clip: content-box,
     border-box;
@@ -108,6 +108,10 @@
 
         outline: none;
     }
+}
+
+.btnSecondary {
+    @include btnSecondary;
 }
 
 

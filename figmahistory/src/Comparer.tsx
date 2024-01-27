@@ -854,45 +854,15 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
     // #endregion
 
     return (
-        <div className={`comparer rowAvailable verticalLayout ${props.className}`}>
-            <div className='rowAuto'>
-
-                {/* <select id="selectVersion1" value={selectVersionLeftSelectedOption} onChange={onVersion1Changed}>
-                    {renderOptions()}
-                </select>
-                <select id="selectVersion2" value={selectVersionRightSelectedOption} onChange={onVersion2Changed}>
-                    {renderOptions()}
-                </select> */}
-
-                <input type="checkbox" value="SECTION" onChange={onDifferenceTypesChanged} checked={differencesTypes.includes('SECTION')} />
-                <label>Section</label>
-                <input type="checkbox" value="FRAME" onChange={onDifferenceTypesChanged} checked={differencesTypes.includes('FRAME')} />
-                <label>Frame</label>
-                <input type="checkbox" value="COMPONENT_SET" onChange={onDifferenceTypesChanged} checked={differencesTypes.includes('COMPONENT_SET')} />
-                <label>Component sets</label>
-                <input type="checkbox" value="COMPONENT" onChange={onDifferenceTypesChanged} checked={differencesTypes.includes('COMPONENT')} />
-                <label>Components</label>
-                <input type="checkbox" value="INSTANCE" onChange={onDifferenceTypesChanged} checked={differencesTypes.includes('INSTANCE')} />
-                <label>Instances</label>
-                <input type="checkbox" value="GROUP" onChange={onDifferenceTypesChanged} checked={differencesTypes.includes('GROUP')} />
-                <label>Groups</label>
-                <input type="checkbox" value="RECTANGLE" onChange={onDifferenceTypesChanged} checked={differencesTypes.includes('RECTANGLE')} />
-                <label>Rectangle</label>
-                <input type="checkbox" value="TEXT" onChange={onDifferenceTypesChanged} checked={differencesTypes.includes('TEXT')} />
-                <label>Text</label>
-
-                <button onClick={fitIntoView}>Fit into view</button>
-
-
-
-            </div>
-            <div className='rowAvailable horizontalLayout'>
-                <div className="colAuto">
-                    <div className="verticalLayout">
-                        {renderPageList()}
-                    </div>
+        <div className={`comparer rowAvailable horizontalLayout ${props.className}`}>
+            <div className="colAuto">
+                <div className="verticalLayout">
+                    {renderPageList()}
                 </div>
-                <div ref={canvasDiv} className="colAvailable verticalLayout">
+            </div>
+            <div className='colAvailable verticalLayout'>
+
+                <div ref={canvasDiv} className="rowAvailable">
                     <ReactCompareSlider className='extend' onPositionChange={onSliderPositionChange} boundsPadding={sliderPadding}
                         onlyHandleDraggable={true}
                         itemOne={
@@ -960,9 +930,33 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                             </TransformWrapper>
                         }
                     />
+                </div>
+                <div className='rowAuto bottomBar'>
+
+                    <input type="checkbox" value="SECTION" onChange={onDifferenceTypesChanged} checked={differencesTypes.includes('SECTION')} />
+                    <label>Section</label>
+                    <input type="checkbox" value="FRAME" onChange={onDifferenceTypesChanged} checked={differencesTypes.includes('FRAME')} />
+                    <label>Frame</label>
+                    <input type="checkbox" value="COMPONENT_SET" onChange={onDifferenceTypesChanged} checked={differencesTypes.includes('COMPONENT_SET')} />
+                    <label>Component sets</label>
+                    <input type="checkbox" value="COMPONENT" onChange={onDifferenceTypesChanged} checked={differencesTypes.includes('COMPONENT')} />
+                    <label>Components</label>
+                    <input type="checkbox" value="INSTANCE" onChange={onDifferenceTypesChanged} checked={differencesTypes.includes('INSTANCE')} />
+                    <label>Instances</label>
+                    <input type="checkbox" value="GROUP" onChange={onDifferenceTypesChanged} checked={differencesTypes.includes('GROUP')} />
+                    <label>Groups</label>
+                    <input type="checkbox" value="RECTANGLE" onChange={onDifferenceTypesChanged} checked={differencesTypes.includes('RECTANGLE')} />
+                    <label>Rectangle</label>
+                    <input type="checkbox" value="TEXT" onChange={onDifferenceTypesChanged} checked={differencesTypes.includes('TEXT')} />
+                    <label>Text</label>
+
+                    <button className='btnSecondary' onClick={fitIntoView}>Fit into view</button>
+
+
 
                 </div>
             </div>
+
         </div>
     );
 };

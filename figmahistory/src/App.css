@@ -48,7 +48,7 @@ div::-webkit-scrollbar-thumb {
 }
 @media (prefers-color-scheme: dark) {
   div::-webkit-scrollbar-thumb {
-    background-color: #424242;
+    background-color: #35353C;
   }
 }
 @media (prefers-color-scheme: light) {
@@ -58,7 +58,7 @@ div::-webkit-scrollbar-thumb {
 }
 @media (prefers-color-scheme: dark) {
   div::-webkit-scrollbar-thumb:hover {
-    background-color: #606060;
+    background-color: #474750;
   }
 }
 @media (prefers-color-scheme: light) {
@@ -68,7 +68,7 @@ div::-webkit-scrollbar-thumb {
 }
 @media (prefers-color-scheme: dark) {
   div::-webkit-scrollbar-thumb:active {
-    background-color: #323232;
+    background-color: #323234;
   }
 }
 
@@ -338,6 +338,72 @@ div::-webkit-scrollbar-thumb {
 }
 .btnPrimary.large {
   height: 40px;
+}
+
+.btnSecondary {
+  background-color: transparent;
+  width: 100px;
+  height: 34px;
+  border-radius: 6px;
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+  margin: 0 auto;
+  outline: none;
+  font-family: AvenirNextLTPro-Demi, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px;
+  transition: all 0.1s ease-out;
+  line-height: 34px;
+}
+@media (prefers-color-scheme: light) {
+  .btnSecondary {
+    border: 1px solid #9797A9;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .btnSecondary {
+    border: 1px solid #424242;
+  }
+}
+@media (prefers-color-scheme: light) {
+  .btnSecondary {
+    color: #323232;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .btnSecondary {
+    color: #ffffff;
+  }
+}
+.btnSecondary:hover {
+  outline: none;
+}
+@media (prefers-color-scheme: light) {
+  .btnSecondary:hover {
+    background-color: rgba(144, 26, 237, 0.1);
+    border-color: #A648F1;
+    color: #901AED;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .btnSecondary:hover {
+    background-color: rgba(144, 26, 237, 0.1);
+    border-color: #A648F1;
+  }
+}
+.btnSecondary:active {
+  outline: none;
+}
+@media (prefers-color-scheme: light) {
+  .btnSecondary:active {
+    background-color: rgba(144, 26, 237, 0.2);
+    border-color: #8C2CD7;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .btnSecondary:active {
+    background-color: rgba(144, 26, 237, 0.2);
+    border-color: #8C2CD7;
+  }
 }
 
 .btnTertiary {
@@ -884,12 +950,12 @@ input[type=text].hasMessage {
   border-radius: 2px;
 }
 @media (prefers-color-scheme: light) {
-  .comparer .versionOption:hover {
+  .comparer .versionOption:hover, .comparer .versionOption:focus {
     background-color: #FFFFFF;
   }
 }
 @media (prefers-color-scheme: dark) {
-  .comparer .versionOption:hover {
+  .comparer .versionOption:hover, .comparer .versionOption:focus {
     background-color: #35353C;
   }
 }
@@ -903,6 +969,23 @@ input[type=text].hasMessage {
 }
 .comparer .versionOption .small {
   font-size: 13px;
+}
+.comparer .bottomBar {
+  padding: 12px;
+  display: grid;
+  grid-template-columns: 2fr 1fr 2fr;
+}
+@media (prefers-color-scheme: light) {
+  .comparer .bottomBar {
+    background-color: #F9F9F9;
+    border-top: 1px solid #e4e4e8;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .comparer .bottomBar {
+    background-color: #19191C;
+    border-top: 1px solid #242428;
+  }
 }
 
 @font-face {
@@ -997,19 +1080,6 @@ body {
 @media (prefers-color-scheme: dark) {
   .dotted {
     background-image: radial-gradient(#242428 1px, transparent 0);
-  }
-}
-
-@media (prefers-color-scheme: light) {
-  .bottomBar {
-    background-color: #F0F0F0;
-    border-top: 1px solid #DDDDDD;
-  }
-}
-@media (prefers-color-scheme: dark) {
-  .bottomBar {
-    background-color: #28282D;
-    border-top: 1px solid #4D4D4D;
   }
 }
 
