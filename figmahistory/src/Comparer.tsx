@@ -6,7 +6,7 @@ import { ReactCompareSlider } from 'react-compare-slider';
 import isEqual from 'lodash/isEqual';
 import Canvas from './Canvas';
 import Select, { ActionMeta, ControlProps, DropdownIndicatorProps, ValueContainerProps, components } from 'react-select'
-import MultiValue from 'react-select/dist/declarations/src/components/MultiValue';
+import { Tooltip as ReactTooltip } from "react-tooltip";
 
 interface ComparerProps {
     className: string;
@@ -871,7 +871,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                                     top: '0px',
                                 }}>
                                     <div className="canvasVersionOverlay">
-                                        <Select className='select' classNamePrefix={selectPrefix} defaultMenuIsOpen options={fileVersionsList} isMulti={false} unstyled components={customComponents} isSearchable={false} onChange={onVersion1Changed} value={selectVersionLeftSelectedOption} />
+                                        <Select className='select' classNamePrefix={selectPrefix} options={fileVersionsList} isMulti={false} unstyled components={customComponents} isSearchable={false} onChange={onVersion1Changed} value={selectVersionLeftSelectedOption} />
                                     </div>
                                 </div>
 
@@ -929,7 +929,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                 <div className='rowAuto bottomBar'>
 
                     <div className="horizontalLayout leftElements">
-                        <button className={`btnSecondary iconButton ${globalState.viewDiffs.showShapes ? 'checked' : ''}`} onClick={() => onDiffChange('shapes')}>
+                        <button className={`btnSecondary iconButton ${globalState.viewDiffs.showShapes ? 'checked' : ''}`} onClick={() => onDiffChange('shapes')} data-tooltip-id="showDiffShapesTooltip">
                             <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <rect x="6.65" y="6.65" width="10.7" height="10.7" stroke="white" stroke-width="1.3" />
                                 <path opacity="0.5" fill-rule="evenodd" clip-rule="evenodd" d="M6 10.6C3.45949 10.6 1.4 8.54051 1.4 6C1.4 3.45949 3.45949 1.4 6 1.4C8.54051 1.4 10.6 3.45949 10.6 6H12C12 2.68629 9.31371 0 6 0C2.68629 0 0 2.68629 0 6C0 9.31371 2.68629 12 6 12V10.6Z" fill="white" />
@@ -955,7 +955,11 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
 
                     <button className='btnSecondary centerElements' onClick={fitIntoView}>Fit into view</button>
 
-
+                    <ReactTooltip
+                        id="showDiffShapesTooltip"
+                        place="top"
+                        content="Shapes"
+                    />
 
                 </div>
             </div>
