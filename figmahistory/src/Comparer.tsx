@@ -8,6 +8,7 @@ import Canvas from './Canvas';
 import Select, { ActionMeta, ControlProps, DropdownIndicatorProps, ValueContainerProps, components } from 'react-select'
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import { ReactSVG } from 'react-svg'
+import List from './List';
 
 interface ComparerProps {
     className: string;
@@ -49,6 +50,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
 
     const [pagesListVersionLeft, setPagesListVersionLeft] = useState<Page[]>();
     const [pagesListVersionRight, setPagesListVersionRight] = useState<Page[]>();
+    const [mergedPagesList, setMergedPagesList] = useState<Page[]>();
 
     const [versionLeftNodesWithImages, setVersionLeftNodesWithImages] = useState<NodeWithImage[]>([]);
     const [versionRightNodesWithImages, setVersionRightNodesWithImages] = useState<NodeWithImage[]>([]);
@@ -410,6 +412,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                 if (globalState.isDocumentLeftLoaded) props.initialLoadComplete();
             }
 
+
             //If node-id retrieved from URL belongs to a page, and globalState.selectedPageId has not been set yet, set it to the retrieved id.
             if (!globalState.selectedPageId && globalState.selectedNodeId) {
                 if (pages.some(page => page.id == globalState.selectedNodeId))
@@ -632,8 +635,8 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
 
         if (pageLeftNodes && pageLeftNodes.length > 0 && pageRightNodes && pageRightNodes.length > 0) {
 
-            const newDocumentLeftFlatNodes = getVersionComparison(pageLeftNodes, pageRightNodes);
-            const newDocumentRightFlatNodes = getVersionComparison(pageRightNodes, pageLeftNodes);
+            const newDocumentLeftFlatNodes = getPageComparison(pageLeftNodes, pageRightNodes);
+            const newDocumentRightFlatNodes = getPageComparison(pageRightNodes, pageLeftNodes);
 
             updateDocumentPageLeftFlatNodes(pageId, newDocumentLeftFlatNodes);
             updateDocumentPageRightFlatNodes(pageId, newDocumentRightFlatNodes);
@@ -641,7 +644,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
 
     }
 
-    function getVersionComparison(array1FlatNodes: Node[], array2FlatNodes: Node[]) {
+    function getPageComparison(array1FlatNodes: Node[], array2FlatNodes: Node[]) {
         let newDocumentFlatNodes: Node[] = [];
 
         for (const node1 of array1FlatNodes) {
@@ -696,94 +699,8 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
         ));
     };
 
-    function mergePagesPreservingOrder(array1: Page[], array2: Page[]): Page[] {
-        const mergedArray: Page[] = [];
+    
 
-        function addPage(page: Page, presentInVersionLeft: boolean, presentInVersionRight: boolean, secondName: string) {
-            const newPage: Page = {
-                id: page.id,
-                children: page.children,
-                name: page.name,
-                nameOtherVersion: secondName,
-                backgroundColor: page.backgroundColor,
-                presentInVersionLeft: presentInVersionLeft,
-                presentInVersionRight: presentInVersionRight,
-                flatNodes: page.flatNodes,
-                boundingRect: page.boundingRect
-            };
-            mergedArray.push(newPage);
-        }
-
-        for (const page of array1) {
-            const array2Page = array2.find(page2 => page.id === page2.id);
-            if (array2Page)
-                addPage(page, true, true, array2Page.name);
-            else
-                addPage(page, true, false, "");
-        }
-
-
-        for (const page of array2) {
-            if (!array1.some(page1 => page.id === page1.id))
-                addPage(page, false, true, "");
-        }
-
-        return mergedArray;
-    }
-
-    const renderPageList = () => {
-        //console.log("Rendering pages")
-        let combinedPageOptions: Page[] = [];
-        if (pagesListVersionLeft && pagesListVersionRight)
-            combinedPageOptions = mergePagesPreservingOrder(pagesListVersionLeft, pagesListVersionRight);
-
-
-        function onPageChangedClick(page: Page) {
-            return (event: React.MouseEvent<HTMLDivElement, MouseEvent>): void => {
-
-                setSelectedPageId(page.id);
-
-                if (page.presentInVersionLeft) {
-                    //console.log("Will try to draw left version. version id is:" + globalState.documentLeft.version)
-                    drawPage(page.id, Side.LEFT);
-                }
-                else
-                    drawVersionPresent(Side.LEFT, false);
-
-                if (page.presentInVersionRight) {
-                    //console.log("Will try to draw right version. version id is:" + globalState.documentRight.version)
-                    drawPage(page.id, Side.RIGHT);
-                }
-                else
-                    drawVersionPresent(Side.RIGHT, false);
-            };
-        }
-
-        return combinedPageOptions?.map((page) => (
-            <div className='listItem' key={page.id} onClick={onPageChangedClick(page)}>
-                <div className='verticalLayout'>
-                    <div className='rowAuto primaryText'>
-                        {page.name}
-                    </div>
-                    {page.name != page.nameOtherVersion && page.nameOtherVersion != "" ? (
-                        <div className='rowAuto secondaryText'>
-                            ( {page.nameOtherVersion})
-                        </div>
-                    ) : ""}
-                    {page.presentInVersionLeft && !page.presentInVersionRight ? (
-                        <div className='rowAuto primaryText'>
-                            🌟 Just in vLeft
-                        </div>
-                    ) : ""}
-                    {!page.presentInVersionLeft && page.presentInVersionRight ? (
-                        <div className='rowAuto primaryText'>
-                            🌟 Just in vRight
-                        </div>
-                    ) : ""}
-                </div>
-            </div>
-        ));
-    };
 
     // #endregion
 
@@ -872,6 +789,36 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
         setViewDifferences();
     }
 
+
+
+    function onPageSelectionChange(page: Page): void {
+        console.log("Page changed. New page is:" + page.name);
+
+
+        setSelectedPageId(page.id);
+
+        if (page.presentInVersionLeft) {
+            console.log("Will try to draw left version. version id is:" + globalState.documentLeft.version)
+            drawPage(page.id, Side.LEFT);
+        }
+        else {
+            console.log("Apparently page is not present in left version");
+            drawVersionPresent(Side.LEFT, false);
+        }
+
+        if (page.presentInVersionRight) {
+            console.log("Will try to draw right version. version id is:" + globalState.documentRight.version)
+            drawPage(page.id, Side.RIGHT);
+        }
+        else {
+            console.log("Apparently page is not present in right version");
+            drawVersionPresent(Side.RIGHT, false);
+        }
+
+
+        console.log("Ended page change");
+    }
+
     // #endregion
 
     return (
@@ -884,7 +831,9 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                     <div className="rowAuto header">
                         Pages
                     </div>
-                    {renderPageList()}
+                    {/* {renderPageList()} */}
+
+                    <List versionLeftPages={pagesListVersionLeft} versionRightPages={pagesListVersionRight} onSelectionChange={(selectedItem) => onPageSelectionChange(selectedItem)} />
                 </div>
             </div>
             <div className='colAvailable verticalLayout'>
