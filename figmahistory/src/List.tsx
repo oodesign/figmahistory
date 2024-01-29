@@ -86,14 +86,19 @@ const List: React.FC<ListProps> = (props) => {
                                 <div className="rowAuto">
                                     {page.name}
                                 </div>
-                                {page.name != page.nameOtherVersion && page.nameOtherVersion != "" ? (
+                                {page.presentInVersionLeft && page.presentInVersionRight && (page.name != page.nameOtherVersion) ? (
                                     <div className='rowAuto secondaryText'>
-                                        ('{page.nameOtherVersion}' on {page.presentInVersionLeft ? "left version" : "right version"})
+                                        ('{page.nameOtherVersion}' on right version)
                                     </div>
                                 ) : ""}
                                 {page.presentInVersionLeft && !page.presentInVersionRight ? (
                                     <div className='rowAuto secondaryText'>
-                                        (Only present in {page.presentInVersionLeft ? "left version" : "right version"})
+                                        (Only present in left version)
+                                    </div>
+                                ) : ""}
+                                {!page.presentInVersionLeft && page.presentInVersionRight ? (
+                                    <div className='rowAuto secondaryText'>
+                                        (Only present in right version)
                                     </div>
                                 ) : ""}
 

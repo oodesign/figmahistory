@@ -972,7 +972,7 @@ input[type=text].hasMessage {
 }
 .comparer .sidePanel {
   width: 240px;
-  transition: all 0.2s ease-out;
+  transition: all 0.3s ease-out;
   padding-top: 80px;
   padding-bottom: 80px;
 }

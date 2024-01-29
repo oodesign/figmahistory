@@ -201,9 +201,9 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
 
                     // Continue fetching if there is a previous page
                     //console.log("-- Has more pages? NextPage is:" + data.pagination.next_page)
-                    if (data.pagination && data.pagination.next_page) {
-                        await fetchVersionListPage(data.pagination.next_page);
-                    }
+                    // if (data.pagination && data.pagination.next_page) {
+                    //     await fetchVersionListPage(data.pagination.next_page);
+                    // }
                 } else {
                     console.error(`Failed to fetch versions: ${response.statusText}`);
                 }

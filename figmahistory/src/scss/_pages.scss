@@ -205,7 +205,7 @@
 
     .sidePanel {
         width: 240px;
-        transition: all 0.2s ease-out;
+        transition: all 0.3s ease-out;
 
         @include for-theme(light) {
             background-color: $light_backgroundColor2;
