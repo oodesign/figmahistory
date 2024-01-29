@@ -968,7 +968,7 @@ input[type=text].hasMessage {
   font-size: 13px;
 }
 .comparer .sidePanel {
-  width: 200px;
+  width: 240px;
   padding-top: 80px;
 }
 @media (prefers-color-scheme: light) {
@@ -1015,7 +1015,7 @@ input[type=text].hasMessage {
   }
 }
 .comparer .sidePanel .listItem {
-  padding: 8px 24px;
+  padding: 8px 24px 12px 24px;
 }
 .comparer .bottomBar {
   padding: 12px;

@@ -26,7 +26,9 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
     const rightImage = useRef<ReactZoomPanPinchRef>(null);
     const leftImage = useRef<ReactZoomPanPinchRef>(null);
     const canvasDiv = useRef<HTMLDivElement | null>(null);
+    const pageList = useRef<HTMLDivElement>(null);
 
+    
     const selectPrefix = "reactselect";
 
     const [isLoadingLeftPage, setIsLoadingLeftPage] = useState<boolean>(true);
@@ -50,7 +52,6 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
 
     const [pagesListVersionLeft, setPagesListVersionLeft] = useState<Page[]>();
     const [pagesListVersionRight, setPagesListVersionRight] = useState<Page[]>();
-    const [mergedPagesList, setMergedPagesList] = useState<Page[]>();
 
     const [versionLeftNodesWithImages, setVersionLeftNodesWithImages] = useState<NodeWithImage[]>([]);
     const [versionRightNodesWithImages, setVersionRightNodesWithImages] = useState<NodeWithImage[]>([]);
@@ -418,10 +419,16 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                 if (pages.some(page => page.id == globalState.selectedNodeId))
                     setSelectedPageId(globalState.selectedNodeId);
             }
+            else {
 
-            let pageId = globalState.selectedPageId ? globalState.selectedPageId : versionDocument.pages[0].id;
+                if (!globalState.selectedPageId)
+                    setSelectedPageId(versionDocument.pages[0].id);
+            }
 
-            drawPage(pageId, side);
+            
+
+
+            drawPage(globalState.selectedPageId, side);
 
         }
     }
@@ -699,7 +706,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
         ));
     };
 
-    
+
 
 
     // #endregion
@@ -794,7 +801,6 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
     function onPageSelectionChange(page: Page): void {
         console.log("Page changed. New page is:" + page.name);
 
-
         setSelectedPageId(page.id);
 
         if (page.presentInVersionLeft) {
@@ -833,7 +839,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                     </div>
                     {/* {renderPageList()} */}
 
-                    <List versionLeftPages={pagesListVersionLeft} versionRightPages={pagesListVersionRight} onSelectionChange={(selectedItem) => onPageSelectionChange(selectedItem)} />
+                    <List versionLeftPages={pagesListVersionLeft} versionRightPages={pagesListVersionRight} selectedItemId={globalState.selectedPageId} onSelectionChange={(selectedItem) => onPageSelectionChange(selectedItem)} />
                 </div>
             </div>
             <div className='colAvailable verticalLayout'>

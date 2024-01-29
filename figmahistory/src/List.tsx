@@ -6,6 +6,7 @@ interface ListProps {
     versionRightPages: Page[] | undefined;
     onSelectionChange: (selectedItem: Page) => void;
     selectedItem?: Page | null;
+    selectedItemId: string | undefined;
 }
 
 const List: React.FC<ListProps> = (props) => {
@@ -62,19 +63,19 @@ const List: React.FC<ListProps> = (props) => {
         else if (props.versionRightPages)
             setLocalPages(props.versionRightPages);
 
-    }, [props.versionLeftPages, props.versionRightPages]);
-
-    useEffect(() => {
-        if (props.selectedItem !== undefined) {
-            setLocalSelectedItem(props.selectedItem);
+        if (props.selectedItemId && localPages) {
+            const selectedPage = localPages.find(page => page.id == props.selectedItemId);
+            if (selectedPage) setLocalSelectedItem(selectedPage);
         }
-    }, [props.selectedItem]);
+
+    }, [props.versionLeftPages, props.versionRightPages, props.selectedItemId]);
+
 
     return (
         (localPages ?
             <ul>
                 {localPages.map((page) => (
-                    <li key={page.id} className={`listItem ${(localSelectedItem === page) ? 'selected' : ''}`}
+                    <li key={page.id} className={`listItem ${(localSelectedItem?.id === page.id) ? 'selected' : ''}`}
                         onClick={() => handleItemClick(page)}
                     >
                         <div className="verticalLayout">
@@ -83,19 +84,15 @@ const List: React.FC<ListProps> = (props) => {
                             </div>
                             {page.name != page.nameOtherVersion && page.nameOtherVersion != "" ? (
                                 <div className='rowAuto secondaryText'>
-                                    ( {page.nameOtherVersion})
+                                    ({page.nameOtherVersion} on {page.presentInVersionLeft ? "left version" : "right version"})
                                 </div>
                             ) : ""}
                             {page.presentInVersionLeft && !page.presentInVersionRight ? (
-                                <div className='rowAuto primaryText'>
-                                    🌟 Just in vLeft
+                                <div className='rowAuto secondaryText'>
+                                    (Only present in {page.presentInVersionLeft ? "left version" : "right version"})
                                 </div>
                             ) : ""}
-                            {!page.presentInVersionLeft && page.presentInVersionRight ? (
-                                <div className='rowAuto primaryText'>
-                                    🌟 Just in vRight
-                                </div>
-                            ) : ""}
+
                         </div>
                     </li>
                 ))}
