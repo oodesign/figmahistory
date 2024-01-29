@@ -82,7 +82,6 @@
         @include for-theme(light) {
             background-color: $light_btnSecondaryBackgroundHover;
             border-color: $accentColorHover;
-            color: $accentColorDarkText;
         }
 
         @include for-theme(dark) {
@@ -138,7 +137,6 @@
     &:hover {
         @include for-theme(light) {
             border-color: $accentColorHover;
-            color: $accentColorDarkText;
         }
 
         @include for-theme(dark) {

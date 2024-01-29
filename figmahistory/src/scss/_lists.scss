@@ -25,6 +25,10 @@
 
     &.selected {
         background-color: $accentColor;
+
+        .secondaryText{
+            color:$accentColorNegativeText;
+        }
     }
 
     span {

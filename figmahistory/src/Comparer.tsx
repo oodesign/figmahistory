@@ -26,9 +26,8 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
     const rightImage = useRef<ReactZoomPanPinchRef>(null);
     const leftImage = useRef<ReactZoomPanPinchRef>(null);
     const canvasDiv = useRef<HTMLDivElement | null>(null);
-    const pageList = useRef<HTMLDivElement>(null);
 
-    
+
     const selectPrefix = "reactselect";
 
     const [isLoadingLeftPage, setIsLoadingLeftPage] = useState<boolean>(true);
@@ -68,7 +67,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
 
     const [fileVersionsList, setFileVersionsList] = useState<Version[]>([]);
 
-    const [sliderPadding, setSliderPadding] = useState(200);
+    const [sliderPadding, setSliderPadding] = useState(50);
     const [sliderPosition, setSliderPosition] = useState(50);
     const [canvasLeftWidth, setCanvasLeftWidth] = useState(0);
     const [canvasRightWidth, setCanvasRightWidth] = useState(0);
@@ -425,7 +424,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                     setSelectedPageId(versionDocument.pages[0].id);
             }
 
-            
+
 
 
             drawPage(globalState.selectedPageId, side);
@@ -613,25 +612,32 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
             setCanvasPageOffsetX(pageOffsetX);
             setCanvasPageOffsetY(pageOffsetY);
 
-            fitIntoView();
-
+            //Fit into view
+            const topFactor = 60;
             if (canvasDiv.current) {
                 let scaleX = (canvasDiv.current.clientWidth - canvasPadding) / canvasWidth;
-                let scaleY = (canvasDiv.current.clientHeight - canvasPadding) / canvasHeight;
-
-                (rightImage.current as any).setTransform(canvasPadding / 2, canvasPadding / 2, Math.min(scaleX, scaleY), 0);
-                (leftImage.current as any).setTransform(canvasPadding / 2, canvasPadding / 2, Math.min(scaleX, scaleY), 0);
+                let scaleY = (canvasDiv.current.clientHeight - canvasPadding - topFactor) / canvasHeight;
+    
+                let offsetX = (canvasDiv.current.clientWidth) / 2 - (canvasWidth * Math.min(scaleX, scaleY)) / 2;
+                let offsetY = (canvasDiv.current.clientHeight) / 2 - (canvasHeight * Math.min(scaleX, scaleY)) / 2;
+    
+                (rightImage.current as any).setTransform(offsetX, offsetY + topFactor, Math.min(scaleX, scaleY), 0);
+                (leftImage.current as any).setTransform(offsetX, offsetY + topFactor, Math.min(scaleX, scaleY), 0);
             }
         }
     }
 
     function fitIntoView() {
+        const topFactor = 40;
         if (canvasDiv.current) {
             let scaleX = (canvasDiv.current.clientWidth - canvasPadding) / canvasWidth;
-            let scaleY = (canvasDiv.current.clientHeight - canvasPadding) / canvasHeight;
+            let scaleY = (canvasDiv.current.clientHeight - canvasPadding - topFactor) / canvasHeight;
 
-            (rightImage.current as any).setTransform(canvasPadding / 2, canvasPadding / 2, Math.min(scaleX, scaleY), 0);
-            (leftImage.current as any).setTransform(canvasPadding / 2, canvasPadding / 2, Math.min(scaleX, scaleY), 0);
+            let offsetX = (canvasDiv.current.clientWidth) / 2 - (canvasWidth * Math.min(scaleX, scaleY)) / 2;
+            let offsetY = (canvasDiv.current.clientHeight) / 2 - (canvasHeight * Math.min(scaleX, scaleY)) / 2;
+
+            (rightImage.current as any).setTransform(offsetX, offsetY + topFactor, Math.min(scaleX, scaleY), 0);
+            (leftImage.current as any).setTransform(offsetX, offsetY + topFactor, Math.min(scaleX, scaleY), 0);
         }
     }
 
@@ -829,23 +835,22 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
 
     return (
         <div className={`comparer rowAvailable horizontalLayout ${props.className}`}>
-            <div className="colAuto sidePanel">
-                <div className="verticalLayout">
+            <div className={`colAuto sidePanel ${pagesListVersionLeft && pagesListVersionRight ? '' : 'collapsed'}`}>
+                <div className="verticalLayout sidePanelContent">
                     <div className="rowAuto title">
                         {globalState.documentName}
                     </div>
                     <div className="rowAuto header">
                         Pages
                     </div>
-                    {/* {renderPageList()} */}
 
-                    <List versionLeftPages={pagesListVersionLeft} versionRightPages={pagesListVersionRight} selectedItemId={globalState.selectedPageId} onSelectionChange={(selectedItem) => onPageSelectionChange(selectedItem)} />
+                    <List versionLeftPages={pagesListVersionLeft} versionRightPages={pagesListVersionRight} selectedVersionNameLeft={selectedVersionNameLeft} selectedVersionNameRight={selectedVersionNameRight} selectedItemId={globalState.selectedPageId} onSelectionChange={(selectedItem) => onPageSelectionChange(selectedItem)} />
                 </div>
             </div>
             <div className='colAvailable verticalLayout'>
 
                 <div ref={canvasDiv} className="rowAvailable">
-                    <ReactCompareSlider className='extend' onPositionChange={onSliderPositionChange} boundsPadding={sliderPadding}
+                    <ReactCompareSlider className='extend dotted' onPositionChange={onSliderPositionChange} boundsPadding={sliderPadding}
                         onlyHandleDraggable={true}
                         itemOne={
                             <TransformWrapper ref={leftImage} onTransformed={handleTransform} minScale={0.01} limitToBounds={false}>
@@ -855,7 +860,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                                 <div className="alignFullCenter" style={{
                                     position: 'absolute',
                                     width: `${canvasLeftWidth}px`,
-                                    top: '0px',
+                                    top: '24px',
                                 }}>
                                     <div className="canvasVersionOverlay">
                                         <Select className='select' classNamePrefix={selectPrefix} options={fileVersionsList} isMulti={false} unstyled components={customComponents} isSearchable={false} onChange={onVersion1Changed} value={selectVersionLeftSelectedOption} />
@@ -887,7 +892,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                                     position: 'absolute',
                                     width: `${canvasRightWidth}px`,
                                     left: `${canvasLeftWidth}px`,
-                                    top: '0px'
+                                    top: '24px'
                                 }}>
                                     <div className="canvasVersionOverlay">
                                         <Select className='select' classNamePrefix={selectPrefix} options={fileVersionsList} isMulti={false} unstyled components={customComponents} isSearchable={false} onChange={onVersion2Changed} value={selectVersionRightSelectedOption} />
