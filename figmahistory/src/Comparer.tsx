@@ -588,9 +588,6 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
         let pageLeftBounds = globalState.documentLeft.pages.find(page => page.id == pageId)?.boundingRect;
         let pageRightBounds = globalState.documentRight.pages.find(page => page.id == pageId)?.boundingRect;
 
-        if (pageLeftBounds) console.log("pageLeftBounds is not there")
-        if (pageRightBounds) console.log("pageRightBounds is not there")
-
         let canvasMinX = 0;
         let canvasMinY = 0;
         let canvasMaxX = 1000;
