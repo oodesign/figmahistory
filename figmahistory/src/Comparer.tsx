@@ -49,6 +49,11 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
     const [isLeftPageAvailable, setIsLeftPageAvailable] = useState<boolean>(true);
     const [isRightPageAvailable, setIsRightPageAvailable] = useState<boolean>(true);
 
+    const [hasLeftPageContent, setHasLeftPageContent] = useState<boolean>(true);
+    const [hasRightPageContent, setHasRightPageContent] = useState<boolean>(true);
+
+
+
     const [pagesListVersionLeft, setPagesListVersionLeft] = useState<Page[]>();
     const [pagesListVersionRight, setPagesListVersionRight] = useState<Page[]>();
     const [mergedPagesList, setMergedPagesList] = useState<Page[]>();
@@ -541,39 +546,55 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
 
             // console.log("contentIds:" + contentIds)
 
-            let getPagesVersion1Image = await fetch('https://api.figma.com/v1/images/' + globalState.documentId + "?ids=" + contentIds + "&format=png&scale=1&version=" + versionId, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${globalState.accessToken}` // Replace FigmaAPIKey with your actual access token
+            if (contentIds && contentIds != "") {
+
+                let getPagesVersionImages = await fetch('https://api.figma.com/v1/images/' + globalState.documentId + "?ids=" + contentIds + "&format=png&scale=1&version=" + versionId, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${globalState.accessToken}` // Replace FigmaAPIKey with your actual access token
+                    }
+                })
+
+                if (getPagesVersionImages.ok) {
+                    const responseJson = await getPagesVersionImages.json();
+
+                    // console.log(responseJson.images);
+
+                    let mapper = newNodesWithImages.map((node) => {
+                        const imageUrl = responseJson.images[node.id] || '';
+
+                        return {
+                            ...node,
+                            imageUrl,
+                        };
+                    });
+
+                    if (side == Side.LEFT) {
+                        setVersionLeftNodesWithImages(mapper);
+                        setIsLeftPageAvailable(true);
+                        setIsLoadingLeftPage(false);
+                        setHasLeftPageContent(true);
+                    }
+                    else if (side == Side.RIGHT) {
+                        setVersionRightNodesWithImages(mapper);
+                        setIsRightPageAvailable(true);
+                        setIsLoadingRightPage(false);
+                        setHasRightPageContent(true);
+                    }
+
                 }
-            })
-
-            if (getPagesVersion1Image.ok) {
-                const responseJson = await getPagesVersion1Image.json();
-
-                // console.log(responseJson.images);
-
-                let mapper = newNodesWithImages.map((node) => {
-                    const imageUrl = responseJson.images[node.id] || '';
-
-                    return {
-                        ...node,
-                        imageUrl,
-                    };
-                });
-
-
+            }
+            else {
                 if (side == Side.LEFT) {
                     setIsLeftPageAvailable(true);
                     setIsLoadingLeftPage(false);
-                    setVersionLeftNodesWithImages(mapper);
+                    setHasLeftPageContent(false);
                 }
                 else if (side == Side.RIGHT) {
                     setIsRightPageAvailable(true);
                     setIsLoadingRightPage(false);
-                    setVersionRightNodesWithImages(mapper);
+                    setHasRightPageContent(false);
                 }
-
             }
         }
 
@@ -852,7 +873,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
 
 
     function onPageSelectionChange(page: Page): void {
-        console.log("Page changed. New page is:" + page.name);
+        // console.log("Page changed. New page is:" + page.name);
 
         setSelectedPageId(page.id);
 
@@ -869,9 +890,6 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
         }
         else
             setIsRightPageAvailable(false);
-
-
-        console.log("Ended page change");
     }
 
     // #endregion
@@ -926,6 +944,18 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                                         This page is not available in this version
                                     </div>
                                 </div>
+
+                                <div className={`animatedDiv invisible ${hasLeftPageContent ? 'fadeOut' : 'fadeIn'}`} style={{
+                                    position: 'absolute',
+                                    width: `${canvasLeftWidth}px`,
+                                    height: '100%',
+                                    top: '0px',
+                                }}>
+                                    <div className='verticalLayout alignFullCenterAndCenterText secondaryText'>
+                                        This page is empty
+                                    </div>
+                                </div>
+
                                 <div className="alignFullCenter" style={{
                                     position: 'absolute',
                                     width: `${canvasLeftWidth}px`,
@@ -972,6 +1002,18 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                                         This page is not available in the this version
                                     </div>
                                 </div>
+                                <div className={`animatedDiv invisible ${hasRightPageContent ? 'fadeOut' : 'fadeIn'}`} style={{
+                                    position: 'absolute',
+                                    width: `${canvasRightWidth}px`,
+                                    left: `${canvasLeftWidth}px`,
+                                    height: '100%',
+                                    top: '0px',
+                                }}>
+                                    <div className='verticalLayout alignFullCenterAndCenterText secondaryText'>
+                                        This page is empty
+                                    </div>
+                                </div>
+
                                 <div className="alignFullCenter" style={{
                                     position: 'absolute',
                                     width: `${canvasRightWidth}px`,
