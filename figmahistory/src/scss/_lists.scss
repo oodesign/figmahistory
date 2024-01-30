@@ -15,19 +15,24 @@
 
     &:hover {
         @include for-theme(light) {
-            background-color: $light_leftListItemHoverBackgroundColor;
+            background-color: $light_componentSecondaryColorHover;
         }
 
         @include for-theme(dark) {
-            background-color: $dark_leftListItemHoverBackgroundColor;
+            background-color: $dark_componentSecondaryColorHover;
         }
     }
 
     &.selected {
         background-color: $accentColor;
+        color: $accentColorNegativeText;
 
-        .secondaryText{
-            color:$accentColorNegativeText;
+        .primaryText {
+            color: $accentColorNegativeText;
+        }
+
+        .secondaryText {
+            color: $accentColorNegativeSecondaryText;
         }
     }
 

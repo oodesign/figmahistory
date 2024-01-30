@@ -7,13 +7,9 @@
     background-color: $accentColor;
     transition: all 0.15s ease-out;
 
-    @include for-theme(light) {
-        color: $light_primaryColor;
-    }
 
-    @include for-theme(dark) {
-        color: $dark_primaryColor;
-    }
+    color: $accentColorNegativeText;
+
 
     padding: 6px 24px;
     height: $componentHeightDefault;

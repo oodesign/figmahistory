@@ -19,6 +19,7 @@ import FigmaFileInput from './FigmaFileInput';
 import Loader from './Loader';
 import Comparer, { ComparerRef } from './Comparer';
 import { node } from 'prop-types';
+import { ReactSVG } from 'react-svg';
 
 const Start = () => {
 
@@ -187,7 +188,7 @@ const Start = () => {
     <FigmaFileInput ref={figmaFileInputRef} getDocument={getDocument} className={`singleCellExtend animatedDiv visible ${onInputState ? 'fadeIn' : 'fadeOut'}`} />
 
     <div className="logo">
-      <img src="./figmahistory/images/logo.png" />
+      <ReactSVG src="./figmahistory/images/logo.svg" renumerateIRIElements={false}/>
     </div>
 
     <div className={`userData alignVerticalCenter animatedDiv invisible ${userData ? 'fadeIn' : 'fadeOut'}`}>

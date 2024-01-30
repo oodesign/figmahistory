@@ -4,11 +4,34 @@
         position: absolute;
         top: 16px;
         left: 24px;
+        width: 128px;
 
         img {
             width: 124px;
             height: 28px;
         }
+
+        #part1,
+        #bar {
+            @include for-theme(light) {
+                fill: $light_primaryColor;
+            }
+
+            @include for-theme(dark) {
+                fill: $dark_primaryColor;
+            }
+        }
+
+        #part2 {
+            @include for-theme(light) {
+                fill: $light_tertiaryColor;
+            }
+
+            @include for-theme(dark) {
+                fill: $dark_tertiaryColor;
+            }
+        }
+
     }
 
     .userData {
@@ -38,6 +61,30 @@
         width: 446px;
         height: 112px;
         margin-bottom: 64px;
+
+        .front {
+            path {
+                @include for-theme(light) {
+                    fill: $light_primaryColor;
+                }
+
+                @include for-theme(dark) {
+                    fill: $dark_primaryColor;
+                }
+            }
+        }
+
+        .back {
+            path {
+                @include for-theme(light) {
+                    fill: $light_tertiaryColor;
+                }
+
+                @include for-theme(dark) {
+                    fill: $dark_tertiaryColor;
+                }
+            }
+        }
     }
 
     .label {
@@ -95,7 +142,7 @@
 
         &:hover {
             @include for-theme(light) {
-                background-color: rgba($light_componentSecondaryColorActive, 0.8);
+                background-color: rgba($light_componentSecondaryColorHover, 0.8);
             }
 
             @include for-theme(dark) {
@@ -122,14 +169,15 @@
         overflow: hidden;
         margin-top: 2px;
         padding: 4px;
+        backdrop-filter: blur(20px);
 
         @include for-theme(light) {
-            background-color: $light_backgroundColor;
+            background-color: rgba($light_backgroundColor,0.9);
             border: 1px solid $light_componentSecondaryColor;
         }
 
         @include for-theme(dark) {
-            background-color: $dark_backgroundColor;
+            background-color: rgba($dark_backgroundColor,0.9);
             border: 1px solid $dark_componentSecondaryColor;
         }
 
@@ -144,7 +192,7 @@
     }
 
     .versionContainer {
-        padding: 8px 12px;
+        padding: 12px 16px;
         transition: all 0.1s ease-out;
 
         img {
@@ -170,7 +218,7 @@
 
     .versionOption {
 
-        padding: 8px 8px;
+        padding:12px 16px;
         transition: all 0.1s ease-out;
         border-radius: 2px;
 
@@ -208,7 +256,7 @@
         transition: all 0.3s ease-out;
 
         @include for-theme(light) {
-            background-color: $light_backgroundColor2;
+            background-color: $light_backgroundColor;
         }
 
         @include for-theme(dark) {
@@ -240,7 +288,6 @@
         }
 
         .listItem {
-
             padding: 8px 24px 12px 24px;
         }
     }
@@ -255,13 +302,13 @@
         padding: 12px;
 
         @include for-theme(light) {
-            background-color: $light_backgroundColor;
-            border-top: 1px solid $light_backgroundColor2;
+            background-color: $light_backgroundColor2;
+            border-top: 1px solid $light_backgroundColor3;
         }
 
         @include for-theme(dark) {
             background-color: $dark_backgroundColor;
-            border-top: 1px solid $dark_backgroundColor2;
+            border-top: 1px solid $dark_backgroundColor3;
         }
 
         display: grid;
@@ -273,6 +320,16 @@
             &.iconButton {
                 width: 36px;
                 margin-right: 8px;
+
+                path{
+                    @include for-theme(light) {
+                        fill: $light_primaryColor;
+                    }
+
+                    @include for-theme(dark) {
+                        fill: $dark_primaryColor;
+                    }
+                }
 
                 &:hover {
                     @include for-theme(light) {
@@ -300,6 +357,16 @@
 
                         @include for-theme(dark) {
                             border-color: $accentColorHover;
+                        }
+                    }
+
+                    path{
+                        @include for-theme(light) {
+                            fill: $accentColor;
+                        }
+    
+                        @include for-theme(dark) {
+                            fill: $dark_primaryColor;
                         }
                     }
                 }

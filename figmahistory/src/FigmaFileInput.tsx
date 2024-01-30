@@ -1,5 +1,6 @@
 import React, { SyntheticEvent, useRef } from 'react';
 import { ReactCompareSlider, useReactCompareSliderRef } from 'react-compare-slider';
+import { ReactSVG } from 'react-svg';
 
 interface FigmaFileInputProps {
     getDocument: (id: string, nodeId: string) => void;
@@ -56,13 +57,13 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                     <ReactCompareSlider ref={reactCompareSliderRef} onLoad={setSliderPosition} transition="0.75s ease-in-out" position={100}
 
                         itemOne={
-                            <div className="extend innerCanvas">
-                                <img src="./figmahistory/images/logoSlider.png" />
+                            <div className="extend innerCanvas front">
+                                <ReactSVG src="./figmahistory/images/logoSlider.svg"/>
                             </div>
                         }
                         itemTwo={
-                            <div className="extend innerCanvas">
-                                <img src="./figmahistory/images/logoSlider2.png" />
+                            <div className="extend innerCanvas back">
+                            <ReactSVG src="./figmahistory/images/logoSlider.svg"/>
                             </div>
                         }
                     />
