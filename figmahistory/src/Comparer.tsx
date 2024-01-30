@@ -886,6 +886,11 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
         hideSide(Side.LEFT, false);
         hideSide(Side.RIGHT, false);
 
+        //TODO Refactor how loading states are handled
+        //To fade out messages. Will be shown again if needd on drawPage.
+        setHasLeftPageContent(true);
+        setHasRightPageContent(true);
+
         if (page.presentInVersionLeft)
             drawPage(page.id, Side.LEFT);
         else
