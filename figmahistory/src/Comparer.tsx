@@ -406,8 +406,14 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
             // }
 
 
-            if (!globalState.selectedPageId)
-                setSelectedPageId(versionDocument.pages[0].id);
+            if (!globalState.selectedPageId) {
+                if (globalState.selectedNodeId) {
+                    if (pages.some(page => page.id == globalState.selectedNodeId))
+                        setSelectedPageId(globalState.selectedNodeId);
+                }
+                else
+                    setSelectedPageId(versionDocument.pages[0].id);
+            }
 
             const mergedPageList = getBothDocumentVersionsMergedPagesList();
 

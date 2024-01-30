@@ -226,14 +226,16 @@
 
         .title {
             @include primaryText;
-            margin-left: 24px;
+            padding-left: 24px;
+            padding-right: 24px;
             margin-bottom: 32px;
             font-size: 16px;
         }
 
         .header {
             @include secondaryText;
-            margin-left: 24px;
+            padding-left: 24px;
+            padding-right: 24px;
             margin-bottom: 16px;
         }
 
