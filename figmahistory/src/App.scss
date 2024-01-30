@@ -100,9 +100,19 @@ body {
 // #region Window, backgrounds, and panels
 
 .dotted {
-  background: transparent;
   background-size: 20px 20px;
   background-position: -19px -19px;
+
+
+  @include for-theme(light) {
+    background-color: $light_backgroundColor;
+    color: $light_primaryColor;
+  }
+
+  @include for-theme(dark) {
+    background-color: $dark_backgroundColor;
+    color: $dark_primaryColor;
+  }
 
   @include for-theme(light) {
     background-image: radial-gradient($light_backgroundColor2 1px, transparent 0);

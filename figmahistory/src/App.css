@@ -1176,9 +1176,20 @@ body {
 }
 
 .dotted {
-  background: transparent;
   background-size: 20px 20px;
   background-position: -19px -19px;
+}
+@media (prefers-color-scheme: light) {
+  .dotted {
+    background-color: #F9F9F9;
+    color: #323232;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .dotted {
+    background-color: #19191C;
+    color: #ffffff;
+  }
 }
 @media (prefers-color-scheme: light) {
   .dotted {

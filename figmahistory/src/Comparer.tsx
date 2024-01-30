@@ -917,11 +917,11 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
             <div className='colAvailable verticalLayout'>
 
                 <div ref={canvasDiv} className="rowAvailable">
-                    <ReactCompareSlider className='extend dotted' onPositionChange={onSliderPositionChange} boundsPadding={sliderPadding}
+                    <ReactCompareSlider className='extend' onPositionChange={onSliderPositionChange} boundsPadding={sliderPadding}
                         onlyHandleDraggable={true}
                         itemOne={
                             <TransformWrapper ref={leftImage} onTransformed={handleTransform} minScale={0.01} limitToBounds={false}>
-                                <TransformComponent wrapperClass='verticalLayout' contentClass='verticalLayout'>
+                                <TransformComponent wrapperClass='verticalLayout dotted' contentClass='verticalLayout'>
                                     <Canvas name='LEFT' allImagesLoaded={canvasLeftAllImagesLoaded} nodesWithImages={versionLeftNodesWithImages} differences={versionLeftDifferences} differenceTypes={differencesTypes} canvasWidth={canvasWidth} canvasHeight={canvasHeight} offsetX={canvasPageOffsetX} offsetY={canvasPageOffsetY} background={selectedPageColorLeft} containerClass={`innerCanvas animatedDiv invisible ${isLoadingLeftPage ? 'fadeOut' : 'fadeIn'}`} />
                                 </TransformComponent>
 
@@ -975,9 +975,8 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                         }
                         itemTwo={
                             <TransformWrapper ref={rightImage} onTransformed={handleTransform} minScale={0.01} limitToBounds={false}>
-                                <TransformComponent wrapperClass='verticalLayout' contentClass='verticalLayout'>
+                                <TransformComponent wrapperClass='verticalLayout dotted' contentClass='verticalLayout'>
                                     <Canvas name='RIGHT' allImagesLoaded={canvasRightAllImagesLoaded} nodesWithImages={versionRightNodesWithImages} differences={versionRightDifferences} differenceTypes={differencesTypes} canvasWidth={canvasWidth} canvasHeight={canvasHeight} offsetX={canvasPageOffsetX} offsetY={canvasPageOffsetY} background={selectedPageColorRight} containerClass={`innerCanvas animatedDiv invisible ${isLoadingRightPage ? 'fadeOut' : 'fadeIn'}`} />
-
                                 </TransformComponent>
 
 
