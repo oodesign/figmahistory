@@ -591,33 +591,60 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
         if (pageLeftBounds) console.log("pageLeftBounds is not there")
         if (pageRightBounds) console.log("pageRightBounds is not there")
 
+        let canvasMinX = 0;
+        let canvasMinY = 0;
+        let canvasMaxX = 1000;
+        let canvasMaxY = 1000;
+        let canvasWidth = 1000;
+        let canvasHeight = 1000;
+        let pageOffsetX = 0;
+        let pageOffsetY = 0;
+
         if (pageLeftBounds && pageRightBounds) {
-            let canvasMinX = Math.min(pageLeftBounds.x, pageRightBounds.x);
-            let canvasMinY = Math.min(pageLeftBounds.y, pageRightBounds.y);
-            let canvasMaxX = Math.max((pageLeftBounds.x + pageLeftBounds.width), (pageRightBounds.x + pageRightBounds.width));
-            let canvasMaxY = Math.max((pageLeftBounds.y + pageLeftBounds.height), (pageRightBounds.y + pageRightBounds.height));
-            let canvasWidth = canvasMaxX - canvasMinX;
-            let canvasHeight = canvasMaxY - canvasMinY;
-            let pageOffsetX = canvasMinX;
-            let pageOffsetY = canvasMinY;
+            canvasMinX = Math.min(pageLeftBounds.x, pageRightBounds.x);
+            canvasMinY = Math.min(pageLeftBounds.y, pageRightBounds.y);
+            canvasMaxX = Math.max((pageLeftBounds.x + pageLeftBounds.width), (pageRightBounds.x + pageRightBounds.width));
+            canvasMaxY = Math.max((pageLeftBounds.y + pageLeftBounds.height), (pageRightBounds.y + pageRightBounds.height));
+            canvasWidth = canvasMaxX - canvasMinX;
+            canvasHeight = canvasMaxY - canvasMinY;
+            pageOffsetX = canvasMinX;
+            pageOffsetY = canvasMinY;
+        } else if (pageLeftBounds) {
+            canvasMinX = pageLeftBounds.x;
+            canvasMinY = pageLeftBounds.y;
+            canvasMaxX = (pageLeftBounds.x + pageLeftBounds.width);
+            canvasMaxY = (pageLeftBounds.y + pageLeftBounds.height);
+            canvasWidth = canvasMaxX - canvasMinX;
+            canvasHeight = canvasMaxY - canvasMinY;
+            pageOffsetX = canvasMinX;
+            pageOffsetY = canvasMinY;
+        } else if (pageRightBounds) {
+            canvasMinX = pageRightBounds.x;
+            canvasMinY = pageRightBounds.y;
+            canvasMaxX = (pageRightBounds.x + pageRightBounds.width);
+            canvasMaxY = (pageRightBounds.y + pageRightBounds.height);
+            canvasWidth = canvasMaxX - canvasMinX;
+            canvasHeight = canvasMaxY - canvasMinY;
+            pageOffsetX = canvasMinX;
+            pageOffsetY = canvasMinY;
+        }
 
-            setCanvasWidth(canvasWidth);
-            setCanvasHeight(canvasHeight);
-            setCanvasPageOffsetX(pageOffsetX);
-            setCanvasPageOffsetY(pageOffsetY);
+        setCanvasWidth(canvasWidth);
+        setCanvasHeight(canvasHeight);
+        setCanvasPageOffsetX(pageOffsetX);
+        setCanvasPageOffsetY(pageOffsetY);
 
-            //Fit into view
-            const topFactor = 60;
-            if (canvasDiv.current) {
-                let scaleX = (canvasDiv.current.clientWidth - canvasPadding) / canvasWidth;
-                let scaleY = (canvasDiv.current.clientHeight - canvasPadding - topFactor) / canvasHeight;
+        //Fit into view
+        const topFactor = 40;
+        if (canvasDiv.current) {
+            let scaleX = (canvasDiv.current.clientWidth - canvasPadding) / canvasWidth;
+            let scaleY = (canvasDiv.current.clientHeight - canvasPadding - topFactor) / canvasHeight;
 
-                let offsetX = (canvasDiv.current.clientWidth) / 2 - (canvasWidth * Math.min(scaleX, scaleY)) / 2;
-                let offsetY = (canvasDiv.current.clientHeight) / 2 - (canvasHeight * Math.min(scaleX, scaleY)) / 2;
+            let offsetX = (canvasDiv.current.clientWidth) / 2 - (canvasWidth * Math.min(scaleX, scaleY)) / 2;
+            let offsetY = (canvasDiv.current.clientHeight) / 2 - (canvasHeight * Math.min(scaleX, scaleY)) / 2;
 
-                (rightImage.current as any).setTransform(offsetX, offsetY + topFactor, Math.min(scaleX, scaleY), 0);
-                (leftImage.current as any).setTransform(offsetX, offsetY + topFactor, Math.min(scaleX, scaleY), 0);
-            }
+            (rightImage.current as any).setTransform(offsetX, offsetY + topFactor, Math.min(scaleX, scaleY), 0);
+            (leftImage.current as any).setTransform(offsetX, offsetY + topFactor, Math.min(scaleX, scaleY), 0);
         }
     }
 
