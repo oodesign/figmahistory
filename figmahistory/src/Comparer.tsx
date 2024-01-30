@@ -51,6 +51,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
 
     const [pagesListVersionLeft, setPagesListVersionLeft] = useState<Page[]>();
     const [pagesListVersionRight, setPagesListVersionRight] = useState<Page[]>();
+    const [mergedPagesList, setMergedPagesList] = useState<Page[]>();
 
     const [versionLeftNodesWithImages, setVersionLeftNodesWithImages] = useState<NodeWithImage[]>([]);
     const [versionRightNodesWithImages, setVersionRightNodesWithImages] = useState<NodeWithImage[]>([]);
@@ -332,27 +333,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
 
     async function fetchDocumentVersion(versionId: string, side: Side) {
 
-        if (side == Side.LEFT) {
-            setIsLoadingLeftPage(true);
-            setIsLoadingLeftImages(true);
-            globalState.isDocumentLeftLoaded = false;
-            setTimeout(() => {
-                setVersionLeftNodesWithImages([]);
-                setVersionLeftDifferences([]);
-                setSelectedPageColorLeft("transparent");
-            }, 500)
-
-        }
-        if (side == Side.RIGHT) {
-            setIsLoadingRightPage(true);
-            setIsLoadingRightImages(true);
-            globalState.isDocumentRightLoaded = false;
-            setTimeout(() => {
-                setVersionRightNodesWithImages([]);
-                setVersionRightDifferences([]);
-                setSelectedPageColorRight("transparent");
-            }, 500)
-        }
+        hideSide(side, true);
 
         // console.log("Fetching version:" + versionId + " for side:" + side.valueOf());
         // console.log("At this point, globalPageId is:" + globalState.selectedPageId);
@@ -384,8 +365,8 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                     name: page.name,
                     nameOtherVersion: "",
                     backgroundColor: page.backgroundColor,
-                    presentInVersionLeft: false,
-                    presentInVersionRight: false,
+                    presentInVersionLeft: side == Side.LEFT,
+                    presentInVersionRight: side == Side.RIGHT,
                     flatNodes: [],
                     boundingRect: { x: 0, y: 0, width: 0, height: 0 }
                 };
@@ -413,23 +394,61 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
             }
 
 
-            //If node-id retrieved from URL belongs to a page, and globalState.selectedPageId has not been set yet, set it to the retrieved id.
-            if (!globalState.selectedPageId && globalState.selectedNodeId) {
-                if (pages.some(page => page.id == globalState.selectedNodeId))
-                    setSelectedPageId(globalState.selectedNodeId);
-            }
+            //TODO If node-id retrieved from URL belongs to a page, and globalState.selectedPageId has not been set yet, set it to the retrieved id.
+            // if (!globalState.selectedPageId && globalState.selectedNodeId) {
+            //     if (pages.some(page => page.id == globalState.selectedNodeId))
+            //         setSelectedPageId(globalState.selectedNodeId);
+            // }
+
+
+            if (!globalState.selectedPageId)
+                setSelectedPageId(versionDocument.pages[0].id);
+
+            const mergedPageList = getBothDocumentVersionsMergedPagesList();
+
+            setMergedPagesList(mergedPageList);
+
+            if (pages.some(page => page.id == globalState.selectedPageId))
+                drawPage(globalState.selectedPageId, side);
             else {
-
-                if (!globalState.selectedPageId)
-                    setSelectedPageId(versionDocument.pages[0].id);
+                if (side == Side.LEFT) setIsLeftPageAvailable(false);
+                if (side == Side.RIGHT) setIsRightPageAvailable(false);
             }
-
-
-
-
-            drawPage(globalState.selectedPageId, side);
 
         }
+    }
+
+
+    function getBothDocumentVersionsMergedPagesList() {
+        const mergedPageList: Page[] = [];
+        if (globalState.documentLeft && globalState.documentRight) {
+            for (const leftPage of globalState.documentLeft.pages) {
+                const rightPage = globalState.documentRight.pages.find(rightPage => rightPage.id == leftPage.id)
+                if (rightPage) {
+                    leftPage.presentInVersionRight = true;
+                    leftPage.nameOtherVersion = rightPage.name;
+                }
+                else {
+                    leftPage.presentInVersionRight = false;
+                    leftPage.nameOtherVersion = "";
+                }
+                if (!mergedPageList.some(page => page.id == leftPage.id)) mergedPageList.push(leftPage);
+            }
+            for (const rightPage of globalState.documentRight.pages) {
+                const leftPage = globalState.documentLeft.pages.find(leftPage => leftPage.id == rightPage.id)
+                if (leftPage) {
+                    rightPage.presentInVersionLeft = true;
+                    rightPage.nameOtherVersion = leftPage.name;
+                }
+                else {
+                    rightPage.presentInVersionLeft = false;
+                    rightPage.nameOtherVersion = "";
+                }
+                if (!mergedPageList.some(page => page.id == rightPage.id)) mergedPageList.push(rightPage);
+            }
+        }
+
+        return mergedPageList;
     }
 
     // #endregion
@@ -446,38 +465,14 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
             versionId = globalState.documentRight.version;
         }
 
-        if (side == Side.LEFT) {
-            setIsLoadingLeftPage(true);
-            setIsLoadingLeftImages(true);
-            setTimeout(() => {
-                setVersionLeftNodesWithImages([]);
-                setVersionLeftDifferences([]);
-                setSelectedPageColorLeft("transparent");
-            }, 500)
-
-        }
-        if (side == Side.RIGHT) {
-            setIsLoadingRightPage(true);
-            setIsLoadingRightImages(true);
-            setTimeout(() => {
-                setVersionRightNodesWithImages([]);
-                setVersionRightDifferences([]);
-                setSelectedPageColorRight("transparent");
-            }, 500)
-        }
-
         await fetchPage(versionId, pageId, side);
 
         calculateDifferences(pageId);
         setCanvasDimensionsAndOffset(pageId);
 
-        drawVersionPresent(side, true);
-
         let page: Page | undefined = undefined;
         let leftPage = globalState.documentLeft.pages.find(page => page.id === pageId);
         let rightPage = globalState.documentRight.pages.find(page => page.id === pageId);
-
-
 
         if (side == Side.LEFT) {
             versionId = globalState.documentLeft.version;
@@ -569,11 +564,12 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
 
 
                 if (side == Side.LEFT) {
-
+                    setIsLeftPageAvailable(true);
                     setIsLoadingLeftPage(false);
                     setVersionLeftNodesWithImages(mapper);
                 }
                 else if (side == Side.RIGHT) {
+                    setIsRightPageAvailable(true);
                     setIsLoadingRightPage(false);
                     setVersionRightNodesWithImages(mapper);
                 }
@@ -584,11 +580,6 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
     }
 
 
-    function drawVersionPresent(side: Side, present: boolean) {
-        if (side == Side.LEFT) setIsLeftPageAvailable(present);
-        if (side == Side.RIGHT) setIsRightPageAvailable(present);
-    }
-
     // #endregion
 
 
@@ -596,6 +587,9 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
     function setCanvasDimensionsAndOffset(pageId: string) {
         let pageLeftBounds = globalState.documentLeft.pages.find(page => page.id == pageId)?.boundingRect;
         let pageRightBounds = globalState.documentRight.pages.find(page => page.id == pageId)?.boundingRect;
+
+        if (pageLeftBounds) console.log("pageLeftBounds is not there")
+        if (pageRightBounds) console.log("pageRightBounds is not there")
 
         if (pageLeftBounds && pageRightBounds) {
             let canvasMinX = Math.min(pageLeftBounds.x, pageRightBounds.x);
@@ -617,10 +611,10 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
             if (canvasDiv.current) {
                 let scaleX = (canvasDiv.current.clientWidth - canvasPadding) / canvasWidth;
                 let scaleY = (canvasDiv.current.clientHeight - canvasPadding - topFactor) / canvasHeight;
-    
+
                 let offsetX = (canvasDiv.current.clientWidth) / 2 - (canvasWidth * Math.min(scaleX, scaleY)) / 2;
                 let offsetY = (canvasDiv.current.clientHeight) / 2 - (canvasHeight * Math.min(scaleX, scaleY)) / 2;
-    
+
                 (rightImage.current as any).setTransform(offsetX, offsetY + topFactor, Math.min(scaleX, scaleY), 0);
                 (leftImage.current as any).setTransform(offsetX, offsetY + topFactor, Math.min(scaleX, scaleY), 0);
             }
@@ -750,13 +744,13 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
     }
 
     function onVersion1Changed(newValue: any, actionMeta: ActionMeta<any>): void {
-        console.log("Changed left version");
+        // console.log("Changed left version");
         setSelectVersionLeftSelectedOption(newValue);
         fetchDocumentVersion(newValue.id, Side.LEFT);
     }
 
     function onVersion2Changed(newValue: any, actionMeta: ActionMeta<any>): void {
-        console.log("Changed right version");
+        // console.log("Changed right version");
         setSelectVersionRightSelectedOption(newValue);
         fetchDocumentVersion(newValue.id, Side.RIGHT);
     }
@@ -803,29 +797,54 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
     }
 
 
+    function hideSide(side: Side, resetIsDocumentLoaded: boolean) {
+        if (side == Side.LEFT) {
+            setIsLoadingLeftPage(true);
+            setIsLoadingLeftImages(true);
+            if (resetIsDocumentLoaded)
+                globalState.isDocumentLeftLoaded = false;
+
+            setTimeout(() => {
+                setVersionLeftNodesWithImages([]);
+                setVersionLeftDifferences([]);
+                setSelectedPageColorLeft("transparent");
+            }, 500)
+
+        }
+        if (side == Side.RIGHT) {
+            setIsLoadingRightPage(true);
+            setIsLoadingRightImages(true);
+            if (resetIsDocumentLoaded)
+                globalState.isDocumentRightLoaded = false;
+
+            setTimeout(() => {
+                setVersionRightNodesWithImages([]);
+                setVersionRightDifferences([]);
+                setSelectedPageColorRight("transparent");
+            }, 500)
+        }
+    }
+
+
 
     function onPageSelectionChange(page: Page): void {
         console.log("Page changed. New page is:" + page.name);
 
         setSelectedPageId(page.id);
 
-        if (page.presentInVersionLeft) {
-            console.log("Will try to draw left version. version id is:" + globalState.documentLeft.version)
+        hideSide(Side.LEFT, false);
+        hideSide(Side.RIGHT, false);
+
+        if (page.presentInVersionLeft)
             drawPage(page.id, Side.LEFT);
-        }
-        else {
-            console.log("Apparently page is not present in left version");
-            drawVersionPresent(Side.LEFT, false);
-        }
+        else
+            setIsLeftPageAvailable(false);
 
         if (page.presentInVersionRight) {
-            console.log("Will try to draw right version. version id is:" + globalState.documentRight.version)
             drawPage(page.id, Side.RIGHT);
         }
-        else {
-            console.log("Apparently page is not present in right version");
-            drawVersionPresent(Side.RIGHT, false);
-        }
+        else
+            setIsRightPageAvailable(false);
 
 
         console.log("Ended page change");
@@ -844,7 +863,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                         Pages
                     </div>
 
-                    <List versionLeftPages={pagesListVersionLeft} versionRightPages={pagesListVersionRight} selectedVersionNameLeft={selectedVersionNameLeft} selectedVersionNameRight={selectedVersionNameRight} selectedItemId={globalState.selectedPageId} onSelectionChange={(selectedItem) => onPageSelectionChange(selectedItem)} />
+                    <List pageList={mergedPagesList} selectedVersionNameLeft={selectedVersionNameLeft} selectedVersionNameRight={selectedVersionNameRight} selectedItemId={globalState.selectedPageId} onSelectionChange={(selectedItem) => onPageSelectionChange(selectedItem)} />
                 </div>
             </div>
             <div className='colAvailable verticalLayout'>
@@ -857,15 +876,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                                 <TransformComponent wrapperClass='verticalLayout' contentClass='verticalLayout'>
                                     <Canvas name='LEFT' allImagesLoaded={canvasLeftAllImagesLoaded} nodesWithImages={versionLeftNodesWithImages} differences={versionLeftDifferences} differenceTypes={differencesTypes} canvasWidth={canvasWidth} canvasHeight={canvasHeight} offsetX={canvasPageOffsetX} offsetY={canvasPageOffsetY} background={selectedPageColorLeft} containerClass={`innerCanvas animatedDiv invisible ${isLoadingLeftPage ? 'fadeOut' : 'fadeIn'}`} />
                                 </TransformComponent>
-                                <div className="alignFullCenter" style={{
-                                    position: 'absolute',
-                                    width: `${canvasLeftWidth}px`,
-                                    top: '24px',
-                                }}>
-                                    <div className="canvasVersionOverlay">
-                                        <Select className='select' classNamePrefix={selectPrefix} options={fileVersionsList} isMulti={false} unstyled components={customComponents} isSearchable={false} onChange={onVersion1Changed} value={selectVersionLeftSelectedOption} />
-                                    </div>
-                                </div>
+
 
                                 <div className={`animatedDiv invisible ${(!isLoadingLeftImages && !isLoadingLeftPage) ? 'fadeOut' : 'fadeOut'}`} style={{
                                     position: 'absolute',
@@ -880,6 +891,26 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                                         </div>
                                     </div>
                                 </div>
+
+                                <div className={`animatedDiv invisible ${isLeftPageAvailable ? 'fadeOut' : 'fadeIn'}`} style={{
+                                    position: 'absolute',
+                                    width: `${canvasLeftWidth}px`,
+                                    height: '100%',
+                                    top: '0px',
+                                }}>
+                                    <div className='verticalLayout alignFullCenterAndCenterText secondaryText'>
+                                        This page is not available in this version
+                                    </div>
+                                </div>
+                                <div className="alignFullCenter" style={{
+                                    position: 'absolute',
+                                    width: `${canvasLeftWidth}px`,
+                                    top: '24px',
+                                }}>
+                                    <div className="canvasVersionOverlay">
+                                        <Select className='select' classNamePrefix={selectPrefix} options={fileVersionsList} isMulti={false} unstyled components={customComponents} isSearchable={false} onChange={onVersion1Changed} value={selectVersionLeftSelectedOption} />
+                                    </div>
+                                </div>
                             </TransformWrapper>
                         }
                         itemTwo={
@@ -888,16 +919,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                                     <Canvas name='RIGHT' allImagesLoaded={canvasRightAllImagesLoaded} nodesWithImages={versionRightNodesWithImages} differences={versionRightDifferences} differenceTypes={differencesTypes} canvasWidth={canvasWidth} canvasHeight={canvasHeight} offsetX={canvasPageOffsetX} offsetY={canvasPageOffsetY} background={selectedPageColorRight} containerClass={`innerCanvas animatedDiv invisible ${isLoadingRightPage ? 'fadeOut' : 'fadeIn'}`} />
 
                                 </TransformComponent>
-                                <div className="alignFullCenter" style={{
-                                    position: 'absolute',
-                                    width: `${canvasRightWidth}px`,
-                                    left: `${canvasLeftWidth}px`,
-                                    top: '24px'
-                                }}>
-                                    <div className="canvasVersionOverlay">
-                                        <Select className='select' classNamePrefix={selectPrefix} options={fileVersionsList} isMulti={false} unstyled components={customComponents} isSearchable={false} onChange={onVersion2Changed} value={selectVersionRightSelectedOption} />
-                                    </div>
-                                </div>
+
 
 
                                 <div className={`animatedDiv invisible ${(!isLoadingRightImages && !isLoadingRightPage) ? 'fadeOut' : 'fadeOut'}`} style={{
@@ -914,6 +936,30 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                                         </div>
                                     </div>
                                 </div>
+
+                                <div className={`animatedDiv invisible ${isRightPageAvailable ? 'fadeOut' : 'fadeIn'}`} style={{
+                                    position: 'absolute',
+                                    width: `${canvasRightWidth}px`,
+                                    left: `${canvasLeftWidth}px`,
+                                    height: '100%',
+                                    top: '0px',
+                                }}>
+                                    <div className='verticalLayout alignFullCenterAndCenterText secondaryText'>
+                                        This page is not available in the this version
+                                    </div>
+                                </div>
+                                <div className="alignFullCenter" style={{
+                                    position: 'absolute',
+                                    width: `${canvasRightWidth}px`,
+                                    left: `${canvasLeftWidth}px`,
+                                    top: '24px'
+                                }}>
+                                    <div className="canvasVersionOverlay">
+                                        <Select className='select' classNamePrefix={selectPrefix} options={fileVersionsList} isMulti={false} unstyled components={customComponents} isSearchable={false} onChange={onVersion2Changed} value={selectVersionRightSelectedOption} />
+                                    </div>
+                                </div>
+
+
                             </TransformWrapper>
                         }
                     />
