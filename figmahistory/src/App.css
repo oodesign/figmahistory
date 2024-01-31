@@ -393,6 +393,17 @@ div::-webkit-scrollbar-thumb {
     border-color: #8C2CD7;
   }
 }
+@media (prefers-color-scheme: light) {
+  .btnSecondary.checked {
+    border-color: #901AED;
+    color: #901AED;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .btnSecondary.checked {
+    border-color: #901AED;
+  }
+}
 
 .btnTertiary {
   border: 1px solid transparent;
@@ -963,6 +974,16 @@ input[type=text].hasMessage {
 .comparer .reactselect__indicators {
   width: 32px;
 }
+@media (prefers-color-scheme: light) {
+  .comparer .sidebysideHandle .__rcs-handle-line {
+    background-color: #fafafc !important;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .comparer .sidebysideHandle .__rcs-handle-line {
+    background-color: #242428 !important;
+  }
+}
 .comparer .versionContainer {
   padding: 12px 16px;
   transition: all 0.1s ease-out;
@@ -1009,6 +1030,60 @@ input[type=text].hasMessage {
 }
 .comparer .versionOption .small {
   font-size: 13px;
+}
+.comparer .comparePadded {
+  padding-left: 50%;
+}
+.comparer .differenceHeader {
+  font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border-radius: 4px;
+}
+@media (prefers-color-scheme: light) {
+  .comparer .differenceHeader {
+    color: #323232;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .comparer .differenceHeader {
+    color: #ffffff;
+  }
+}
+@media (prefers-color-scheme: light) {
+  .comparer .differenceHeader {
+    background-color: #FFD600;
+    color: #19191C;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .comparer .differenceHeader {
+    background-color: #FFD600;
+    color: #19191C;
+  }
+}
+@media (prefers-color-scheme: light) {
+  .comparer .differenceOutline {
+    border: 2px solid #FFD600;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .comparer .differenceOutline {
+    border: 2px solid #FFD600;
+  }
+}
+@media (prefers-color-scheme: light) {
+  .comparer .differenceArtboard {
+    backgroundColor: rgba(0, 0, 0, 0.05);
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .comparer .differenceArtboard {
+    backgroundColor: rgba(255, 255, 255, 0.05);
+  }
 }
 .comparer .sidePanel {
   width: 240px;
@@ -1069,7 +1144,7 @@ input[type=text].hasMessage {
   padding: 8px 24px 12px 24px;
 }
 .comparer .bottomBar {
-  padding: 12px;
+  padding: 12px 12px 12px 12px;
   display: grid;
   grid-template-columns: 2fr 1fr 2fr;
 }
@@ -1087,6 +1162,9 @@ input[type=text].hasMessage {
 }
 .comparer .bottomBar .btnSecondary {
   height: 36px;
+}
+.comparer .bottomBar .btnSecondary.viewOption {
+  margin-right: 8px;
 }
 .comparer .bottomBar .btnSecondary.iconButton {
   width: 36px;

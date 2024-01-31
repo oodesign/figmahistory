@@ -172,12 +172,12 @@
         backdrop-filter: blur(20px);
 
         @include for-theme(light) {
-            background-color: rgba($light_backgroundColor,0.9);
+            background-color: rgba($light_backgroundColor, 0.9);
             border: 1px solid $light_componentSecondaryColor;
         }
 
         @include for-theme(dark) {
-            background-color: rgba($dark_backgroundColor,0.9);
+            background-color: rgba($dark_backgroundColor, 0.9);
             border: 1px solid $dark_componentSecondaryColor;
         }
 
@@ -189,6 +189,18 @@
 
     .reactselect__indicators {
         width: 32px;
+    }
+
+    .sidebysideHandle {
+        .__rcs-handle-line {
+            @include for-theme(light) {
+                background-color: $light_backgroundColor !important;
+            }
+
+            @include for-theme(dark) {
+                background-color: $dark_backgroundColor2 !important;
+            }
+        }
     }
 
     .versionContainer {
@@ -218,7 +230,7 @@
 
     .versionOption {
 
-        padding:12px 16px;
+        padding: 12px 16px;
         transition: all 0.1s ease-out;
         border-radius: 2px;
 
@@ -246,6 +258,48 @@
 
         .small {
             font-size: 13px;
+        }
+    }
+
+    .comparePadded {
+        padding-left: 50%;
+    }
+
+    .differenceHeader {
+        @include primaryText;
+        @include alignFullCenter;
+        padding: 8px;
+        border-radius: 4px;
+
+        @include for-theme(light) {
+            background-color: $light_differenceColor;
+            color: $light_differenceTextColor;
+        }
+
+        @include for-theme(dark) {
+            background-color: $dark_differenceColor;
+            color: $dark_differenceTextColor;
+        }
+    }
+
+    .differenceOutline {
+
+        @include for-theme(light) {
+            border: 2px solid $light_differenceColor;
+        }
+
+        @include for-theme(dark) {
+            border: 2px solid $dark_differenceColor;
+        }
+    }
+
+    .differenceArtboard {
+        @include for-theme(light) {
+            backgroundColor: rgba(0, 0, 0, 0.05);
+        }
+
+        @include for-theme(dark) {
+            backgroundColor: rgba(255, 255, 255, 0.05);
         }
     }
 
@@ -299,7 +353,7 @@
     .bottomBar {
 
         // height:60px;
-        padding: 12px;
+        padding: 12px 12px 12px 12px;
 
         @include for-theme(light) {
             background-color: $light_backgroundColor2;
@@ -317,11 +371,15 @@
         .btnSecondary {
             height: 36px;
 
+            &.viewOption {
+                margin-right: 8px;
+            }
+
             &.iconButton {
                 width: 36px;
                 margin-right: 8px;
 
-                path{
+                path {
                     @include for-theme(light) {
                         fill: $light_primaryColor;
                     }
@@ -360,11 +418,11 @@
                         }
                     }
 
-                    path{
+                    path {
                         @include for-theme(light) {
                             fill: $accentColor;
                         }
-    
+
                         @include for-theme(dark) {
                             fill: $dark_primaryColor;
                         }

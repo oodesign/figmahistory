@@ -1,8 +1,8 @@
-import React, { ChangeEvent, useImperativeHandle, useRef, useState } from 'react';
+import React, { ChangeEvent, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { ReactZoomPanPinchRef, TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
 import { User, Side, Color, Document, Version, Page, NodeWithImage, FigmaNode, Node, Difference, Rect, ViewDiffs } from './types';
 import { globalState, setDocumentID, setAccessToken, setDocumentLeft, setDocumentRight, updateDocumentPageLeftChildrenAndFlatNodes, updateDocumentPageRightChildrenAndFlatNodes, setSelectedPageId, updateDocumentPageLeftFlatNodes, updateDocumentPageRightFlatNodes, updateDocumentPageRightBounds, updateDocumentPageLeftBounds, setSelectedNodeId, setViewDiffs, } from './globals';
-import { ReactCompareSlider } from 'react-compare-slider';
+import { ReactCompareSlider, ReactCompareSliderHandle, useReactCompareSliderRef } from 'react-compare-slider';
 import isEqual from 'lodash/isEqual';
 import Canvas from './Canvas';
 import Select, { ActionMeta, ControlProps, DropdownIndicatorProps, ValueContainerProps, components } from 'react-select'
@@ -27,8 +27,13 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
     const leftImage = useRef<ReactZoomPanPinchRef>(null);
     const canvasDiv = useRef<HTMLDivElement | null>(null);
 
+    const sliderRef = useReactCompareSliderRef();
+
 
     const selectPrefix = "reactselect";
+
+    const [isCompareModeOn, setIsCompareModeOn] = useState<boolean>(true);
+
 
     const [isLoadingLeftPage, setIsLoadingLeftPage] = useState<boolean>(true);
     const [isLoadingRightPage, setIsLoadingRightPage] = useState<boolean>(true);
@@ -79,6 +84,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
     const [canvasRightWidth, setCanvasRightWidth] = useState(0);
 
 
+
     const CustomOption = ({ innerProps, data }) => (
         <div {...innerProps} className='versionOption verticalLayout'>
             <div className="rowAuto primaryText">{data.label}</div>
@@ -123,7 +129,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                             {children}
                         </div>
                     </div>
-                    : <div>No label</div>}
+                    : <div className='versionContainer primaryText'>---</div>}
             </components.ValueContainer>
         )
         // }
@@ -663,8 +669,14 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
         if (canvasDiv.current) {
             let scaleX = (canvasDiv.current.clientWidth - canvasPadding) / canvasWidth;
             let scaleY = (canvasDiv.current.clientHeight - canvasPadding - topFactor) / canvasHeight;
+            let availableWidth = canvasDiv.current.clientWidth;
 
-            let offsetX = (canvasDiv.current.clientWidth) / 2 - (canvasWidth * Math.min(scaleX, scaleY)) / 2;
+            if (!isCompareModeOn) {
+                availableWidth = availableWidth / 2;
+                scaleX = scaleX / 2;
+            }
+
+            let offsetX = (availableWidth) / 2 - (canvasWidth * Math.min(scaleX, scaleY)) / 2;
             let offsetY = (canvasDiv.current.clientHeight) / 2 - (canvasHeight * Math.min(scaleX, scaleY)) / 2;
 
             (rightImage.current as any).setTransform(offsetX, offsetY + topFactor, Math.min(scaleX, scaleY), 0);
@@ -677,8 +689,14 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
         if (canvasDiv.current) {
             let scaleX = (canvasDiv.current.clientWidth - canvasPadding) / canvasWidth;
             let scaleY = (canvasDiv.current.clientHeight - canvasPadding - topFactor) / canvasHeight;
+            let availableWidth = canvasDiv.current.clientWidth;
 
-            let offsetX = (canvasDiv.current.clientWidth) / 2 - (canvasWidth * Math.min(scaleX, scaleY)) / 2;
+            if (!isCompareModeOn) {
+                availableWidth = availableWidth / 2;
+                scaleX = scaleX / 2;
+            }
+
+            let offsetX = (availableWidth) / 2 - (canvasWidth * Math.min(scaleX, scaleY)) / 2;
             let offsetY = (canvasDiv.current.clientHeight) / 2 - (canvasHeight * Math.min(scaleX, scaleY)) / 2;
 
             (rightImage.current as any).setTransform(offsetX, offsetY + topFactor, Math.min(scaleX, scaleY), 0);
@@ -749,17 +767,6 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
         }
     }
 
-    const renderOptions = () => {
-        return fileVersionsList.map((fileVersion) => (
-            <option key={fileVersion.id} value={fileVersion.id}>
-                {fileVersion.label} - {fileVersion.user.handle}
-            </option>
-        ));
-    };
-
-
-
-
     // #endregion
 
     function onDifferenceTypesChanged(event: ChangeEvent<HTMLInputElement>): void {
@@ -817,6 +824,24 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
         if (globalState.viewDiffs.showShapes) newDifferences.push("RECTANGLE", "VECTOR", "STAR", "LINE", "ELLIPSE", "REGULAR_POLYGON");
 
         setDifferencesTypes(newDifferences);
+    }
+
+
+    useEffect(() => {
+        fitIntoView();
+    }, [isCompareModeOn]);
+
+    function setViewMode(type: string): void {
+        switch (type) {
+            case 'compare':
+                setIsCompareModeOn(true);
+                sliderRef.current.setPosition(50);
+                break;
+            case 'sidebyside':
+                setIsCompareModeOn(false);
+                sliderRef.current.setPosition(50);
+                break;
+        }
     }
 
     function onDiffChange(type: string): void {
@@ -920,10 +945,12 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                 </div>
             </div>
             <div className='colAvailable verticalLayout'>
-
                 <div ref={canvasDiv} className="rowAvailable">
-                    <ReactCompareSlider className='extend' onPositionChange={onSliderPositionChange} boundsPadding={sliderPadding}
-                        onlyHandleDraggable={true}
+                    <ReactCompareSlider ref={sliderRef} className='extend' onPositionChange={onSliderPositionChange} boundsPadding={sliderPadding} onlyHandleDraggable={true} disabled={!isCompareModeOn}
+                        handle={
+                            <ReactCompareSliderHandle className={`${isCompareModeOn ? "compareHandle" : "sidebysideHandle"}`} buttonStyle={{ display: `${isCompareModeOn ? "grid" : "none"}` }}
+                                linesStyle={{ boxShadow: `${isCompareModeOn ? true : undefined}`, cursor: `${isCompareModeOn ? "ew-resize" : "default"}` }}
+                            />}
                         itemOne={
                             <TransformWrapper ref={leftImage} onTransformed={handleTransform} minScale={0.01} limitToBounds={false}>
                                 <TransformComponent wrapperClass='verticalLayout dotted' contentClass='verticalLayout'>
@@ -980,11 +1007,9 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                         }
                         itemTwo={
                             <TransformWrapper ref={rightImage} onTransformed={handleTransform} minScale={0.01} limitToBounds={false}>
-                                <TransformComponent wrapperClass='verticalLayout dotted' contentClass='verticalLayout'>
+                                <TransformComponent wrapperClass={`verticalLayout dotted ${!isCompareModeOn ? 'comparePadded' : ''}`} contentClass='verticalLayout'>
                                     <Canvas name='RIGHT' allImagesLoaded={canvasRightAllImagesLoaded} nodesWithImages={versionRightNodesWithImages} differences={versionRightDifferences} differenceTypes={differencesTypes} canvasWidth={canvasWidth} canvasHeight={canvasHeight} offsetX={canvasPageOffsetX} offsetY={canvasPageOffsetY} background={selectedPageColorRight} containerClass={`innerCanvas animatedDiv invisible ${isLoadingRightPage ? 'fadeOut' : 'fadeIn'}`} />
                                 </TransformComponent>
-
-
 
                                 <div className={`animatedDiv invisible ${(!isLoadingRightImages && !isLoadingRightPage) ? 'fadeOut' : 'fadeOut'}`} style={{
                                     position: 'absolute',
@@ -1041,6 +1066,11 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                     />
                 </div>
                 <div className='rowAuto bottomBar'>
+
+                    <div className="horizontalLayout leftElements">
+                        <button className={`colAuto btnSecondary viewOption ${isCompareModeOn ? 'checked' : ''}`} onClick={() => setViewMode('compare')}>Compare</button>
+                        <button className={`colAuto btnSecondary viewOption ${!isCompareModeOn ? 'checked' : ''}`} onClick={() => setViewMode('sidebyside')}>Side by side</button>
+                    </div>
 
 
 

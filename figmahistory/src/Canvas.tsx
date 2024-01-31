@@ -59,14 +59,13 @@ const Canvas: React.FC<CanvasProps> = (props) => {
         return props.differences.map((difference, index) => (
             (difference.type == "FRAME" && !difference.isChildOfFrame) ?
                 <div key={`Frame${index}`}>
-                    <div className={`negativeText`}
+                    <div className={`differenceArtboard`}
                         style={{
                             position: 'absolute',
                             left: `${(difference.boundingRect.x + (-props.offsetX))}px`,
                             top: `${(difference.boundingRect.y + (-props.offsetY))}px`,
                             width: `${difference.boundingRect.width}px`,
                             height: `${difference.boundingRect.height}px`,
-                            backgroundColor: `rgba(255,255,255,0.05)`
                         }}
                     />
                 </div>
@@ -83,24 +82,22 @@ const Canvas: React.FC<CanvasProps> = (props) => {
                 ((difference.type != "FRAME") || (difference.type == "FRAME" && !difference.isChildOfFrame) ?
                     <div key={index}>
 
-                        <div className={`negativeText`} style={{
+                        <div className={`differenceHeader`} style={{
                             position: 'absolute',
                             left: `${(difference.boundingRect.x + (-props.offsetX))}px`,
                             top: `${(difference.boundingRect.y + (-props.offsetY) - 30)}px`,
-                            backgroundColor: `yellow`,
                             height: `24px`
                         }}>
                             CHANGED
                         </div>
 
-                        <div className={`negativeText`}
+                        <div className={`differenceOutline`}
                             style={{
                                 position: 'absolute',
                                 left: `${(difference.boundingRect.x + (-props.offsetX))}px`,
                                 top: `${(difference.boundingRect.y + (-props.offsetY))}px`,
                                 width: `${difference.boundingRect.width}px`,
                                 height: `${difference.boundingRect.height}px`,
-                                border: `2px solid yellow`
                             }}
                         />
                     </div>

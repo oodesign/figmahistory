@@ -101,6 +101,17 @@
 
         outline: none;
     }
+
+    &.checked {
+        @include for-theme(light) {
+            border-color: $accentColor;
+            color: $accentColor;
+        }
+
+        @include for-theme(dark) {
+            border-color: $accentColor;
+        }
+    }
 }
 
 .btnSecondary {
