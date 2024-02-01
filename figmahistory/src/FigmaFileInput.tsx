@@ -1,4 +1,4 @@
-import React, { SyntheticEvent, useRef } from 'react';
+import React, { SyntheticEvent, useEffect, useRef } from 'react';
 import { ReactCompareSlider, useReactCompareSliderRef } from 'react-compare-slider';
 import { ReactSVG } from 'react-svg';
 
@@ -38,15 +38,25 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
         }
     }
 
-
-
-    function setSliderPosition(event: SyntheticEvent<HTMLDivElement, Event>): void {
-        if (reactCompareSliderRef.current) {
-            reactCompareSliderRef.current.setPosition(50);
-            setTimeout(() => {
+    useEffect(() => {
+        const fireTransition = async () => {
+            console.log("FireTransition");
+            await new Promise(resolve => setTimeout(() => {
+                console.log("Setting to 50");
+                reactCompareSliderRef.current.setPosition(50);
+                resolve(true);
+            }, 100));
+            await new Promise(resolve => setTimeout(() => {
+                console.log("Setting to 75");
                 reactCompareSliderRef.current.setPosition(75);
-            }, 750);
-        }
+                resolve(true);
+            }, 850));
+        };
+        fireTransition();
+    }, [reactCompareSliderRef]);
+
+    function setComponentReady(arg0: boolean): void {
+        console.log("Loaded")
     }
 
     return (
@@ -54,16 +64,16 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
         <div className={`${props.className} verticalLayout figmaFileInput`}>
             <div className="alignFullCenterAndCenterText verticalLayout">
                 <div className='rowAuto logoSlider'>
-                    <ReactCompareSlider ref={reactCompareSliderRef} onLoad={setSliderPosition} transition="0.75s ease-in-out" position={100}
+                    <ReactCompareSlider ref={reactCompareSliderRef} onLoad={() => setComponentReady(true)} transition="0.75s ease-in-out" position={100}
 
                         itemOne={
                             <div className="extend innerCanvas front">
-                                <ReactSVG src="./figmahistory/images/logoSlider.svg"/>
+                                <ReactSVG src="./figmahistory/images/logoSlider.svg" />
                             </div>
                         }
                         itemTwo={
                             <div className="extend innerCanvas back">
-                            <ReactSVG src="./figmahistory/images/logoSlider.svg"/>
+                                <ReactSVG src="./figmahistory/images/logoSlider.svg" />
                             </div>
                         }
                     />
@@ -89,10 +99,10 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                         </div>
                     </div>
                 </div>
-                <div className="rowAuto secondaryText">
-                    Access to your designs is solely used for comparison rendering.<br />
+                <div className="rowAuto secondaryText spaced">
+                    Access to designs is only used for comparison rendering.<br />
                     We do not (and will never) store, analyze, or share your designs. We do not track analytics. <br />
-                    Your designs are, and will continue to be, just for your eyes.
+                    Your designs are (and will continue to be) just for your eyes.
                 </div>
             </div>
         </div>

@@ -439,6 +439,10 @@
 
         .leftElements {
             grid-column: 1;
+
+            @include smallDesktop {
+                display: none;
+            }
         }
 
         .centerElements {
@@ -448,6 +452,10 @@
         .rightElements {
             grid-column: 3;
             justify-content: flex-end;
+
+            @include smallDesktop {
+                display: none;
+            }
         }
     }
 

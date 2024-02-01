@@ -17,6 +17,9 @@
   font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 13px;
 }
+.secondaryText.spaced {
+  line-height: 20px;
+}
 @media (prefers-color-scheme: light) {
   .secondaryText {
     color: #868688;
@@ -470,6 +473,9 @@ textarea {
   text-align: left;
   margin: 0 0 8px 0;
 }
+.inputLabel.spaced {
+  line-height: 20px;
+}
 @media (prefers-color-scheme: light) {
   .inputLabel {
     color: #868688;
@@ -486,6 +492,9 @@ textarea {
   font-size: 13px;
   text-align: left;
   margin: 0 0 24px 0;
+}
+.inputMessage.spaced {
+  line-height: 20px;
 }
 @media (prefers-color-scheme: light) {
   .inputMessage {
@@ -634,6 +643,9 @@ input[type=text].hasMessage {
 .secondaryText {
   font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 13px;
+}
+.secondaryText.spaced {
+  line-height: 20px;
 }
 @media (prefers-color-scheme: light) {
   .secondaryText {
@@ -1130,6 +1142,9 @@ input[type=text].hasMessage {
   padding-right: 24px;
   margin-bottom: 16px;
 }
+.comparer .sidePanel .header.spaced {
+  line-height: 20px;
+}
 @media (prefers-color-scheme: light) {
   .comparer .sidePanel .header {
     color: #868688;
@@ -1226,12 +1241,22 @@ input[type=text].hasMessage {
 .comparer .bottomBar .leftElements {
   grid-column: 1;
 }
+@media (max-width: 1280px) {
+  .comparer .bottomBar .leftElements {
+    display: none;
+  }
+}
 .comparer .bottomBar .centerElements {
   grid-column: 2;
 }
 .comparer .bottomBar .rightElements {
   grid-column: 3;
   justify-content: flex-end;
+}
+@media (max-width: 1280px) {
+  .comparer .bottomBar .rightElements {
+    display: none;
+  }
 }
 
 @font-face {
