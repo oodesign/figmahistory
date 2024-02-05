@@ -875,6 +875,8 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
 
     function hideSide(side: Side, resetIsDocumentLoaded: boolean) {
         if (side == Side.LEFT) {
+
+            setHasLeftPageContent(true);
             setIsLoadingLeftPage(true);
             setIsLoadingLeftImages(true);
             if (resetIsDocumentLoaded)
@@ -888,6 +890,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
 
         }
         if (side == Side.RIGHT) {
+            setHasRightPageContent(true);
             setIsLoadingRightPage(true);
             setIsLoadingRightImages(true);
             if (resetIsDocumentLoaded)
@@ -911,17 +914,15 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
         hideSide(Side.LEFT, false);
         hideSide(Side.RIGHT, false);
 
-        //TODO Refactor how loading states are handled
-        //To fade out messages. Will be shown again if needd on drawPage.
-        setHasLeftPageContent(true);
-        setHasRightPageContent(true);
-
-        if (page.presentInVersionLeft)
+        if (page.presentInVersionLeft) {
+            setIsLeftPageAvailable(true);
             drawPage(page.id, Side.LEFT);
+        }
         else
             setIsLeftPageAvailable(false);
 
         if (page.presentInVersionRight) {
+            setIsRightPageAvailable(true);
             drawPage(page.id, Side.RIGHT);
         }
         else
@@ -958,7 +959,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                                 </TransformComponent>
 
 
-                                <div className={`animatedDiv invisible ${(!isLoadingLeftImages && !isLoadingLeftPage) ? 'fadeOut' : 'fadeOut'}`} style={{
+                                <div className={`animatedDiv invisible noPointerEvents ${((isLoadingLeftImages || isLoadingLeftPage) && isLeftPageAvailable && hasLeftPageContent) ? 'fadeIn' : 'fadeOut'}`} style={{
                                     position: 'absolute',
                                     width: `${canvasLeftWidth}px`,
                                     height: '100%',
@@ -966,9 +967,9 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                                 }}>
                                     <div id="indeterminateLoader" className="verticalLayout alignFullCenterAndCenterText indeterminateLoader show">
                                         <div className="dualRingLoader"></div>
-                                        <div className="loaderMessage">
-                                            Loading stuff - {isLoadingLeftImages ? "loadingLeftImages" : "notLoadingLeftImages"} - {isLoadingLeftPage ? "loadingLeftPage" : "notLoadingLeftPage"}
-                                        </div>
+                                        {/* <div className="loaderMessage">
+                                            Loading from Figma - {isLoadingLeftImages ? "loadingLeftImages" : "notLoadingLeftImages"} - {isLoadingLeftPage ? "loadingLeftPage" : "notLoadingLeftPage"}
+                                        </div> */}
                                     </div>
                                 </div>
 
@@ -1011,7 +1012,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                                     <Canvas name='RIGHT' allImagesLoaded={canvasRightAllImagesLoaded} nodesWithImages={versionRightNodesWithImages} differences={versionRightDifferences} differenceTypes={differencesTypes} canvasWidth={canvasWidth} canvasHeight={canvasHeight} offsetX={canvasPageOffsetX} offsetY={canvasPageOffsetY} background={selectedPageColorRight} containerClass={`innerCanvas animatedDiv invisible ${isLoadingRightPage ? 'fadeOut' : 'fadeIn'}`} />
                                 </TransformComponent>
 
-                                <div className={`animatedDiv invisible ${(!isLoadingRightImages && !isLoadingRightPage) ? 'fadeOut' : 'fadeOut'}`} style={{
+                                <div className={`animatedDiv invisible noPointerEvents ${((isLoadingRightImages || isLoadingRightPage) && isRightPageAvailable && hasRightPageContent) ? 'fadeIn' : 'fadeOut'}`} style={{
                                     position: 'absolute',
                                     width: `${canvasRightWidth}px`,
                                     left: `${canvasLeftWidth}px`,
@@ -1020,9 +1021,9 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                                 }}>
                                     <div id="indeterminateLoader" className="verticalLayout alignFullCenterAndCenterText indeterminateLoader show">
                                         <div className="dualRingLoader"></div>
-                                        <div className="loaderMessage">
-                                            Loading stuff - {isLoadingRightImages ? "loadingRightImages" : "notLoadingRightImages"} - {isLoadingRightPage ? "loadingRightPage" : "notLoadingRightPage"}
-                                        </div>
+                                        {/* <div className="loaderMessage">
+                                            Loading from Figma - {isLoadingRightImages ? "loadingRightImages" : "notLoadingRightImages"} - {isLoadingRightPage ? "loadingRightPage" : "notLoadingRightPage"}
+                                        </div> */}
                                     </div>
                                 </div>
 

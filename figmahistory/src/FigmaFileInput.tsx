@@ -40,17 +40,14 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
 
     useEffect(() => {
         const fireTransition = async () => {
-            console.log("FireTransition");
             await new Promise(resolve => setTimeout(() => {
-                console.log("Setting to 50");
                 reactCompareSliderRef.current.setPosition(50);
                 resolve(true);
             }, 100));
             await new Promise(resolve => setTimeout(() => {
-                console.log("Setting to 75");
                 reactCompareSliderRef.current.setPosition(75);
                 resolve(true);
-            }, 850));
+            }, 750));
         };
         fireTransition();
     }, [reactCompareSliderRef]);

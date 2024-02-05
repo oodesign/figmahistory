@@ -223,12 +223,34 @@ div::-webkit-scrollbar-thumb {
   padding: 5px 10px 0 10px;
 }
 
+.noPointerEvents {
+  pointer-events: none;
+}
+
 .indeterminateLoader {
   min-height: 100px;
   width: 100%;
   position: relative;
   opacity: 0;
   transition: opacity 0.3s ease-in-out;
+}
+.indeterminateLoader .loaderMessage {
+  font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px;
+  margin-top: 16px;
+}
+.indeterminateLoader .loaderMessage.spaced {
+  line-height: 20px;
+}
+@media (prefers-color-scheme: light) {
+  .indeterminateLoader .loaderMessage {
+    color: #868688;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .indeterminateLoader .loaderMessage {
+    color: #949494;
+  }
 }
 .indeterminateLoader .indeterminateLoaderRing {
   content: "";
@@ -1156,7 +1178,7 @@ input[type=text].hasMessage {
   }
 }
 .comparer .sidePanel .listItem {
-  padding: 8px 24px 12px 24px;
+  padding: 8px 24px 10px 24px;
 }
 .comparer .bottomBar {
   padding: 12px 12px 12px 12px;

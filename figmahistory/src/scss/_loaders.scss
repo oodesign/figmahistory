@@ -5,6 +5,11 @@
     opacity: 0;
     transition: opacity 0.3s ease-in-out;
 
+    .loaderMessage{
+        @include secondaryText;
+        margin-top: 16px;
+    }
+
     .indeterminateLoaderRing {
         content: "";
         display: inline-block;

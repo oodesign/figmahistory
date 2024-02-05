@@ -20,6 +20,19 @@ const Canvas: React.FC<CanvasProps> = (props) => {
     const [containerWidth, setContainerWidth] = useState(props.canvasWidth);
     const [containerHeight, setContainerHeight] = useState(props.canvasHeight);
 
+    const imagesLoadedRef = useRef(0);
+
+    const imageLoaded = (event) => {
+        imagesLoadedRef.current += 1;
+
+        if (imagesLoadedRef.current >= props.nodesWithImages.length) {
+            props.allImagesLoaded();
+        }
+    };
+
+    useEffect(() => {
+        imagesLoadedRef.current = 0;
+    }, [props.nodesWithImages]);
 
     useEffect(() => {
         setContainerWidth(props.canvasWidth);
@@ -27,16 +40,7 @@ const Canvas: React.FC<CanvasProps> = (props) => {
     }, [props.canvasWidth, props.canvasHeight, props.offsetX, props.offsetY]);
 
     const renderNodes = (): React.ReactNode => {
-        let imagesLoaded = 0;
-
-        function imageLoaded(event: SyntheticEvent<HTMLImageElement, Event>): void {
-            imagesLoaded++;
-            // console.log(props.name +" - Image loaded");
-            if (imagesLoaded >= props.nodesWithImages.length)
-                props.allImagesLoaded();
-        }
-
-        //console.log("Drawing canvas: " + name + ". Offset:" + offsetX + "," + offsetY);
+       
         return props.nodesWithImages.map((nodeWithImage, index) => (
             <img
                 key={`Image ${index}`}
@@ -55,7 +59,6 @@ const Canvas: React.FC<CanvasProps> = (props) => {
     };
 
     const renderArtboards = (): React.ReactNode => {
-        //console.log("Drawing canvas: " + name + ". Offset:" + offsetX + "," + offsetY);
         return props.differences.map((difference, index) => (
             (difference.type == "FRAME" && !difference.isChildOfFrame) ?
                 <div key={`Frame${index}`}>
