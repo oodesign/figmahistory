@@ -191,6 +191,18 @@
         width: 32px;
     }
 
+    .compareHandle {
+        .__rcs-handle-line {
+            @include for-theme(light) {
+                background-color: $light_backgroundColor4 !important;
+            }
+
+            @include for-theme(dark) {
+                background-color: $dark_backgroundColor2 !important;
+            }
+        }
+    }
+
     .sidebysideHandle {
         .__rcs-handle-line {
             @include for-theme(light) {
@@ -226,6 +238,8 @@
             left: 0;
             top: 0;
         }
+
+        
     }
 
     .versionOption {
