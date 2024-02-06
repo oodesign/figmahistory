@@ -52,16 +52,12 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
         fireTransition();
     }, [reactCompareSliderRef]);
 
-    function setComponentReady(arg0: boolean): void {
-        console.log("Loaded")
-    }
-
     return (
 
         <div className={`${props.className} verticalLayout figmaFileInput`}>
             <div className="alignFullCenterAndCenterText verticalLayout">
                 <div className='rowAuto logoSlider'>
-                    <ReactCompareSlider ref={reactCompareSliderRef} onLoad={() => setComponentReady(true)} transition="0.75s ease-in-out" position={100}
+                    <ReactCompareSlider ref={reactCompareSliderRef} transition="0.75s ease-in-out" position={100}
 
                         itemOne={
                             <div className="extend innerCanvas front">

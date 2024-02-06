@@ -309,10 +309,14 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
 
             let minX = 0, minY = 0, maxX = 0, maxY = 0;
             for (const node of pageFlatNodes) {
-                minX = Math.min(minX, node.figmaNode.absoluteBoundingBox.x);
-                minY = Math.min(minY, node.figmaNode.absoluteBoundingBox.y);
-                maxX = Math.max(maxX, +node.figmaNode.absoluteBoundingBox.x + node.figmaNode.absoluteBoundingBox.width);
-                maxY = Math.max(maxY, node.figmaNode.absoluteBoundingBox.y + node.figmaNode.absoluteBoundingBox.height);
+                // console.log("Processing flatNodes dimensions.  node.figmaNode.absoluteBoundingBox is:" + node.figmaNode.absoluteBoundingBox);
+                // console.log("--- node.figmaNode (id and name and type) are:" + node.nodeId + " - "+node.figmaNode.name + " - "+node.figmaNode.type);
+                if (node.figmaNode.absoluteBoundingBox) {
+                    minX = Math.min(minX, node.figmaNode.absoluteBoundingBox.x);
+                    minY = Math.min(minY, node.figmaNode.absoluteBoundingBox.y);
+                    maxX = Math.max(maxX, +node.figmaNode.absoluteBoundingBox.x + node.figmaNode.absoluteBoundingBox.width);
+                    maxY = Math.max(maxY, node.figmaNode.absoluteBoundingBox.y + node.figmaNode.absoluteBoundingBox.height);
+                }
             }
 
             let pageDimensions: Rect = {
@@ -501,7 +505,9 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
 
         if (page) {
 
-            let allowedTypes = ['FRAME', 'SECTION', 'COMPONENT', 'COMPONENT_SET'];
+            let allowedTypes = ['FRAME', 'SECTION', 'COMPONENT', 'COMPONENT_SET', 'INSTANCE', 'GROUP', 'FRAMEGROUP', 'TEXT', 'RECTANGLE', 'VECTOR', 'STAR', 'LINE', 'ELLIPSE', 'REGULAR_POLYGON', 'BOOLEAN_OPERATION'];
+
+
 
             if (leftPage && rightPage) {
                 // console.log("nodesInPage. Side:" + side)
@@ -552,6 +558,8 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
 
             let contentIds: string = newNodesWithImages.map((node: NodeWithImage) => node.child.id).join(',');
 
+            // console.log("page.children:")
+            // console.log(page.children)
             // console.log("newNodesWithImages:")
             // console.log(newNodesWithImages)
 
@@ -620,6 +628,13 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
     function setCanvasDimensionsAndOffset(pageId: string) {
         let pageLeftBounds = globalState.documentLeft.pages.find(page => page.id == pageId)?.boundingRect;
         let pageRightBounds = globalState.documentRight.pages.find(page => page.id == pageId)?.boundingRect;
+
+
+        // console.log("Trying to setCanvasDimensionsAndOffset.");
+        // console.log("---pageLeftBounds is ");
+        // console.log(pageLeftBounds);
+        // console.log("---pageRightBounds is ");
+        // console.log(pageRightBounds);
 
         let canvasMinX = 0;
         let canvasMinY = 0;

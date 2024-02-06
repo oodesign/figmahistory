@@ -1015,7 +1015,7 @@ input[type=text].hasMessage {
 }
 @media (prefers-color-scheme: dark) {
   .comparer .compareHandle .__rcs-handle-line {
-    background-color: #242428 !important;
+    background-color: #f0f0f2 !important;
   }
 }
 @media (prefers-color-scheme: light) {
