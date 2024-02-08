@@ -14,11 +14,13 @@ export interface GlobalState {
     isDocumentRightLoaded: boolean;
     user: User;
     viewDiffs: ViewDiffs
+
+    loadedDocuments: Document[];
 }
 
 export let globalState: GlobalState = {
     documentId: "",
-    documentName:"",
+    documentName: "",
     accessToken: "",
     documentLeft: {
         name: "",
@@ -41,14 +43,15 @@ export let globalState: GlobalState = {
         email: ""
     },
     viewDiffs: {
-        showSections:true,
+        showSections: true,
         showFrames: true,
-        showComponents:true,
-        showInstances:true,
+        showComponents: true,
+        showInstances: true,
         showGroups: false,
         showText: false,
         showShapes: false,
-    }
+    },
+    loadedDocuments: []
 };
 
 export function setDocumentID(id: string) {
@@ -61,6 +64,13 @@ export function setAccessToken(token: string) {
 
 export function setDocumentLeft(doc: Document) {
     globalState = { ...globalState, documentLeft: doc };
+}
+
+export function addLoadedDocument(doc: Document) {
+    globalState = {
+        ...globalState,
+        loadedDocuments: [...globalState.loadedDocuments, doc],
+    };
 }
 
 export function updateDocumentPageLeftBounds(pageId: string, boundingRect: Rect) {
@@ -79,6 +89,56 @@ export function updateDocumentPageLeftBounds(pageId: string, boundingRect: Rect)
                 }
             }),
         },
+    };
+}
+
+
+
+export function updateDocumentPageIsLoaded(documentId: string, pageId: string, isLoaded: boolean) {
+    globalState = {
+        ...globalState,
+        loadedDocuments: globalState.loadedDocuments.map(document => {
+            if (document.version === documentId) {
+                return {
+                    ...document,
+                    pages: document.pages.map(page => {
+                        if (page.id === pageId) {
+                            return {
+                                ...page,
+                                isLoaded: isLoaded,
+                            };
+                        }
+                        return page;
+                    }),
+                };
+            }
+            return document;
+        }),
+    };
+}
+
+export function updateDocumentPageChildrenFlatNodesAndBackground(documentId: string, pageId: string, pageChildren: any[], flatNodes: Node[], backgroundColor: Color) {
+    globalState = {
+        ...globalState,
+        loadedDocuments: globalState.loadedDocuments.map(document => {
+            if (document.version === documentId) {
+                return {
+                    ...document,
+                    pages: document.pages.map(page => {
+                        if (page.id === pageId) {
+                            return {
+                                ...page,
+                                children: pageChildren,
+                                flatNodes: flatNodes,
+                                backgroundColor: backgroundColor,
+                            };
+                        }
+                        return page;
+                    }),
+                };
+            }
+            return document;
+        }),
     };
 }
 

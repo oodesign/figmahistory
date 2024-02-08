@@ -25,6 +25,7 @@ export interface Document {
 }
 
 export interface Page {
+    documentId: string,
     id: string;
     children: any[];
     name: string;
@@ -34,6 +35,7 @@ export interface Page {
     presentInVersionRight: boolean;
     flatNodes: Node[];
     boundingRect: Rect;
+    isLoaded: boolean
 }
 
 export interface Version {

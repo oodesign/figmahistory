@@ -1,7 +1,7 @@
 import React, { ChangeEvent, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { ReactZoomPanPinchRef, TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
 import { User, Side, Color, Document, Version, Page, NodeWithImage, FigmaNode, Node, Difference, Rect, ViewDiffs } from './types';
-import { globalState, setDocumentID, setAccessToken, setDocumentLeft, setDocumentRight, updateDocumentPageLeftChildrenAndFlatNodes, updateDocumentPageRightChildrenAndFlatNodes, setSelectedPageId, updateDocumentPageLeftFlatNodes, updateDocumentPageRightFlatNodes, updateDocumentPageRightBounds, updateDocumentPageLeftBounds, setSelectedNodeId, setViewDiffs, } from './globals';
+import { globalState, setDocumentID, setAccessToken, setDocumentLeft, setDocumentRight, updateDocumentPageLeftChildrenAndFlatNodes, updateDocumentPageRightChildrenAndFlatNodes, setSelectedPageId, updateDocumentPageLeftFlatNodes, updateDocumentPageRightFlatNodes, updateDocumentPageRightBounds, updateDocumentPageLeftBounds, setSelectedNodeId, setViewDiffs, addLoadedDocument, updateDocumentPageIsLoaded, updateDocumentPageChildrenFlatNodesAndBackground, } from './globals';
 import { ReactCompareSlider, ReactCompareSliderHandle, useReactCompareSliderRef } from 'react-compare-slider';
 import isEqual from 'lodash/isEqual';
 import Canvas from './Canvas';
@@ -282,62 +282,97 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
         return flatNodes;
     }
 
+    function getExistingPage(versionId: string, pageId: string) {
+        const existingDocument = globalState.loadedDocuments.find(document => document.version == versionId);
+        if (existingDocument) {
+            const existingPage = existingDocument.pages.find(page => page.documentId == versionId && page.id == pageId);
+            if (existingPage) return existingPage;
+            else return null;
+        }
+        else return null;
+    }
+
     async function fetchPage(versionId: string, pageId: string, side: Side) {
 
-        // console.log("Fetching page:" + pageId + " for side:" + side.valueOf());
-        let depth = "";
-        // let depth = "&depth=2";
+        let pageChildren: any[] = [];
+        let pageFlatNodes: Node[] = [];
+        let pageBackground: Color = { a: 1, r: 255, g: 255, b: 255 };
 
-        let getPageNode = await fetch('https://api.figma.com/v1/files/' + globalState.documentId + "/nodes?version=" + versionId + depth + "&ids=" + pageId, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${globalState.accessToken}`
-            }
-        });
+        const existingPage = getExistingPage(versionId, pageId);
 
-        if (getPageNode.ok) {
-            const responseJson = await getPageNode.json();
-            // console.log("OK, Page is ready");
-            // console.log(responseJson.nodes);
-            // console.log(responseJson.nodes[pageId]);
-            // console.log(responseJson.nodes[pageId].document);
+        if (existingPage && existingPage.isLoaded) {
+            console.log("Should not load this page because was already loaded");
 
+            pageChildren = existingPage.children;
+            pageFlatNodes = existingPage.flatNodes;
+            pageBackground = existingPage.backgroundColor;
+            console.log("Page was loaded from storage. children:" + pageChildren.length + " - flatNodes:" + pageFlatNodes.length + " - bgColor:" + pageBackground.r + " ," + pageBackground.g + " ," + pageBackground.b + " ," + pageBackground.a)
 
-            let pageChildren = responseJson.nodes[pageId].document.children;
-            let pageFlatNodes = flattenNodes(responseJson.nodes[pageId].document);
-            let pageBackground: Color = responseJson.nodes[pageId].document.backgroundColor;
+        }
+        else {
+            console.log("Should load page because it hadn't been loaded yet.")
 
-            let minX = 0, minY = 0, maxX = 0, maxY = 0;
-            for (const node of pageFlatNodes) {
-                // console.log("Processing flatNodes dimensions.  node.figmaNode.absoluteBoundingBox is:" + node.figmaNode.absoluteBoundingBox);
-                // console.log("--- node.figmaNode (id and name and type) are:" + node.nodeId + " - "+node.figmaNode.name + " - "+node.figmaNode.type);
-                if (node.figmaNode.absoluteBoundingBox) {
-                    minX = Math.min(minX, node.figmaNode.absoluteBoundingBox.x);
-                    minY = Math.min(minY, node.figmaNode.absoluteBoundingBox.y);
-                    maxX = Math.max(maxX, +node.figmaNode.absoluteBoundingBox.x + node.figmaNode.absoluteBoundingBox.width);
-                    maxY = Math.max(maxY, node.figmaNode.absoluteBoundingBox.y + node.figmaNode.absoluteBoundingBox.height);
+            // console.log("Fetching page:" + pageId + " for side:" + side.valueOf());
+            let depth = "";
+            // let depth = "&depth=2";
+
+            let getPageNode = await fetch('https://api.figma.com/v1/files/' + globalState.documentId + "/nodes?version=" + versionId + depth + "&ids=" + pageId, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${globalState.accessToken}`
                 }
-            }
+            });
 
-            let pageDimensions: Rect = {
-                x: minX,
-                y: minY,
-                width: maxX - minX,
-                height: maxY - minY,
-            }
+            if (getPageNode.ok) {
+                const responseJson = await getPageNode.json();
+                pageChildren = responseJson.nodes[pageId].document.children;
+                pageFlatNodes = flattenNodes(responseJson.nodes[pageId].document);
+                pageBackground = responseJson.nodes[pageId].document.backgroundColor;
 
-
-            if (side == Side.LEFT) {
-                updateDocumentPageLeftBounds(pageId, pageDimensions);
-                updateDocumentPageLeftChildrenAndFlatNodes(pageId, pageChildren, pageFlatNodes);
-                setSelectedPageColorLeft(rgbaToString(pageBackground));
-            }
-            else if (side == Side.RIGHT) {
-                updateDocumentPageRightBounds(pageId, pageDimensions);
-                updateDocumentPageRightChildrenAndFlatNodes(pageId, pageChildren, pageFlatNodes);
-                setSelectedPageColorRight(rgbaToString(pageBackground));
+                updateDocumentPageIsLoaded(versionId, pageId, true);
+                updateDocumentPageChildrenFlatNodesAndBackground(versionId, pageId, pageChildren, pageFlatNodes, pageBackground);
+                console.log("Page was fetched. children:" + pageChildren.length + " - flatNodes:" + pageFlatNodes.length + " - bgColor:" + pageBackground.r + " ," + pageBackground.g + " ," + pageBackground.b + " ," + pageBackground.a)
             }
         }
+
+
+
+
+        // console.log("OK, Page is ready");
+        // console.log(responseJson.nodes);
+        // console.log(responseJson.nodes[pageId]);
+        // console.log(responseJson.nodes[pageId].document);
+
+
+        let minX = 0, minY = 0, maxX = 0, maxY = 0;
+        for (const node of pageFlatNodes) {
+            // console.log("Processing flatNodes dimensions.  node.figmaNode.absoluteBoundingBox is:" + node.figmaNode.absoluteBoundingBox);
+            // console.log("--- node.figmaNode (id and name and type) are:" + node.nodeId + " - "+node.figmaNode.name + " - "+node.figmaNode.type);
+            if (node.figmaNode.absoluteBoundingBox) {
+                minX = Math.min(minX, node.figmaNode.absoluteBoundingBox.x);
+                minY = Math.min(minY, node.figmaNode.absoluteBoundingBox.y);
+                maxX = Math.max(maxX, +node.figmaNode.absoluteBoundingBox.x + node.figmaNode.absoluteBoundingBox.width);
+                maxY = Math.max(maxY, node.figmaNode.absoluteBoundingBox.y + node.figmaNode.absoluteBoundingBox.height);
+            }
+        }
+
+        let pageDimensions: Rect = {
+            x: minX,
+            y: minY,
+            width: maxX - minX,
+            height: maxY - minY,
+        }
+
+
+        if (side == Side.LEFT) {
+            updateDocumentPageLeftBounds(pageId, pageDimensions);
+            updateDocumentPageLeftChildrenAndFlatNodes(pageId, pageChildren, pageFlatNodes);
+        }
+        else if (side == Side.RIGHT) {
+            updateDocumentPageRightBounds(pageId, pageDimensions);
+            updateDocumentPageRightChildrenAndFlatNodes(pageId, pageChildren, pageFlatNodes);
+        }
+
     }
 
 
@@ -375,6 +410,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
 
             let pages: Page[] = figmaDocumentPages.map((page: any, index: number) => {
                 return {
+                    documentId: versionId,
                     id: page.id,
                     children: page.children, //Will be empty if depth is set to 1
                     name: page.name,
@@ -383,7 +419,8 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                     presentInVersionLeft: side == Side.LEFT,
                     presentInVersionRight: side == Side.RIGHT,
                     flatNodes: [],
-                    boundingRect: { x: 0, y: 0, width: 0, height: 0 }
+                    boundingRect: { x: 0, y: 0, width: 0, height: 0 },
+                    isLoaded: false
                 };
             });
 
@@ -407,6 +444,8 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                 globalState.isDocumentRightLoaded = true;
                 if (globalState.isDocumentLeftLoaded) props.initialLoadComplete();
             }
+
+            addLoadedDocument(versionDocument)
 
 
             //TODO If node-id retrieved from URL belongs to a page, and globalState.selectedPageId has not been set yet, set it to the retrieved id.
@@ -489,7 +528,6 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
         await fetchPage(versionId, pageId, side);
 
         calculateDifferences(pageId);
-        setCanvasDimensionsAndOffset(pageId);
 
         let page: Page | undefined = undefined;
         let leftPage = globalState.documentLeft.pages.find(page => page.id === pageId);
@@ -509,40 +547,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
 
 
 
-            if (leftPage && rightPage) {
-                // console.log("nodesInPage. Side:" + side)
-                // console.log(nodesInLeftPage)
-                // console.log(nodesInRightPage)
 
-                let leftDifferences: Difference[] = [];
-                for (const node of leftPage.flatNodes) {
-                    if (!node.isEqualToOtherVersion || !node.isPresentInOtherVersion) {
-                        leftDifferences.push({
-                            type: node.type,
-                            boundingRect: node.figmaNode.absoluteBoundingBox,
-                            isChildOfFrame: node.isChildOfFrame
-                        });
-                    }
-                }
-
-                let rightDifferences: Difference[] = [];
-                for (const node of rightPage.flatNodes) {
-                    if (!node.isEqualToOtherVersion || !node.isPresentInOtherVersion) {
-                        rightDifferences.push({
-                            type: node.type,
-                            boundingRect: node.figmaNode.absoluteBoundingBox,
-                            isChildOfFrame: node.isChildOfFrame
-                        });
-                    }
-                }
-
-                // console.log("Differences:");
-                // console.log(leftDifferences);
-                // console.log(rightDifferences);
-
-                setVersionLeftDifferences(leftDifferences);
-                setVersionRightDifferences(rightDifferences);
-            }
 
             // console.log("page:")
             // console.log(page);
@@ -591,17 +596,20 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
 
                     if (side == Side.LEFT) {
                         setVersionLeftNodesWithImages(mapper);
+                        setSelectedPageColorLeft(leftPage ? rgbaToString(leftPage.backgroundColor) : "transparent");
                         setIsLeftPageAvailable(true);
                         setIsLoadingLeftPage(false);
                         setHasLeftPageContent(true);
                     }
                     else if (side == Side.RIGHT) {
                         setVersionRightNodesWithImages(mapper);
+                        setSelectedPageColorRight(rightPage ? rgbaToString(rightPage.backgroundColor) : "transparent");
                         setIsRightPageAvailable(true);
                         setIsLoadingRightPage(false);
                         setHasRightPageContent(true);
                     }
 
+                    setCanvasDimensionsAndOffset(pageId);
                 }
             }
             else {
@@ -615,6 +623,43 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                     setIsLoadingRightPage(false);
                     setHasRightPageContent(false);
                 }
+
+                setCanvasDimensionsAndOffset(pageId);
+            }
+
+            if (leftPage && rightPage) {
+                // console.log("nodesInPage. Side:" + side)
+                // console.log(nodesInLeftPage)
+                // console.log(nodesInRightPage)
+
+                let leftDifferences: Difference[] = [];
+                for (const node of leftPage.flatNodes) {
+                    if (!node.isEqualToOtherVersion || !node.isPresentInOtherVersion) {
+                        leftDifferences.push({
+                            type: node.type,
+                            boundingRect: node.figmaNode.absoluteBoundingBox,
+                            isChildOfFrame: node.isChildOfFrame
+                        });
+                    }
+                }
+
+                let rightDifferences: Difference[] = [];
+                for (const node of rightPage.flatNodes) {
+                    if (!node.isEqualToOtherVersion || !node.isPresentInOtherVersion) {
+                        rightDifferences.push({
+                            type: node.type,
+                            boundingRect: node.figmaNode.absoluteBoundingBox,
+                            isChildOfFrame: node.isChildOfFrame
+                        });
+                    }
+                }
+
+                console.log("Differences:");
+                console.log(leftDifferences);
+                console.log(rightDifferences);
+
+                setVersionLeftDifferences(leftDifferences);
+                setVersionRightDifferences(rightDifferences);
             }
         }
 
@@ -724,6 +769,8 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
         let pageLeftNodes = globalState.documentLeft.pages.find(page => page.id == pageId)?.flatNodes;
         let pageRightNodes = globalState.documentRight.pages.find(page => page.id == pageId)?.flatNodes;
 
+        console.log("CalculateDifferences. pageLeftNodes:" + pageLeftNodes?.length + ". pageRightNodes:" + pageRightNodes?.length)
+
         if (pageLeftNodes && pageLeftNodes.length > 0 && pageRightNodes && pageRightNodes.length > 0) {
 
             const newDocumentLeftFlatNodes = getPageComparison(pageLeftNodes, pageRightNodes);
@@ -731,7 +778,12 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
 
             updateDocumentPageLeftFlatNodes(pageId, newDocumentLeftFlatNodes);
             updateDocumentPageRightFlatNodes(pageId, newDocumentRightFlatNodes);
+
+
+            console.log("--- Found" + newDocumentLeftFlatNodes.filter(node => node.isEqualToOtherVersion == false).length + " differences on LEFT");
+            console.log("--- Found" + newDocumentRightFlatNodes.filter(node => node.isEqualToOtherVersion == false).length + " differences on RIGHT");
         }
+
 
     }
 
