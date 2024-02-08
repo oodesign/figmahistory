@@ -301,16 +301,16 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
         const existingPage = getExistingPage(versionId, pageId);
 
         if (existingPage && existingPage.isLoaded) {
-            console.log("Should not load this page because was already loaded");
+            // console.log("Should not load this page because was already loaded");
 
             pageChildren = existingPage.children;
             pageFlatNodes = existingPage.flatNodes;
             pageBackground = existingPage.backgroundColor;
-            console.log("Page was loaded from storage. children:" + pageChildren.length + " - flatNodes:" + pageFlatNodes.length + " - bgColor:" + pageBackground.r + " ," + pageBackground.g + " ," + pageBackground.b + " ," + pageBackground.a)
+            // console.log("Page was loaded from storage. children:" + pageChildren.length + " - flatNodes:" + pageFlatNodes.length + " - bgColor:" + pageBackground.r + " ," + pageBackground.g + " ," + pageBackground.b + " ," + pageBackground.a)
 
         }
         else {
-            console.log("Should load page because it hadn't been loaded yet.")
+            // console.log("Should load page because it hadn't been loaded yet.")
 
             // console.log("Fetching page:" + pageId + " for side:" + side.valueOf());
             let depth = "";
@@ -331,7 +331,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
 
                 updateDocumentPageIsLoaded(versionId, pageId, true);
                 updateDocumentPageChildrenFlatNodesAndBackground(versionId, pageId, pageChildren, pageFlatNodes, pageBackground);
-                console.log("Page was fetched. children:" + pageChildren.length + " - flatNodes:" + pageFlatNodes.length + " - bgColor:" + pageBackground.r + " ," + pageBackground.g + " ," + pageBackground.b + " ," + pageBackground.a)
+                // console.log("Page was fetched. children:" + pageChildren.length + " - flatNodes:" + pageFlatNodes.length + " - bgColor:" + pageBackground.r + " ," + pageBackground.g + " ," + pageBackground.b + " ," + pageBackground.a)
             }
         }
 
@@ -388,64 +388,67 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
         // console.log("Fetching version:" + versionId + " for side:" + side.valueOf());
         // console.log("At this point, globalPageId is:" + globalState.selectedPageId);
 
-        // let depth = "";
-        let depth = "&depth=1";
-        // let depth = "&depth=2";
+        let versionDocument = globalState.loadedDocuments.find(document => document.version == versionId);
 
-        let getPagesVersion = await fetch('https://api.figma.com/v1/files/' + globalState.documentId + "?version=" + versionId + depth, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${globalState.accessToken}`
+        if (!versionDocument) {
+            // console.log("Need to fetch document")
+            let depth = "&depth=1";
+
+            let getPagesVersion = await fetch('https://api.figma.com/v1/files/' + globalState.documentId + "?version=" + versionId + depth, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${globalState.accessToken}`
+                }
+            })
+
+            if (getPagesVersion.ok) {
+                const responseJson = await getPagesVersion.json();
+
+                let figmaDocumentPages: any[] = responseJson.document.children.filter((child: any) => child.type === 'CANVAS');
+
+                let pages: Page[] = figmaDocumentPages.map((page: any, index: number) => {
+                    return {
+                        documentId: versionId,
+                        id: page.id,
+                        children: page.children,
+                        name: page.name,
+                        nameOtherVersion: "",
+                        backgroundColor: page.backgroundColor,
+                        presentInVersionLeft: side == Side.LEFT,
+                        presentInVersionRight: side == Side.RIGHT,
+                        flatNodes: [],
+                        boundingRect: { x: 0, y: 0, width: 0, height: 0 },
+                        isLoaded: false
+                    };
+                });
+
+                versionDocument = {
+                    name: responseJson.document.name,
+                    version: versionId,
+                    pages: pages,
+                }
+
+                addLoadedDocument(versionDocument)
             }
-        })
+        }
+        // else
+        //     console.log("Document was already loaded")
 
-        if (getPagesVersion.ok) {
-            const responseJson = await getPagesVersion.json();
-            // console.log("OK, document is ready");
-            // console.log(responseJson);
-
-
-            let figmaDocumentPages: any[] = responseJson.document.children.filter((child: any) => child.type === 'CANVAS');
-            // console.log(figmaDocumentPages);
-
-            let pages: Page[] = figmaDocumentPages.map((page: any, index: number) => {
-                return {
-                    documentId: versionId,
-                    id: page.id,
-                    children: page.children, //Will be empty if depth is set to 1
-                    name: page.name,
-                    nameOtherVersion: "",
-                    backgroundColor: page.backgroundColor,
-                    presentInVersionLeft: side == Side.LEFT,
-                    presentInVersionRight: side == Side.RIGHT,
-                    flatNodes: [],
-                    boundingRect: { x: 0, y: 0, width: 0, height: 0 },
-                    isLoaded: false
-                };
-            });
-
-            let versionDocument: Document = {
-                name: responseJson.document.name,
-                version: versionId,
-                pages: pages,
-            }
-
+        if (versionDocument) {
             if (side == Side.LEFT) {
                 setDocumentLeft(versionDocument);
-                setPagesListVersionLeft(pages);
+                setPagesListVersionLeft(versionDocument.pages);
                 setIsLoadingLeftPage(false);
                 globalState.isDocumentLeftLoaded = true;
                 if (globalState.isDocumentRightLoaded) props.initialLoadComplete();
             }
             if (side == Side.RIGHT) {
                 setDocumentRight(versionDocument);
-                setPagesListVersionRight(pages);
+                setPagesListVersionRight(versionDocument.pages);
                 setIsLoadingRightPage(false);
                 globalState.isDocumentRightLoaded = true;
                 if (globalState.isDocumentLeftLoaded) props.initialLoadComplete();
             }
-
-            addLoadedDocument(versionDocument)
 
 
             //TODO If node-id retrieved from URL belongs to a page, and globalState.selectedPageId has not been set yet, set it to the retrieved id.
@@ -454,10 +457,9 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
             //         setSelectedPageId(globalState.selectedNodeId);
             // }
 
-
             if (!globalState.selectedPageId) {
                 if (globalState.selectedNodeId) {
-                    if (pages.some(page => page.id == globalState.selectedNodeId))
+                    if (versionDocument.pages.some(page => page.id == globalState.selectedNodeId))
                         setSelectedPageId(globalState.selectedNodeId);
                 }
                 else
@@ -468,13 +470,12 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
 
             setMergedPagesList(mergedPageList);
 
-            if (pages.some(page => page.id == globalState.selectedPageId))
+            if (versionDocument.pages.some(page => page.id == globalState.selectedPageId))
                 drawPage(globalState.selectedPageId, side);
             else {
                 if (side == Side.LEFT) setIsLeftPageAvailable(false);
                 if (side == Side.RIGHT) setIsRightPageAvailable(false);
             }
-
         }
     }
 
@@ -654,9 +655,9 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                     }
                 }
 
-                console.log("Differences:");
-                console.log(leftDifferences);
-                console.log(rightDifferences);
+                // console.log("Differences:");
+                // console.log(leftDifferences);
+                // console.log(rightDifferences);
 
                 setVersionLeftDifferences(leftDifferences);
                 setVersionRightDifferences(rightDifferences);
@@ -769,7 +770,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
         let pageLeftNodes = globalState.documentLeft.pages.find(page => page.id == pageId)?.flatNodes;
         let pageRightNodes = globalState.documentRight.pages.find(page => page.id == pageId)?.flatNodes;
 
-        console.log("CalculateDifferences. pageLeftNodes:" + pageLeftNodes?.length + ". pageRightNodes:" + pageRightNodes?.length)
+        // console.log("CalculateDifferences. pageLeftNodes:" + pageLeftNodes?.length + ". pageRightNodes:" + pageRightNodes?.length)
 
         if (pageLeftNodes && pageLeftNodes.length > 0 && pageRightNodes && pageRightNodes.length > 0) {
 
@@ -780,8 +781,8 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
             updateDocumentPageRightFlatNodes(pageId, newDocumentRightFlatNodes);
 
 
-            console.log("--- Found" + newDocumentLeftFlatNodes.filter(node => node.isEqualToOtherVersion == false).length + " differences on LEFT");
-            console.log("--- Found" + newDocumentRightFlatNodes.filter(node => node.isEqualToOtherVersion == false).length + " differences on RIGHT");
+            // console.log("--- Found" + newDocumentLeftFlatNodes.filter(node => node.isEqualToOtherVersion == false).length + " differences on LEFT");
+            // console.log("--- Found" + newDocumentRightFlatNodes.filter(node => node.isEqualToOtherVersion == false).length + " differences on RIGHT");
         }
 
 
