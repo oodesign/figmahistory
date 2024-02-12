@@ -1,7 +1,7 @@
 import React, { ChangeEvent, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { ReactZoomPanPinchRef, TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
 import { User, Side, Color, Document, Version, Page, NodeWithImage, FigmaNode, Node, Difference, Rect, ViewDiffs } from './types';
-import { globalState, setDocumentID, setAccessToken, setDocumentLeft, setDocumentRight, updateDocumentPageLeftChildrenAndFlatNodes, updateDocumentPageRightChildrenAndFlatNodes, setSelectedPageId, updateDocumentPageLeftFlatNodes, updateDocumentPageRightFlatNodes, updateDocumentPageRightBounds, updateDocumentPageLeftBounds, setSelectedNodeId, setViewDiffs, addLoadedDocument, updateDocumentPageIsLoaded, updateDocumentPageChildrenFlatNodesAndBackground, } from './globals';
+import { globalState, setDocumentID, setAccessToken, setDocumentLeft, setDocumentRight, updateDocumentPageLeftChildrenAndFlatNodes, updateDocumentPageRightChildrenAndFlatNodes, setSelectedPageId, updateDocumentPageLeftFlatNodes, updateDocumentPageRightFlatNodes, updateDocumentPageRightBounds, updateDocumentPageLeftBounds, setSelectedNodeId, setViewDiffs, addLoadedDocument, updateDocumentPageIsLoaded, updateDocumentPageChildrenFlatNodesAndBackground, setHasMultipleVersionPages, setVersionPagesCount, } from './globals';
 import { ReactCompareSlider, ReactCompareSliderHandle, useReactCompareSliderRef } from 'react-compare-slider';
 import isEqual from 'lodash/isEqual';
 import Canvas from './Canvas';
@@ -57,6 +57,8 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
     const [hasLeftPageContent, setHasLeftPageContent] = useState<boolean>(true);
     const [hasRightPageContent, setHasRightPageContent] = useState<boolean>(true);
 
+    const [isLoadingVersions, setIsLoadingVersions] = useState<boolean>(true);
+    const versionPagesLoaded = useRef<number>(0);
 
 
     const [pagesListVersionLeft, setPagesListVersionLeft] = useState<Page[]>();
@@ -187,6 +189,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
         const versions: Version[] = [];
 
         async function fetchVersionListPage(url: string | undefined): Promise<void> {
+            const versionsInPage: Version[] = [];
             if (url) {
                 const response = await fetch(url, {
                     method: 'GET',
@@ -199,7 +202,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                     const data = await response.json();
                     let fetchedVersionList = data.versions;
                     for (const version of fetchedVersionList) {
-                        versions.push({
+                        versionsInPage.push({
                             id: version.id,
                             created_at: formatDate(version.created_at),
                             label: version.label ? version.label : "Autosave",
@@ -209,13 +212,27 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                         });
                     }
                     // console.log(data)
-                    // versions.push(...data.versions);
+                    versions.push(...versionsInPage);
 
-                    // Continue fetching if there is a previous page
-                    //console.log("-- Has more pages? NextPage is:" + data.pagination.next_page)
-                    // if (data.pagination && data.pagination.next_page) {
-                    //     await fetchVersionListPage(data.pagination.next_page);
-                    // }
+                    if (data.pagination && data.pagination.next_page) {
+                        setHasMultipleVersionPages(true);
+                        setVersionPagesCount(globalState.versionPagesCount + 1);
+                        console.log("Apparently there are more version pages. For now we found:" + globalState.versionPagesCount);
+                        //Version load will be async.
+                        fetchVersionListPage(data.pagination.next_page);
+                    }
+                    else {
+
+                        console.log("Wop. No more version pages. versionPagesLoaded is: " + versionPagesLoaded.current);
+                    }
+
+                    versionPagesLoaded.current++;
+                    console.log("For now we have loaded " + versionPagesLoaded.current + " version pages");
+                    if (versionPagesLoaded.current >= globalState.versionPagesCount)
+                        setIsLoadingVersions(false);
+
+
+
                 } else {
                     console.error(`Failed to fetch versions: ${response.statusText}`);
                 }
@@ -1069,7 +1086,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                                     top: '24px',
                                 }}>
                                     <div className="canvasVersionOverlay">
-                                        <Select className='select' classNamePrefix={selectPrefix} options={fileVersionsList} isMulti={false} unstyled components={customComponents} isSearchable={false} onChange={onVersion1Changed} value={selectVersionLeftSelectedOption} />
+                                        <Select className='select' isLoading={isLoadingVersions} classNamePrefix={selectPrefix} options={fileVersionsList} isMulti={false} unstyled components={customComponents} isSearchable={false} onChange={onVersion1Changed} value={selectVersionLeftSelectedOption} />
                                     </div>
                                 </div>
                             </TransformWrapper>
@@ -1125,7 +1142,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                                     top: '24px'
                                 }}>
                                     <div className="canvasVersionOverlay">
-                                        <Select className='select' classNamePrefix={selectPrefix} options={fileVersionsList} isMulti={false} unstyled components={customComponents} isSearchable={false} onChange={onVersion2Changed} value={selectVersionRightSelectedOption} />
+                                        <Select className='select' isLoading={isLoadingVersions} classNamePrefix={selectPrefix} options={fileVersionsList} isMulti={false} unstyled components={customComponents} isSearchable={false} onChange={onVersion2Changed} value={selectVersionRightSelectedOption} />
                                     </div>
                                 </div>
 

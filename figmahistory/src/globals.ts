@@ -14,6 +14,8 @@ export interface GlobalState {
     isDocumentRightLoaded: boolean;
     user: User;
     viewDiffs: ViewDiffs
+    hasMultipleVersionPages: boolean
+    versionPagesCount: number
 
     loadedDocuments: Document[];
 }
@@ -51,6 +53,8 @@ export let globalState: GlobalState = {
         showText: false,
         showShapes: false,
     },
+    hasMultipleVersionPages: false,
+    versionPagesCount: 1,
     loadedDocuments: []
 };
 
@@ -71,6 +75,14 @@ export function addLoadedDocument(doc: Document) {
         ...globalState,
         loadedDocuments: [...globalState.loadedDocuments, doc],
     };
+}
+
+export function setHasMultipleVersionPages(hasMultipleVersionPages: boolean) {
+    globalState = { ...globalState, hasMultipleVersionPages: hasMultipleVersionPages };
+}
+
+export function setVersionPagesCount(versionPagesCount: number) {
+    globalState = { ...globalState, versionPagesCount: versionPagesCount };
 }
 
 export function updateDocumentPageLeftBounds(pageId: string, boundingRect: Rect) {
