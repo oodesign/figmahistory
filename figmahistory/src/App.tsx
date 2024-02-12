@@ -44,11 +44,7 @@ const Start = () => {
 
   const handleFigmaAuthentication = async (code: string) => {
 
-    let figmaDocumentInfo = "";//TODO Review calls when going through this path --> getFigmaDocumentInfo();
-    let figmaDocumentId = "";//TODO Review calls when going through this path --> figmaDocumentInfo.id;
-    let figmaDocumentNodeId = "";//TODO Review calls when going through this path --> figmaDocumentInfo.nodeId;
 
-    // console.log("Try post call");
     fetch('http://localhost:5002/get-figma-access-token', {
       method: 'POST',
       headers: {
@@ -58,15 +54,12 @@ const Start = () => {
     })
       .then(async response => {
         const responseObject = await response.json();
-        if (responseObject.figmaData.access_token)
+        if (responseObject.figmaData.access_token) {
           setAccessToken(responseObject.figmaData.access_token);
-
-        setDocumentID(figmaDocumentId);
-
-        if (figmaDocumentNodeId)
-          setSelectedNodeId(figmaDocumentNodeId);
-
-        //TODO Review calls when going through this path --> fetchFigmaFiles();
+          getUser();
+          if (comparerRef.current)
+            comparerRef.current.fetchFigmaFiles();
+        }
       })
       .then(data => {
         // console.log(data) 
@@ -93,16 +86,12 @@ const Start = () => {
     setOnLoadingState(true);
     setOnComparerState(false);
 
-    let figmaDocumentId = id;
-    let figmaDocumentNodeId = nodeId;
+
+    setDocumentID(id);
+    setSelectedNodeId(nodeId);
 
 
-    if (globalState.accessToken && figmaDocumentId) {
-      setDocumentID(figmaDocumentId);
-
-      if (figmaDocumentNodeId)
-        setSelectedNodeId(figmaDocumentNodeId);
-
+    if (globalState.accessToken && globalState.documentId) {
       if (comparerRef.current)
         comparerRef.current.fetchFigmaFiles();
     }
@@ -151,11 +140,10 @@ const Start = () => {
 
 
   useEffect(() => {
-
     //TODO Retrieve token from storage
-    const token = "figu_c3F858MxN07ZBhWSXewYZglB_c_hGa4l0tx_MLrb";
-    setAccessToken(token);
-    getUser();
+    // const token = "figu_c3F858MxN07ZBhWSXewYZglB_c_hGa4l0tx_MLrb";
+    // setAccessToken(token);
+    // getUser();
   }, []);
 
 
@@ -188,7 +176,7 @@ const Start = () => {
     <FigmaFileInput ref={figmaFileInputRef} getDocument={getDocument} className={`singleCellExtend animatedDiv visible ${onInputState ? 'fadeIn' : 'fadeOut'}`} />
 
     <div className="logo">
-      <ReactSVG src="./figmahistory/images/logo.svg" renumerateIRIElements={false}/>
+      <ReactSVG src="./figmahistory/images/logo.svg" renumerateIRIElements={false} />
     </div>
 
     <div className={`userData alignVerticalCenter animatedDiv invisible ${userData ? 'fadeIn' : 'fadeOut'}`}>
