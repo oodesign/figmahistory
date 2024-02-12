@@ -176,7 +176,7 @@ const Start = () => {
     <FigmaFileInput ref={figmaFileInputRef} getDocument={getDocument} className={`singleCellExtend animatedDiv visible ${onInputState ? 'fadeIn' : 'fadeOut'}`} />
 
     <div className="logo">
-      <ReactSVG src="./figmahistory/images/logo.svg" renumerateIRIElements={false} />
+      <ReactSVG src="/figmahistory/images/logo.svg" renumerateIRIElements={false} />
     </div>
 
     <div className={`userData alignVerticalCenter animatedDiv invisible ${userData ? 'fadeIn' : 'fadeOut'}`}>

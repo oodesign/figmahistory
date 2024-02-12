@@ -61,12 +61,12 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
 
                         itemOne={
                             <div className="extend innerCanvas front">
-                                <ReactSVG src="./figmahistory/images/logoSlider.svg" />
+                                <ReactSVG src="/figmahistory/images/logoSlider.svg" />
                             </div>
                         }
                         itemTwo={
                             <div className="extend innerCanvas back">
-                                <ReactSVG src="./figmahistory/images/logoSlider.svg" />
+                                <ReactSVG src="/figmahistory/images/logoSlider.svg" />
                             </div>
                         }
                     />
