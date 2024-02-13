@@ -217,19 +217,15 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                     if (data.pagination && data.pagination.next_page) {
                         setHasMultipleVersionPages(true);
                         setVersionPagesCount(globalState.versionPagesCount + 1);
-                        console.log("Apparently there are more version pages. For now we found:" + globalState.versionPagesCount);
                         //Version load will be async.
                         fetchVersionListPage(data.pagination.next_page);
                     }
-                    else {
-
-                        console.log("Wop. No more version pages. versionPagesLoaded is: " + versionPagesLoaded.current);
-                    }
 
                     versionPagesLoaded.current++;
-                    console.log("For now we have loaded " + versionPagesLoaded.current + " version pages");
                     if (versionPagesLoaded.current >= globalState.versionPagesCount)
+                    {
                         setIsLoadingVersions(false);
+                    }
 
 
 

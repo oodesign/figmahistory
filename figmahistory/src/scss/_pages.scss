@@ -188,7 +188,10 @@
     }
 
     .reactselect__indicators {
-        width: 32px;
+        padding: 0 24px 0 0;
+        .reactselect__indicator-separator{
+            margin-right: 8px;
+        }
     }
 
     .compareHandle {

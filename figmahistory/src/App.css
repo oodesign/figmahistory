@@ -1006,7 +1006,10 @@ input[type=text].hasMessage {
   padding: 0 4px 0 0;
 }
 .comparer .reactselect__indicators {
-  width: 32px;
+  padding: 0 24px 0 0;
+}
+.comparer .reactselect__indicators .reactselect__indicator-separator {
+  margin-right: 8px;
 }
 @media (prefers-color-scheme: light) {
   .comparer .compareHandle .__rcs-handle-line {
