@@ -53,6 +53,24 @@
 
 .figmaFileInput {
 
+    background-image: url('./images/bg.png');
+    background-repeat: no-repeat;
+    background-position: right bottom;
+
+    .alignVCenter {
+        margin-left: 10%;
+        margin-bottom: 90px;
+
+        @include smallDesktop {
+            margin-left: 128px;
+        }
+
+        @include largeDesktop {
+            margin-left: 240px;
+        }
+    }
+
+
     .alignFullCenter {
         bottom: 60px;
     }
@@ -63,7 +81,31 @@
         margin-bottom: 64px;
 
         .front {
-            path {
+            &.animated {
+                transition: clip-path 0.75s ease-in-out;
+            }
+
+            #figma {
+                @include for-theme(light) {
+                    fill: $light_primaryColor;
+                }
+
+                @include for-theme(dark) {
+                    fill: $dark_primaryColor;
+                }
+            }
+
+            #history {
+                @include for-theme(light) {
+                    fill: url(#history_dark_gradient) #fff;
+                }
+
+                @include for-theme(dark) {
+                    fill: url(#history_dark_gradient) #fff;
+                }
+            }
+
+            #subtitle {
                 @include for-theme(light) {
                     fill: $light_primaryColor;
                 }
@@ -75,7 +117,33 @@
         }
 
         .back {
-            path {
+            &.animated {
+                transition: clip-path 0.75s ease-in-out;
+            }
+
+            #figma {
+                @include for-theme(light) {
+                    fill: $light_tertiaryColor;
+                }
+
+                @include for-theme(dark) {
+                    fill: $dark_tertiaryColor;
+                }
+            }
+
+            #history {
+                @include for-theme(light) {
+                    fill: url(#history_dark_gradient) #fff;
+                    opacity: 0.3;
+                }
+
+                @include for-theme(dark) {
+                    fill: url(#history_dark_gradient) #fff;
+                    opacity: 0.3;
+                }
+            }
+
+            #subtitle {
                 @include for-theme(light) {
                     fill: $light_tertiaryColor;
                 }
@@ -100,7 +168,8 @@
     }
 
     .inputForm {
-        width: 55%;
+        width: 65%;
+        max-width: 1600px;
         margin-bottom: 56px;
     }
 }
@@ -189,7 +258,8 @@
 
     .reactselect__indicators {
         padding: 0 24px 0 0;
-        .reactselect__indicator-separator{
+
+        .reactselect__indicator-separator {
             margin-right: 8px;
         }
     }
@@ -242,7 +312,7 @@
             top: 0;
         }
 
-        
+
     }
 
     .versionOption {
@@ -335,7 +405,7 @@
         }
 
         padding-top:80px;
-        padding-bottom:80px;
+        padding-bottom:64px;
 
 
         &.collapsed {
@@ -360,6 +430,27 @@
 
         .listItem {
             padding: 8px 24px 10px 24px;
+        }
+
+        .trialMessage {
+            padding: 24px;
+
+            .secondaryText {
+                margin-bottom: 16px;
+
+                &::first-letter {
+                    text-transform:capitalize;
+                }
+            }
+
+            .btnPrimary{
+                width:100%;
+                margin-bottom: 16px;
+            }
+
+            .btnSecondary{
+                width:100%;
+            }
         }
     }
 

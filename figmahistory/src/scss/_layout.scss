@@ -132,8 +132,18 @@ $headerSidesDistance: 18px;
     align-items: center;
 }
 
+
+@mixin alignVCenter {
+    @include flex;
+    justify-content: center;
+}
+
 .alignVerticalCenter {
     @include alignVerticalCenter;
+}
+
+.alignVCenter {
+    @include alignVCenter;
 }
 
 @mixin alignHorizontalCenter {

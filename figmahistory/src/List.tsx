@@ -31,7 +31,7 @@ const List: React.FC<ListProps> = (props) => {
 
     return (
         (props.pageList ?
-            <div className='scrollable'>
+            <div className='rowAvailable scrollable'>
                 <ul>
                     {props.pageList.map((page) => (
                         <li key={page.id} className={`listItem ${(localSelectedItem?.id === page.id) ? 'selected' : ''}`}

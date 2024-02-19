@@ -6,9 +6,9 @@ import ImageDiff from 'react-image-diff';
 import ReactCompareImage from 'react-compare-image';
 import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slider';
 import { TransformWrapper, TransformComponent, ReactZoomPanPinchRef } from "react-zoom-pan-pinch";
-import { globalState, setDocumentID, setAccessToken, setDocumentLeft, setDocumentRight, updateDocumentPageLeftChildrenAndFlatNodes, updateDocumentPageRightChildrenAndFlatNodes, setSelectedPageId, updateDocumentPageLeftFlatNodes, updateDocumentPageRightFlatNodes, updateDocumentPageRightBounds, updateDocumentPageLeftBounds, setSelectedNodeId, setUser, setDocumentName } from './globals';
+import { globalState, setDocumentID, setAccessToken, setDocumentLeft, setDocumentRight, updateDocumentPageLeftChildrenAndFlatNodes, updateDocumentPageRightChildrenAndFlatNodes, setSelectedPageId, updateDocumentPageLeftFlatNodes, updateDocumentPageRightFlatNodes, updateDocumentPageRightBounds, updateDocumentPageLeftBounds, setSelectedNodeId, setUser, setDocumentName, setAppState, setAppTrialDaysLeft } from './globals';
 
-import { User, Side, Color, Document, Version, Page, NodeWithImage, FigmaNode, Node, Difference, Rect } from './types';
+import { User, Side, Color, Document, Version, Page, NodeWithImage, FigmaNode, Node, Difference, Rect, AppResponse, AppState } from './types';
 
 import Canvas from './Canvas';
 import './App.css';
@@ -40,7 +40,18 @@ const Start = () => {
   const [userData, setUserData] = useState<User>();
 
 
+
   // #region Authentication and access
+
+
+  function ProceedAsActiveUser(token: string) {
+    if (token) {
+      setAccessToken(token);
+      getUser();
+      if (comparerRef.current)
+        comparerRef.current.fetchFigmaFiles();
+    }
+  }
 
   const handleFigmaAuthentication = async (code: string) => {
 
@@ -54,13 +65,35 @@ const Start = () => {
     })
       .then(async response => {
         const responseObject = await response.json();
-        if (responseObject.figmaData.access_token) {
-          setAccessToken(responseObject.figmaData.access_token);
-          getUser();
-          if (comparerRef.current)
-            comparerRef.current.fetchFigmaFiles();
+        if (responseObject) {
+          const appResponse: AppResponse = responseObject.appResponse
+
+          if (appResponse) {
+            setAppState(appResponse.state);
+            setAppTrialDaysLeft(appResponse.trialDaysLeft);
+            switch (appResponse.state) {
+              case AppState.ACTIVE:
+                console.log("User is active");
+                ProceedAsActiveUser(appResponse.token);
+                break;
+
+              case AppState.TRIAL_ACTIVE:
+                console.log("User is in active trial");
+                ProceedAsActiveUser(appResponse.token);
+                break;
+
+              case AppState.TRIAL_EXPIRED:
+                console.log("User trial already expired");
+                break;
+
+              case AppState.NOT_REGISTERED:
+                console.log("User is not registered");
+                break;
+            }
+          }
         }
       })
+
       .then(data => {
         // console.log(data) 
       })
@@ -200,6 +233,7 @@ const App = () => {
 };
 
 export default App;
+
 
 
 

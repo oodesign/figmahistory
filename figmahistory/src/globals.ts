@@ -1,6 +1,7 @@
 // globals.ts
 
-import { User, Side, Color, Document, Version, Page, FigmaNode, Node, Rect, ViewDiffs } from './types';
+import { Timestamp } from 'firebase/firestore';
+import { User, Side, Color, Document, Version, Page, FigmaNode, Node, Rect, ViewDiffs, AppState } from './types';
 
 export interface GlobalState {
     documentId: string;
@@ -13,11 +14,12 @@ export interface GlobalState {
     isDocumentLeftLoaded: boolean;
     isDocumentRightLoaded: boolean;
     user: User;
-    viewDiffs: ViewDiffs
-    hasMultipleVersionPages: boolean
-    versionPagesCount: number
-
+    viewDiffs: ViewDiffs;
+    hasMultipleVersionPages: boolean;
+    versionPagesCount: number;
     loadedDocuments: Document[];
+    appState: AppState;
+    appTrialDaysLeft: number;
 }
 
 export let globalState: GlobalState = {
@@ -55,11 +57,21 @@ export let globalState: GlobalState = {
     },
     hasMultipleVersionPages: false,
     versionPagesCount: 1,
-    loadedDocuments: []
+    loadedDocuments: [],
+    appState: AppState.NOT_REGISTERED,
+    appTrialDaysLeft: 0
 };
 
 export function setDocumentID(id: string) {
     globalState = { ...globalState, documentId: id };
+}
+
+export function setAppState(state: AppState) {
+    globalState = { ...globalState, appState: state };
+}
+
+export function setAppTrialDaysLeft(appTrialDaysLeft: number) {
+    globalState = { ...globalState, appTrialDaysLeft: appTrialDaysLeft };
 }
 
 export function setAccessToken(token: string) {

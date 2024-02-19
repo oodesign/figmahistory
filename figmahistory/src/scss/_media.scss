@@ -9,3 +9,7 @@
 @mixin smallDesktop {
   @media (max-width: 1280px) { @content; }
 }
+
+@mixin largeDesktop {
+  @media (min-width: 2400px) { @content; }
+}

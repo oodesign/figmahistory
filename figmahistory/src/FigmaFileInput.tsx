@@ -1,4 +1,4 @@
-import React, { SyntheticEvent, useEffect, useRef } from 'react';
+import React, { SyntheticEvent, useEffect, useRef, useState } from 'react';
 import { ReactCompareSlider, useReactCompareSliderRef } from 'react-compare-slider';
 import { ReactSVG } from 'react-svg';
 
@@ -11,6 +11,9 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
 
 
     const reactCompareSliderRef = useReactCompareSliderRef();
+    const [isLogoAnimated, setIsLogoAnimated] = useState<boolean>(true);
+    const [clipPath, setClipPath] = useState<string | undefined>(/* initial clip-path */);
+
 
     const getFigmaDocumentInfo = () => {
         const inputElement = document.getElementById("figmaFileURL") as HTMLInputElement;
@@ -48,25 +51,33 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                 reactCompareSliderRef.current.setPosition(75);
                 resolve(true);
             }, 750));
+            await new Promise(resolve => setTimeout(() => {
+                setIsLogoAnimated(false);
+                resolve(true);
+            }, 850));
         };
         fireTransition();
     }, [reactCompareSliderRef]);
 
+    function onSliderPositionChange(position: number): void {
+        const calculatedClipPath = `polygon(0% 0%, ${position}% 0%, ${position}% 100%, 0% 100%)`;
+        setClipPath(calculatedClipPath);
+    }
+
     return (
 
         <div className={`${props.className} verticalLayout figmaFileInput`}>
-            <div className="alignFullCenterAndCenterText verticalLayout">
+            <div className="alignVCenter verticalLayout">
                 <div className='rowAuto logoSlider'>
-                    <ReactCompareSlider ref={reactCompareSliderRef} transition="0.75s ease-in-out" position={100}
-
+                    <ReactCompareSlider ref={reactCompareSliderRef} transition="0.75s ease-in-out" position={100} onPositionChange={onSliderPositionChange} onlyHandleDraggable
                         itemOne={
-                            <div className="extend innerCanvas front">
-                                <ReactSVG src="/figmahistory/images/logoSlider.svg" />
+                            <div className={`extend front ${isLogoAnimated ? 'animated' : ''}`} style={{ clipPath }}>
+                                <ReactSVG src="/figmahistory/images/logoSlider.svg" renumerateIRIElements={false} />
                             </div>
                         }
                         itemTwo={
-                            <div className="extend innerCanvas back">
-                                <ReactSVG src="/figmahistory/images/logoSlider.svg" />
+                            <div className="extend back">
+                                <ReactSVG src="/figmahistory/images/logoSlider.svg" renumerateIRIElements={false} />
                             </div>
                         }
                     />

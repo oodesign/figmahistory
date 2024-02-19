@@ -27,7 +27,7 @@
 }
 @media (prefers-color-scheme: dark) {
   .secondaryText {
-    color: #949494;
+    color: #848494;
   }
 }
 
@@ -140,6 +140,11 @@ div::-webkit-scrollbar-thumb {
   align-items: center;
 }
 
+.alignVCenter {
+  display: flex;
+  justify-content: center;
+}
+
 .alignHorizontalCenter {
   margin: 0 auto;
 }
@@ -249,7 +254,7 @@ div::-webkit-scrollbar-thumb {
 }
 @media (prefers-color-scheme: dark) {
   .indeterminateLoader .loaderMessage {
-    color: #949494;
+    color: #848494;
   }
 }
 .indeterminateLoader .indeterminateLoaderRing {
@@ -451,7 +456,7 @@ div::-webkit-scrollbar-thumb {
 }
 @media (prefers-color-scheme: dark) {
   .btnTertiary {
-    color: #949494;
+    color: #848494;
   }
 }
 .btnTertiary:hover {
@@ -505,7 +510,7 @@ textarea {
 }
 @media (prefers-color-scheme: dark) {
   .inputLabel {
-    color: #949494;
+    color: #848494;
   }
 }
 
@@ -525,7 +530,7 @@ textarea {
 }
 @media (prefers-color-scheme: dark) {
   .inputMessage {
-    color: #949494;
+    color: #848494;
   }
 }
 
@@ -676,7 +681,7 @@ input[type=text].hasMessage {
 }
 @media (prefers-color-scheme: dark) {
   .secondaryText {
-    color: #949494;
+    color: #848494;
   }
 }
 
@@ -873,7 +878,7 @@ input[type=text].hasMessage {
 }
 @media (prefers-color-scheme: dark) {
   .app .logo #part2 {
-    fill: #848484;
+    fill: #5B5B6B;
   }
 }
 .app .userData {
@@ -890,6 +895,25 @@ input[type=text].hasMessage {
   border: none;
 }
 
+.figmaFileInput {
+  background-image: url("./images/bg.png");
+  background-repeat: no-repeat;
+  background-position: right bottom;
+}
+.figmaFileInput .alignVCenter {
+  margin-left: 10%;
+  margin-bottom: 90px;
+}
+@media (max-width: 1280px) {
+  .figmaFileInput .alignVCenter {
+    margin-left: 128px;
+  }
+}
+@media (min-width: 2400px) {
+  .figmaFileInput .alignVCenter {
+    margin-left: 240px;
+  }
+}
 .figmaFileInput .alignFullCenter {
   bottom: 60px;
 }
@@ -898,24 +922,76 @@ input[type=text].hasMessage {
   height: 112px;
   margin-bottom: 64px;
 }
+.figmaFileInput .logoSlider .front.animated {
+  transition: -webkit-clip-path 0.75s ease-in-out;
+  transition: clip-path 0.75s ease-in-out;
+  transition: clip-path 0.75s ease-in-out, -webkit-clip-path 0.75s ease-in-out;
+}
 @media (prefers-color-scheme: light) {
-  .figmaFileInput .logoSlider .front path {
+  .figmaFileInput .logoSlider .front #figma {
     fill: #323232;
   }
 }
 @media (prefers-color-scheme: dark) {
-  .figmaFileInput .logoSlider .front path {
+  .figmaFileInput .logoSlider .front #figma {
     fill: #ffffff;
   }
 }
 @media (prefers-color-scheme: light) {
-  .figmaFileInput .logoSlider .back path {
+  .figmaFileInput .logoSlider .front #history {
+    fill: url(#history_dark_gradient) #fff;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .figmaFileInput .logoSlider .front #history {
+    fill: url(#history_dark_gradient) #fff;
+  }
+}
+@media (prefers-color-scheme: light) {
+  .figmaFileInput .logoSlider .front #subtitle {
+    fill: #323232;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .figmaFileInput .logoSlider .front #subtitle {
+    fill: #ffffff;
+  }
+}
+.figmaFileInput .logoSlider .back.animated {
+  transition: -webkit-clip-path 0.75s ease-in-out;
+  transition: clip-path 0.75s ease-in-out;
+  transition: clip-path 0.75s ease-in-out, -webkit-clip-path 0.75s ease-in-out;
+}
+@media (prefers-color-scheme: light) {
+  .figmaFileInput .logoSlider .back #figma {
     fill: #a2a2a2;
   }
 }
 @media (prefers-color-scheme: dark) {
-  .figmaFileInput .logoSlider .back path {
-    fill: #848484;
+  .figmaFileInput .logoSlider .back #figma {
+    fill: #5B5B6B;
+  }
+}
+@media (prefers-color-scheme: light) {
+  .figmaFileInput .logoSlider .back #history {
+    fill: url(#history_dark_gradient) #fff;
+    opacity: 0.3;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .figmaFileInput .logoSlider .back #history {
+    fill: url(#history_dark_gradient) #fff;
+    opacity: 0.3;
+  }
+}
+@media (prefers-color-scheme: light) {
+  .figmaFileInput .logoSlider .back #subtitle {
+    fill: #a2a2a2;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .figmaFileInput .logoSlider .back #subtitle {
+    fill: #5B5B6B;
   }
 }
 .figmaFileInput .label {
@@ -929,7 +1005,8 @@ input[type=text].hasMessage {
   margin-right: 8px;
 }
 .figmaFileInput .inputForm {
-  width: 55%;
+  width: 65%;
+  max-width: 1600px;
   margin-bottom: 56px;
 }
 
@@ -979,7 +1056,7 @@ input[type=text].hasMessage {
 }
 @media (prefers-color-scheme: dark) {
   .comparer .reactselect__control svg path {
-    fill: #949494;
+    fill: #848494;
   }
 }
 .comparer .reactselect__menu {
@@ -1136,7 +1213,7 @@ input[type=text].hasMessage {
   width: 240px;
   transition: all 0.3s ease-out;
   padding-top: 80px;
-  padding-bottom: 80px;
+  padding-bottom: 64px;
 }
 @media (prefers-color-scheme: light) {
   .comparer .sidePanel {
@@ -1187,11 +1264,27 @@ input[type=text].hasMessage {
 }
 @media (prefers-color-scheme: dark) {
   .comparer .sidePanel .header {
-    color: #949494;
+    color: #848494;
   }
 }
 .comparer .sidePanel .listItem {
   padding: 8px 24px 10px 24px;
+}
+.comparer .sidePanel .trialMessage {
+  padding: 24px;
+}
+.comparer .sidePanel .trialMessage .secondaryText {
+  margin-bottom: 16px;
+}
+.comparer .sidePanel .trialMessage .secondaryText::first-letter {
+  text-transform: capitalize;
+}
+.comparer .sidePanel .trialMessage .btnPrimary {
+  width: 100%;
+  margin-bottom: 16px;
+}
+.comparer .sidePanel .trialMessage .btnSecondary {
+  width: 100%;
 }
 .comparer .bottomBar {
   padding: 12px 12px 12px 12px;

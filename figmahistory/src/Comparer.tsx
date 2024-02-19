@@ -1,6 +1,6 @@
 import React, { ChangeEvent, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { ReactZoomPanPinchRef, TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
-import { User, Side, Color, Document, Version, Page, NodeWithImage, FigmaNode, Node, Difference, Rect, ViewDiffs } from './types';
+import { User, Side, Color, Document, Version, Page, NodeWithImage, FigmaNode, Node, Difference, Rect, ViewDiffs, AppState } from './types';
 import { globalState, setDocumentID, setAccessToken, setDocumentLeft, setDocumentRight, updateDocumentPageLeftChildrenAndFlatNodes, updateDocumentPageRightChildrenAndFlatNodes, setSelectedPageId, updateDocumentPageLeftFlatNodes, updateDocumentPageRightFlatNodes, updateDocumentPageRightBounds, updateDocumentPageLeftBounds, setSelectedNodeId, setViewDiffs, addLoadedDocument, updateDocumentPageIsLoaded, updateDocumentPageChildrenFlatNodesAndBackground, setHasMultipleVersionPages, setVersionPagesCount, } from './globals';
 import { ReactCompareSlider, ReactCompareSliderHandle, useReactCompareSliderRef } from 'react-compare-slider';
 import isEqual from 'lodash/isEqual';
@@ -9,6 +9,7 @@ import Select, { ActionMeta, ControlProps, DropdownIndicatorProps, ValueContaine
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import { ReactSVG } from 'react-svg'
 import List from './List';
+import * as numberToWords from 'number-to-words';
 
 interface ComparerProps {
     className: string;
@@ -222,8 +223,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                     }
 
                     versionPagesLoaded.current++;
-                    if (versionPagesLoaded.current >= globalState.versionPagesCount)
-                    {
+                    if (versionPagesLoaded.current >= globalState.versionPagesCount) {
                         setIsLoadingVersions(false);
                     }
 
@@ -1024,6 +1024,16 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                     </div>
 
                     <List pageList={mergedPagesList} selectedVersionNameLeft={selectedVersionNameLeft} selectedVersionNameRight={selectedVersionNameRight} selectedItemId={globalState.selectedPageId} onSelectionChange={(selectedItem) => onPageSelectionChange(selectedItem)} />
+
+                    {(globalState.appState == AppState.TRIAL_ACTIVE) ? (
+                        <div className="rowAuto trialMessage">
+                            <div className="secondaryText">{numberToWords.toWords(globalState.appTrialDaysLeft)} days of trial sunshine left! Enjoy! ☀️</div>
+                            <a href="https://oodesign.gumroad.com/l/figmahistory" target="_blank">
+                                <button className='btnPrimary'>Get Figma history</button>
+                            </a>
+                            <button className='btnSecondary'>I already have a license</button>
+                        </div>
+                    ) : ""}
                 </div>
             </div>
             <div className='colAvailable verticalLayout'>
@@ -1196,7 +1206,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                 </div>
             </div>
 
-        </div>
+        </div >
     );
 };
 

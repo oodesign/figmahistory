@@ -1,3 +1,4 @@
+import { Timestamp } from 'firebase/firestore';
 
 export interface User {
     id: string;
@@ -91,4 +92,21 @@ export interface ViewDiffs {
     showGroups: boolean;
     showText: boolean;
     showShapes: boolean;
+}
+
+
+export enum AppState {
+    NOT_REGISTERED,
+    TRIAL_EXPIRED,
+    TRIAL_ACTIVE,
+    ACTIVE,
+    LICENSE_DISABLED
+}
+
+
+export interface AppResponse {
+    state: AppState,
+    user: User | undefined,
+    token: string,
+    trialDaysLeft: number
 }
