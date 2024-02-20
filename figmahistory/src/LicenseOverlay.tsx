@@ -118,7 +118,6 @@ const LicenseOverlay: React.ForwardRefRenderFunction<HTMLDivElement, LicenseOver
                                                 autoFocus
                                                 placeholder="00000000-00000000-00000000-00000000"
                                                 className='linkUrlInput displayFlex colAvailable'
-                                                defaultValue="CB6BEE98-A1B145BA-BF971F94-E7C16996"
                                             />
                                         </form>
                                         <div className="colAuto">

@@ -96,7 +96,6 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                                     autoFocus
                                     placeholder="In Figma, click 'Share' and 'Copy link', and paste the link here"
                                     className='linkUrlInput displayFlex colAvailable'
-                                    defaultValue="https://www.figma.com/file/HTUxsQSO4pR1GCvv8Nvqd5/HistoryChecker?type=design&node-id=1%3A2&mode=design&t=ffdrgnmtJ92dZgeQ-1"
                                 />
                             </form>
                             <div className="colAuto">
