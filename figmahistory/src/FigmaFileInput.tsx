@@ -13,6 +13,7 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
     const reactCompareSliderRef = useReactCompareSliderRef();
     const [isLogoAnimated, setIsLogoAnimated] = useState<boolean>(true);
     const [clipPath, setClipPath] = useState<string | undefined>(/* initial clip-path */);
+    const [localValidationMessage, setLocalValidationMessage] = useState<string>("");
 
 
     const getFigmaDocumentInfo = () => {
@@ -23,8 +24,7 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
         const matches = inputURL.match(regex);
 
         if (!matches) {
-            //TODO Handle incorrect format error
-            // return { id: "", nodeId: "" };
+            setLocalValidationMessage("This link doesn't seem to belong to a Figma file");
         }
         else {
             const id = matches[4] || "";
@@ -87,20 +87,25 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                     <div className="rowAuto label secondaryText">
                         Paste your Figma file link below
                     </div>
-                    <div className="rowAuto horizontalLayout">
-                        <form className="colAvailable displayFlex" onSubmit={getFigmaDocumentInfo}>
-                            <input
-                                id="figmaFileURL"
-                                type="text"
-                                autoFocus
-                                placeholder="In Figma, click 'Share' and 'Copy link', and paste the link here"
-                                className='linkUrlInput displayFlex colAvailable'
-                                // defaultValue="https://www.figma.com/file/HTUxsQSO4pR1GCvv8Nvqd5/HistoryChecker?type=design&node-id=1%3A2&mode=design&t=ffdrgnmtJ92dZgeQ-1"
-                            />
-                        </form>
-                        <div className="colAuto">
-                            <button className='btnPrimary large' onClick={getFigmaDocumentInfo}>Compare</button>
+                    <div className="rowAuto ">
+                        <div className=" horizontalLayout">
+                            <form className="colAvailable displayFlex" onSubmit={getFigmaDocumentInfo}>
+                                <input
+                                    id="figmaFileURL"
+                                    type="text"
+                                    autoFocus
+                                    placeholder="In Figma, click 'Share' and 'Copy link', and paste the link here"
+                                    className='linkUrlInput displayFlex colAvailable'
+                                    defaultValue="https://www.figma.com/file/HTUxsQSO4pR1GCvv8Nvqd5/HistoryChecker?type=design&node-id=1%3A2&mode=design&t=ffdrgnmtJ92dZgeQ-1"
+                                />
+                            </form>
+                            <div className="colAuto">
+                                <button className='btnPrimary large' onClick={getFigmaDocumentInfo}>Compare</button>
+                            </div>
                         </div>
+                    </div>
+                    <div className="rowAuto errorText">
+                        {localValidationMessage}
                     </div>
                 </div>
                 <div className="rowAuto secondaryText spaced">
