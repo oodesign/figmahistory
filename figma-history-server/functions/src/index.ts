@@ -2,7 +2,7 @@ import * as functions from 'firebase-functions';
 import * as express from 'express';
 import * as cors from 'cors';
 import * as admin from 'firebase-admin';
-import { Timestamp } from 'firebase-admin/firestore'
+import { DocumentData, Timestamp } from 'firebase-admin/firestore'
 // import axios from 'axios';
 
 const app = express();
@@ -47,11 +47,11 @@ interface AppResponse {
 }
 
 interface License {
-    email: string;
+    emails: string[];
     token: string;
     licenseKey: string;
     licenseType: string;
-    companyDomain: string;
+    activationDate: Timestamp
 }
 
 interface Trial {
@@ -72,15 +72,15 @@ interface Trial {
 //     startDate: string;
 // }
 
-// Add License to Firestore
-// const addLicense = async (data: License): Promise<void> => {
-//     const licensesRef = admin.firestore().collection('StorageTesting');
-//     await licensesRef.add(data);
-// };
 
 const addTrial = async (data: Trial): Promise<void> => {
     const trialsRef = admin.firestore().collection('Trials');
     await trialsRef.add(data);
+};
+
+const addLicense = async (data: License): Promise<void> => {
+    const licensesRef = admin.firestore().collection('Licenses');
+    await licensesRef.add(data);
 };
 
 
@@ -117,10 +117,28 @@ async function getTrialFromEmailAndUpdateToken(email: string, newToken: string):
     }
 }
 
+async function getLicenseFromKey(licenseKey: string): Promise<DocumentData | null> {
+    try {
+        const licensesRef = firestore.collection('Licenses');
+        const querySnapshot = await licensesRef.where('licenseKey', '==', licenseKey).get();
+        if (querySnapshot.empty) {
+            return null; // No license found for the provided email
+        }
+
+        const licenseDoc = querySnapshot.docs[0];
+
+        return licenseDoc;
+    } catch (error) {
+        console.error('Error checking license:', error);
+        throw error;
+    }
+}
+
 async function getLicenseFromEmailAndUpdateToken(email: string, newToken: string): Promise<License | null> {
     try {
         const licensesRef = firestore.collection('Licenses');
-        const querySnapshot = await licensesRef.where('email', '==', email).get();
+        //const querySnapshot = await licensesRef.where('email', '==', email).get();
+        const querySnapshot = await licensesRef.where('emails', 'array-contains', email).get();
         if (querySnapshot.empty) {
             return null; // No license found for the provided email
         }
@@ -152,7 +170,7 @@ function isTrialActive(trial: Trial) {
     return isActive;
 }
 
-async function isGumroadLicenseActive(licenseKey: string): Promise<boolean> {
+async function getGumroadLicense(licenseKey: string): Promise<any> {
     const apiUrl = `https://api.gumroad.com/v2/licenses/verify`;
 
     const requestOptions: RequestInit = {
@@ -174,7 +192,7 @@ async function isGumroadLicenseActive(licenseKey: string): Promise<boolean> {
         }
 
         const responseData = await response.json();
-        return responseData.success;
+        return responseData;
     } catch (error) {
         // Handle errors, log or return false if the license is not valid
         return false;
@@ -182,8 +200,98 @@ async function isGumroadLicenseActive(licenseKey: string): Promise<boolean> {
 }
 
 function getTrialDaysLeft(timestamp: Timestamp) {
-    return 4;
+    const trialDurationDays = 7;
+    const millisecondsInDay = 24 * 60 * 60 * 1000; // 24 hours * 60 minutes * 60 seconds * 1000 milliseconds
+
+    const currentDate = new Date();
+    const trialStartDate = timestamp.toDate();
+
+    const elapsedTime = currentDate.getTime() - trialStartDate.getTime();
+    const remainingTime = trialDurationDays * millisecondsInDay - elapsedTime;
+
+    if (remainingTime > 0) {
+        const remainingDays = Math.ceil(remainingTime / millisecondsInDay);
+        return remainingDays;
+    } else {
+        return 0; // Trial has expired
+    }
 }
+
+app.post('/activate-license', async (req, res) => {
+
+    try {
+        // Extract the code from the request body or wherever it is provided
+        const email = req.body.email;
+        const token = req.body.token;
+        const licenseKey = req.body.licenseKey;
+
+        //console.log("Activating license!" + email + "," + token + "," + licenseKey)
+
+
+        //Check license key on Gumroad platform
+        const gumroadlicenseResponse = await getGumroadLicense(licenseKey);
+        if (gumroadlicenseResponse.success) {
+            const licenseType = gumroadlicenseResponse.purchase.variants;
+
+            //TODO  CHECK IF LICENSE ALREADY EXISTS. DEPENDING ON IT RETURN MESSAGE MAY BE DIFFERENT
+            let licenseData: License | null = null;
+            const fbLicense = await getLicenseFromKey(licenseKey);
+            if (fbLicense) {
+                //If license already exists in Firebase, check if it's single or team license
+                let licenseData = fbLicense.data() as License;
+                if (licenseData.licenseType == "(Team license)") {
+                    //If team license, add the email in the authorized emails array (if it's not there already)
+                    if (!licenseData.emails.includes(email)) {
+                        const licensesRef = firestore.collection('Licenses');
+                        //console.log("License exists. Updating authorized emails of:" + fbLicense.id)
+                        await licensesRef.doc(fbLicense.id).update({
+                            emails: [...licenseData.emails, email]
+                        });
+                    }
+
+                    res.status(200).json({ message: "License was activated", licenseData: JSON.stringify(licenseData) });
+
+                } else if (licenseData.licenseType == "(Single license)") {
+                    //If license exists and is single, check if it's same user or not.
+                    if (licenseData.emails.includes(email)) {
+
+                        res.status(200).json({ message: "License was activated", licenseData: JSON.stringify(licenseData) });
+                    } else {
+                        //If email is not in, the license key was used to activate a different account.
+                        res.status(200).json({ message: "License already used" });
+                    }
+                }
+            }
+            else {
+                //If license doesn't exist in Firebase then needs to be created.
+                addLicense({
+                    emails: [email],
+                    token: token,
+                    licenseKey: licenseKey,
+                    licenseType: licenseType,
+                    activationDate: Timestamp.now()
+                })
+                licenseData = {
+                    emails: [email],
+                    token: token,
+                    licenseKey: licenseKey,
+                    licenseType: licenseType,
+                    activationDate: Timestamp.now()
+                }
+                res.status(200).json({ message: "License was activated", licenseData: JSON.stringify(licenseData) });
+            }
+
+        }
+        else {
+            res.status(200).json({ message: "License not valid" });
+        }
+
+
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
 
 
 app.post('/get-figma-access-token', async (req, res) => {
@@ -218,21 +326,18 @@ app.post('/get-figma-access-token', async (req, res) => {
 
         // Handle the response from the Figma API
         const figmaData = await figmaResponse.json();
-        console.log("Woooo this is server get-figma-access-token")
-        console.log(figmaData)
-        console.log("Getting user")
+        //console.log("Getting user")
         const user = await getUser(figmaData.access_token);
-        console.log(user)
         if (user) {
             appResponse.user = user;
-            console.log("Getting license from email. Email is:" + user.email)
+            //console.log("Getting license from email. Email is:" + user.email)
             const license = await getLicenseFromEmailAndUpdateToken(user.email, figmaData.access_token);
             if (license) {
-                const isLicenseActive = await isGumroadLicenseActive(license.licenseKey)
-                if (isLicenseActive) {
+                const gumroadlicenseResponse = await getGumroadLicense(license.licenseKey);
+                if (gumroadlicenseResponse.success) {
                     appResponse.state = AppState.ACTIVE;
                     appResponse.token = license.token;
-                    console.log("User was already registered. Here license data:");
+                    //console.log("User was already registered. Here license data:");
                 }
                 else {
                     appResponse.state = AppState.LICENSE_DISABLED;
@@ -240,19 +345,19 @@ app.post('/get-figma-access-token', async (req, res) => {
                 }
             }
             else {
-                console.log("Getting trial from email. Email is:" + user.email)
+                //console.log("Getting trial from email. Email is:" + user.email)
                 const trial = await getTrialFromEmailAndUpdateToken(user.email, figmaData.access_token);
-                console.log(trial);
+                //console.log(trial);
                 if (trial) {
                     const trialActive = isTrialActive(trial);
                     appResponse.state = trialActive ? AppState.TRIAL_ACTIVE : AppState.TRIAL_EXPIRED;
                     appResponse.token = figmaData.access_token;
                     appResponse.trialDaysLeft = getTrialDaysLeft(trial.trialStartDate);
-                    console.log("User is in trial." + (trialActive ? "Trial is active" : "But trial has expired") + ". Here trial data:");
-                    console.log(trial);
+                    //console.log("User is in trial." + (trialActive ? "Trial is active" : "But trial has expired") + ". Here trial data:");
+                    //console.log(trial);
                 }
                 else {
-                    console.log("User is not registered. Let's enable a free trial");
+                    //console.log("User is not registered. Let's enable a free trial");
                     addTrial({
                         email: user.email,
                         token: figmaData.access_token,

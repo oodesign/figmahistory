@@ -103,6 +103,11 @@ export enum AppState {
     LICENSE_DISABLED
 }
 
+export enum LicenseOverlayMode{
+    TRIAL_EXPIRED,
+    INPUT_LICENSE_KEY
+}
+
 
 export interface AppResponse {
     state: AppState,

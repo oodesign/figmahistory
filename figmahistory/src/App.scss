@@ -146,12 +146,20 @@ body {
     transition: opacity 0.5s linear, visibility 0s 0.5s !important;
     opacity: 0 !important;
     visibility: hidden !important;
+
+    &.fast{
+      transition: opacity 0.2s linear, visibility 0s 0.2s !important;
+    }
   }
 
   &.fadeIn {
     transition: visibility 0s, opacity 0.5s linear !important;
     opacity: 1 !important;
     visibility: visible !important;
+
+    &.fast{
+      transition: visibility 0s, opacity 0.2s linear !important;
+    }
   }
 }
 

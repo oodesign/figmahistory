@@ -16,6 +16,7 @@ interface ComparerProps {
 
     gotDocumentName: (name: string) => void;
     initialLoadComplete: () => void;
+    onRegisterLicenseClick?: () => void;
 }
 
 export interface ComparerRef {
@@ -1010,6 +1011,11 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
             setIsRightPageAvailable(false);
     }
 
+    function registerLicense(): void {
+        if(props.onRegisterLicenseClick)
+        props.onRegisterLicenseClick();
+    }
+
     // #endregion
 
     return (
@@ -1027,11 +1033,11 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
 
                     {(globalState.appState == AppState.TRIAL_ACTIVE) ? (
                         <div className="rowAuto trialMessage">
-                            <div className="secondaryText">{numberToWords.toWords(globalState.appTrialDaysLeft)} days of trial sunshine left! Enjoy! ☀️</div>
-                            <a href="https://oodesign.gumroad.com/l/figmahistory" target="_blank">
+                            <div className="secondaryText">You still have {globalState.appTrialDaysLeft} days of <br/>trial sunshine left. Enjoy! ☀️</div>
+                            <a href="https://oodesign.gumroad.com/l/figmahistory?option=x8JwFOfp2eKY-GgXKSg2aA%3D%3D&_gl=1*1xpb5kb*_ga*MTUwNTk1MDE5OS4xNjc4MTAzNjAz*_ga_6LJN6D94N6*MTcwODMyNDE5OC44NC4wLjE3MDgzMjQyMDIuMC4wLjA." target="_blank">
                                 <button className='btnPrimary'>Get Figma history</button>
                             </a>
-                            <button className='btnSecondary'>I already have a license</button>
+                            <button className='btnSecondary' onClick={registerLicense}>I already have a license</button>
                         </div>
                     ) : ""}
                 </div>

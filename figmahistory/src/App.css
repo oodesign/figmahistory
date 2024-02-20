@@ -31,6 +31,24 @@
   }
 }
 
+.errorText {
+  font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px;
+}
+.errorText.spaced {
+  line-height: 20px;
+}
+@media (prefers-color-scheme: light) {
+  .errorText {
+    color: #ff4356;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .errorText {
+    color: #ff4356;
+  }
+}
+
 div::-webkit-scrollbar-track {
   border-radius: 5px;
   background-color: transparent;
@@ -434,13 +452,16 @@ div::-webkit-scrollbar-thumb {
     border-color: #901AED;
   }
 }
+.btnSecondary.large {
+  height: 40px;
+}
 
 .btnTertiary {
   border: 1px solid transparent;
   background-color: transparent;
   width: 100px;
   height: 34px;
-  border-radius: 17px;
+  border-radius: 6px;
   background-origin: border-box;
   background-clip: content-box, border-box;
   margin: 0 auto;
@@ -485,6 +506,9 @@ div::-webkit-scrollbar-thumb {
   .btnTertiary:active {
     border-color: #8C2CD7;
   }
+}
+.btnTertiary.large {
+  height: 40px;
 }
 
 input,
@@ -682,6 +706,24 @@ input[type=text].hasMessage {
 @media (prefers-color-scheme: dark) {
   .secondaryText {
     color: #848494;
+  }
+}
+
+.errorText {
+  font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px;
+}
+.errorText.spaced {
+  line-height: 20px;
+}
+@media (prefers-color-scheme: light) {
+  .errorText {
+    color: #ff4356;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .errorText {
+    color: #ff4356;
   }
 }
 
@@ -1007,6 +1049,92 @@ input[type=text].hasMessage {
 .figmaFileInput .inputForm {
   width: 65%;
   max-width: 1600px;
+  margin-bottom: 56px;
+}
+
+.licenseOverlay {
+  background-image: url("./images/bg.png");
+  background-repeat: no-repeat;
+  background-position: right bottom;
+}
+@media (prefers-color-scheme: light) {
+  .licenseOverlay {
+    background-color: #fafafc;
+    color: #323232;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .licenseOverlay {
+    background-color: #19191C;
+    color: #ffffff;
+  }
+}
+.licenseOverlay .logoBig {
+  width: 446px;
+  height: 80px;
+  margin-bottom: 32px;
+}
+@media (prefers-color-scheme: light) {
+  .licenseOverlay .logoBig #figma {
+    fill: #323232;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .licenseOverlay .logoBig #figma {
+    fill: #ffffff;
+  }
+}
+@media (prefers-color-scheme: light) {
+  .licenseOverlay .logoBig #history {
+    fill: url(#history_dark_gradient) #fff;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .licenseOverlay .logoBig #history {
+    fill: url(#history_dark_gradient) #fff;
+  }
+}
+.licenseOverlay .alignVCenter {
+  margin-left: 10%;
+  margin-bottom: 90px;
+}
+@media (max-width: 1280px) {
+  .licenseOverlay .alignVCenter {
+    margin-left: 128px;
+  }
+}
+@media (min-width: 2400px) {
+  .licenseOverlay .alignVCenter {
+    margin-left: 240px;
+  }
+}
+.licenseOverlay .primaryText {
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+.licenseOverlay .options {
+  margin-top: 24px;
+  margin-bottom: 40px;
+}
+.licenseOverlay .options button {
+  float: left;
+  margin-right: 8px;
+  width: 200px;
+}
+.licenseOverlay .label {
+  width: 50%;
+  text-align: left;
+  margin-bottom: 8px;
+}
+.licenseOverlay .linkUrlInput {
+  display: flex;
+  height: 40px;
+  margin-right: 8px;
+}
+.licenseOverlay .inputForm {
+  width: 480px;
+  max-width: 1600px;
+  margin-top: 32px;
   margin-bottom: 56px;
 }
 
@@ -1508,10 +1636,16 @@ body {
   opacity: 0 !important;
   visibility: hidden !important;
 }
+.animatedDiv.fadeOut.fast {
+  transition: opacity 0.2s linear, visibility 0s 0.2s !important;
+}
 .animatedDiv.fadeIn {
   transition: visibility 0s, opacity 0.5s linear !important;
   opacity: 1 !important;
   visibility: visible !important;
+}
+.animatedDiv.fadeIn.fast {
+  transition: visibility 0s, opacity 0.2s linear !important;
 }
 
 a {
