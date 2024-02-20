@@ -5,11 +5,6 @@ $accentColorNegativeText: #ffffff;
 $accentColorNegativeSecondaryText: #C9A0E9;
 
 
-$light_inputBorderColor: #D6D6E3;
-$dark_inputBorderColor: #6A6A78;
-$light_inputBorderColorHover: #D6D6E3;
-$dark_inputBorderColorHover: #8d8d97;
-
 
 $light_backgroundColor: #fafafc;
 $light_backgroundColor2: #ffffff;
@@ -58,7 +53,19 @@ $light_tooltipColor: #FFFFFF;
 $dark_tooltipColor: #39393E;
 
 $light_inputBackgroundColor: #FFFFFF;
-$dark_inputBackgroundColor: #28282A;
+$light_inputBackgroundColorHover: #FFFFFF;
+$light_inputBackgroundColorFocus: #FFFFFF;
+$light_inputBorderColor: #e0e0e0;
+$light_inputBorderColorHover: #bbbbbb;
+$light_inputBorderColorFocus: #808084;
+$light_inputPlaceholderColor: #848494;
+$dark_inputBackgroundColor: #2e2e31;
+$dark_inputBackgroundColorHover: #35353a;
+$dark_inputBackgroundColorFocus: #2e2e31;
+$dark_inputBorderColor: transparent;
+$dark_inputBorderColorHover: transparent;
+$dark_inputBorderColorFocus: #74747a;
+$dark_inputPlaceholderColor: #9595a0;
 
 $light_componentSecondaryColor: #f0f0f2;
 $light_componentSecondaryColorHover: #eaeaec;

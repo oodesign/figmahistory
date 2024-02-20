@@ -52,8 +52,14 @@
 }
 
 .figmaFileInput {
+    @include for-theme(light) {
+        background-image: url('./images/bgLight.png');
+    }
 
-    background-image: url('./images/bg.png');
+    @include for-theme(dark) {
+        background-image: url('./images/bgDark.png');
+    }
+
     background-repeat: no-repeat;
     background-position: right bottom;
 
@@ -188,7 +194,14 @@
         color: $dark_primaryColor;
     }
 
-    background-image: url('./images/bg.png');
+    @include for-theme(light) {
+        background-image: url('./images/bgLight.png');
+    }
+
+    @include for-theme(dark) {
+        background-image: url('./images/bgDark.png');
+    }
+
     background-repeat: no-repeat;
     background-position: right bottom;
 
@@ -233,19 +246,19 @@
         }
     }
 
-    .primaryText{
+    .primaryText {
         font-size: 16px;
         margin-bottom: 12px;
     }
 
-    .options{
+    .options {
         margin-top: 24px;
         margin-bottom: 40px;
 
-        button{
+        button {
             float: left;
             margin-right: 8px;
-            width:200px;
+            width: 200px;
         }
     }
 

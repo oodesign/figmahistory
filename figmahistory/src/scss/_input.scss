@@ -84,24 +84,94 @@ input[type="text"] {
     @include primaryText;
     transition: all 0.15s ease-out;
 
+
     @include for-theme(light) {
-        background-color: $light_inputBackgroundColor;
         border: 1px solid $light_inputBorderColor;
+        background-color: $light_inputBackgroundColor;
     }
 
     @include for-theme(dark) {
-        background-color: $dark_inputBackgroundColor;
         border: 1px solid $dark_inputBorderColor;
+        background-color: $dark_inputBackgroundColor;
     }
 
-    &:focus,
+    &:autofill,
+    &:-webkit-autofill {
+        @include for-theme(light) {
+            color: $light_primaryColor;
+            -webkit-text-fill-color: $light_primaryColor;
+            border: 1px solid $light_inputBorderColor;
+            background-color: $light_inputBackgroundColor;
+        }
+
+        @include for-theme(dark) {
+            color: $dark_primaryColor;
+            -webkit-text-fill-color: $dark_primaryColor;
+            border: 1px solid $dark_inputBorderColor;
+            background-color: $dark_inputBackgroundColor;
+        }
+
+        transition: background-color 5000s ease-in-out 0s;
+
+        &:hover {
+            @include for-theme(light) {
+                border: 1px solid $light_inputBorderColorHover;
+                background-color: $light_inputBackgroundColorHover;
+            }
+
+            @include for-theme(dark) {
+                border: 1px solid $dark_inputBorderColorHover;
+                background-color: $dark_inputBackgroundColorHover;
+            }
+        }
+
+        &:focus {
+            @include for-theme(light) {
+                border: 1px solid $light_inputBorderColorFocus;
+                background-color: $light_inputBackgroundColorFocus;
+            }
+
+            @include for-theme(dark) {
+                border: 1px solid $dark_inputBorderColorFocus;
+                background-color: $dark_inputBackgroundColorFocus;
+            }
+        }
+
+    }
+
+
+    &::placeholder {
+        @include for-theme(light) {
+            color: $light_inputPlaceholderColor;
+        }
+
+        @include for-theme(dark) {
+            color: $dark_inputPlaceholderColor;
+        }
+    }
+
+
     &:hover {
         @include for-theme(light) {
             border: 1px solid $light_inputBorderColorHover;
+            background-color: $light_inputBackgroundColorHover;
         }
 
         @include for-theme(dark) {
             border: 1px solid $dark_inputBorderColorHover;
+            background-color: $dark_inputBackgroundColorHover;
+        }
+    }
+
+    &:focus {
+        @include for-theme(light) {
+            border: 1px solid $light_inputBorderColorFocus;
+            background-color: $light_inputBackgroundColorFocus;
+        }
+
+        @include for-theme(dark) {
+            border: 1px solid $dark_inputBorderColorFocus;
+            background-color: $dark_inputBackgroundColorFocus;
         }
     }
 

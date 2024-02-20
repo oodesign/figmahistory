@@ -649,24 +649,130 @@ input[type=text] {
 }
 @media (prefers-color-scheme: light) {
   input[type=text] {
+    border: 1px solid #e0e0e0;
     background-color: #FFFFFF;
-    border: 1px solid #D6D6E3;
   }
 }
 @media (prefers-color-scheme: dark) {
   input[type=text] {
-    background-color: #28282A;
-    border: 1px solid #6A6A78;
+    border: 1px solid transparent;
+    background-color: #2e2e31;
   }
 }
+input[type=text]:-webkit-autofill {
+  -webkit-transition: background-color 5000s ease-in-out 0s;
+  transition: background-color 5000s ease-in-out 0s;
+}
+input[type=text]:autofill, input[type=text]:-webkit-autofill {
+  -webkit-transition: background-color 5000s ease-in-out 0s;
+  transition: background-color 5000s ease-in-out 0s;
+}
 @media (prefers-color-scheme: light) {
-  input[type=text]:focus, input[type=text]:hover {
-    border: 1px solid #D6D6E3;
+  input[type=text]:-webkit-autofill {
+    color: #323232;
+    -webkit-text-fill-color: #323232;
+    border: 1px solid #e0e0e0;
+    background-color: #FFFFFF;
+  }
+  input[type=text]:autofill, input[type=text]:-webkit-autofill {
+    color: #323232;
+    -webkit-text-fill-color: #323232;
+    border: 1px solid #e0e0e0;
+    background-color: #FFFFFF;
   }
 }
 @media (prefers-color-scheme: dark) {
-  input[type=text]:focus, input[type=text]:hover {
-    border: 1px solid #8d8d97;
+  input[type=text]:-webkit-autofill {
+    color: #ffffff;
+    -webkit-text-fill-color: #ffffff;
+    border: 1px solid transparent;
+    background-color: #2e2e31;
+  }
+  input[type=text]:autofill, input[type=text]:-webkit-autofill {
+    color: #ffffff;
+    -webkit-text-fill-color: #ffffff;
+    border: 1px solid transparent;
+    background-color: #2e2e31;
+  }
+}
+@media (prefers-color-scheme: light) {
+  input[type=text]:-webkit-autofill:hover {
+    border: 1px solid #bbbbbb;
+    background-color: #FFFFFF;
+  }
+  input[type=text]:autofill:hover, input[type=text]:-webkit-autofill:hover {
+    border: 1px solid #bbbbbb;
+    background-color: #FFFFFF;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  input[type=text]:-webkit-autofill:hover {
+    border: 1px solid transparent;
+    background-color: #35353a;
+  }
+  input[type=text]:autofill:hover, input[type=text]:-webkit-autofill:hover {
+    border: 1px solid transparent;
+    background-color: #35353a;
+  }
+}
+@media (prefers-color-scheme: light) {
+  input[type=text]:-webkit-autofill:focus {
+    border: 1px solid #808084;
+    background-color: #FFFFFF;
+  }
+  input[type=text]:autofill:focus, input[type=text]:-webkit-autofill:focus {
+    border: 1px solid #808084;
+    background-color: #FFFFFF;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  input[type=text]:-webkit-autofill:focus {
+    border: 1px solid #74747a;
+    background-color: #2e2e31;
+  }
+  input[type=text]:autofill:focus, input[type=text]:-webkit-autofill:focus {
+    border: 1px solid #74747a;
+    background-color: #2e2e31;
+  }
+}
+@media (prefers-color-scheme: light) {
+  input[type=text]::-moz-placeholder {
+    color: #848494;
+  }
+  input[type=text]::placeholder {
+    color: #848494;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  input[type=text]::-moz-placeholder {
+    color: #9595a0;
+  }
+  input[type=text]::placeholder {
+    color: #9595a0;
+  }
+}
+@media (prefers-color-scheme: light) {
+  input[type=text]:hover {
+    border: 1px solid #bbbbbb;
+    background-color: #FFFFFF;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  input[type=text]:hover {
+    border: 1px solid transparent;
+    background-color: #35353a;
+  }
+}
+@media (prefers-color-scheme: light) {
+  input[type=text]:focus {
+    border: 1px solid #808084;
+    background-color: #FFFFFF;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  input[type=text]:focus {
+    border: 1px solid #74747a;
+    background-color: #2e2e31;
   }
 }
 input[type=text].large {
@@ -938,9 +1044,18 @@ input[type=text].hasMessage {
 }
 
 .figmaFileInput {
-  background-image: url("./images/bg.png");
   background-repeat: no-repeat;
   background-position: right bottom;
+}
+@media (prefers-color-scheme: light) {
+  .figmaFileInput {
+    background-image: url("./images/bgLight.png");
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .figmaFileInput {
+    background-image: url("./images/bgDark.png");
+  }
 }
 .figmaFileInput .alignVCenter {
   margin-left: 10%;
@@ -1053,7 +1168,6 @@ input[type=text].hasMessage {
 }
 
 .licenseOverlay {
-  background-image: url("./images/bg.png");
   background-repeat: no-repeat;
   background-position: right bottom;
 }
@@ -1067,6 +1181,16 @@ input[type=text].hasMessage {
   .licenseOverlay {
     background-color: #19191C;
     color: #ffffff;
+  }
+}
+@media (prefers-color-scheme: light) {
+  .licenseOverlay {
+    background-image: url("./images/bgLight.png");
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .licenseOverlay {
+    background-image: url("./images/bgDark.png");
   }
 }
 .licenseOverlay .logoBig {
