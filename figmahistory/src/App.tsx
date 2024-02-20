@@ -163,7 +163,7 @@ const Start = () => {
 
   const openPopupWindow = () => {
 
-    const url = 'https://www.figma.com/oauth?client_id=pLCXoLFHH1UngPRH0ENGzV&redirect_uri=http://127.0.0.1:5002/callFigmaOAuth&scope=file_read&state=qpolpolq&response_type=code'; // Replace with your actual URL
+    const url = 'https://www.figma.com/oauth?client_id=pLCXoLFHH1UngPRH0ENGzV&redirect_uri=http://127.0.0.1:5002/callFigmaOAuth&scope=files:read&state=qpolpolq&response_type=code'; // Replace with your actual URL
     const options = 'toolbar=no,\
      location=no,\
      status=no,\
