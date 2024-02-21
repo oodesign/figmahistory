@@ -121,7 +121,7 @@ const LicenseOverlay: React.ForwardRefRenderFunction<HTMLDivElement, LicenseOver
                                             />
                                         </form>
                                         <div className="colAuto">
-                                            <button className={`btnPrimary large btnActivate ${props.activationSuccessful ? 'success' : ''}`} onClick={onActivateLicense} >
+                                            <button className={`btnPrimary large btnActivate ${props.activationSuccessful ? 'success' : ''}`} onClick={onActivateLicense} disabled={props.isActivating}>
                                                 <div className="horizontalLayout alignFlexHorizontalCenter">
                                                     <div className="textContent colAuto alignFullCenterAndCenterText">
                                                         {props.activationSuccessful ? "License is active" : props.isActivating ? "Activating" : "Activate license"}

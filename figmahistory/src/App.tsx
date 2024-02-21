@@ -1,5 +1,4 @@
 import React, { ChangeEvent, SetStateAction, useEffect, useRef, useState } from 'react';
-import logo from './logo.svg';
 import { Routes, HashRouter, Route } from 'react-router-dom';
 import axios from 'axios';
 import ImageDiff from 'react-image-diff';
