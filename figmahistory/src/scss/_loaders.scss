@@ -5,7 +5,7 @@
     opacity: 0;
     transition: opacity 0.3s ease-in-out;
 
-    .loaderMessage{
+    .loaderMessage {
         @include secondaryText;
         margin-top: 16px;
     }
@@ -46,6 +46,32 @@
         }
     }
 
+    &.small {
+        min-height: 0;
+        width: 20px;
+        height: 20px;
+
+        .dualRingLoader {
+            width: 20px;
+            height: 20px;
+
+            &:after {
+                width: 20px;
+                height: 20px;
+            }
+        }
+    }
+
+    &.negative {
+        align-self: center;
+        .dualRingLoader {
+            &:after {
+                border: 2px solid $accentColorNegativeText;
+                border-color: $accentColorNegativeText transparent $accentColorNegativeText transparent;
+            }
+        }
+    }
+
 
     &.show {
         opacity: 1;
@@ -78,18 +104,19 @@
 
 // #region CircularProgressbar 
 
-.progressIndicatorContainer{
+.progressIndicatorContainer {
     width: 96px;
     height: 96px;
     margin-bottom: 16px;
 }
 
 .CircularProgressbar {
-    .CircularProgressbar-trail{
+    .CircularProgressbar-trail {
         stroke-width: 4px;
-        stroke: rgba(255,255,255,0.05);
+        stroke: rgba(255, 255, 255, 0.05);
     }
-    .CircularProgressbar-path{
+
+    .CircularProgressbar-path {
         stroke-width: 4px;
         stroke: $accentColor;
     }
@@ -98,8 +125,8 @@
 
 // #endregion
 
-.pageLoader{
+.pageLoader {
     position: absolute;
-    top:300px;
-    left:300px;
+    top: 300px;
+    left: 300px;
 }

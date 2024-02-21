@@ -233,9 +233,12 @@
 
     }
 
-    .alignVCenter {
+    .mainContent {
         margin-left: 10%;
         margin-bottom: 90px;
+    }
+
+    .alignVCenter {
 
         @include smallDesktop {
             margin-left: 128px;
@@ -275,11 +278,30 @@
     }
 
     .inputForm {
-        width: 480px;
+        width: 500px;
         max-width: 1600px;
         margin-top: 32px;
         margin-bottom: 56px;
     }
+
+    .btnActivate {
+        width: 170px;
+
+        #indeterminateLoader {
+            margin-left: 8px;
+        }
+
+        &.success {
+            @include for-theme(light) {
+                background-color: $light_successColor;
+            }
+
+            @include for-theme(dark) {
+                background-color: $dark_successColor;
+            }
+        }
+    }
+
 }
 
 .loader {

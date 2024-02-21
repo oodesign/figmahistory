@@ -49,6 +49,24 @@
   }
 }
 
+.successText {
+  font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px;
+}
+.successText.spaced {
+  line-height: 20px;
+}
+@media (prefers-color-scheme: light) {
+  .successText {
+    color: #3f8f5f;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .successText {
+    color: #57BA7F;
+  }
+}
+
 div::-webkit-scrollbar-track {
   border-radius: 5px;
   background-color: transparent;
@@ -306,6 +324,26 @@ div::-webkit-scrollbar-thumb {
   border: 2px solid rgb(105, 105, 105);
   border-color: rgb(105, 105, 105) transparent rgb(105, 105, 105) transparent;
   animation: dualRingLoader 1.2s linear infinite;
+}
+.indeterminateLoader.small {
+  min-height: 0;
+  width: 20px;
+  height: 20px;
+}
+.indeterminateLoader.small .dualRingLoader {
+  width: 20px;
+  height: 20px;
+}
+.indeterminateLoader.small .dualRingLoader:after {
+  width: 20px;
+  height: 20px;
+}
+.indeterminateLoader.negative {
+  align-self: center;
+}
+.indeterminateLoader.negative .dualRingLoader:after {
+  border: 2px solid #ffffff;
+  border-color: #ffffff transparent #ffffff transparent;
 }
 .indeterminateLoader.show {
   opacity: 1;
@@ -833,6 +871,24 @@ input[type=text].hasMessage {
   }
 }
 
+.successText {
+  font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px;
+}
+.successText.spaced {
+  line-height: 20px;
+}
+@media (prefers-color-scheme: light) {
+  .successText {
+    color: #3f8f5f;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .successText {
+    color: #57BA7F;
+  }
+}
+
 .listItem {
   flex: 0 0 auto;
   position: relative;
@@ -1218,7 +1274,7 @@ input[type=text].hasMessage {
     fill: url(#history_dark_gradient) #fff;
   }
 }
-.licenseOverlay .alignVCenter {
+.licenseOverlay .mainContent {
   margin-left: 10%;
   margin-bottom: 90px;
 }
@@ -1256,10 +1312,26 @@ input[type=text].hasMessage {
   margin-right: 8px;
 }
 .licenseOverlay .inputForm {
-  width: 480px;
+  width: 500px;
   max-width: 1600px;
   margin-top: 32px;
   margin-bottom: 56px;
+}
+.licenseOverlay .btnActivate {
+  width: 170px;
+}
+.licenseOverlay .btnActivate #indeterminateLoader {
+  margin-left: 8px;
+}
+@media (prefers-color-scheme: light) {
+  .licenseOverlay .btnActivate.success {
+    background-color: #3f8f5f;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .licenseOverlay .btnActivate.success {
+    background-color: #57BA7F;
+  }
 }
 
 .loader .alignFullCenter {

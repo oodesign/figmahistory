@@ -12,6 +12,8 @@ interface LicenseOverlayProps {
     className: string;
     mode: LicenseOverlayMode;
     validationMessage?: string
+    isActivating?: boolean
+    activationSuccessful?: boolean
 }
 
 const LicenseOverlay: React.ForwardRefRenderFunction<HTMLDivElement, LicenseOverlayProps> = (props, ref) => {
@@ -40,7 +42,6 @@ const LicenseOverlay: React.ForwardRefRenderFunction<HTMLDivElement, LicenseOver
     }
 
     function onActivateLicense(): void {
-
         const inputElement = document.getElementById("licenseInput") as HTMLInputElement;
         const inputLicense = inputElement.value;
 
@@ -57,13 +58,12 @@ const LicenseOverlay: React.ForwardRefRenderFunction<HTMLDivElement, LicenseOver
             if (props.onActivateLicenseClick)
                 props.onActivateLicenseClick(inputLicense);
         }
-
     }
 
     return (
 
         <div className={`${props.className} verticalLayout licenseOverlay`}>
-            <div className="alignVCenter verticalLayout">
+            <div className="mainContent alignVCenter verticalLayout">
                 <div className='rowAuto logoBig'>
                     <ReactSVG src="/figmahistory/images/logoBig.svg" renumerateIRIElements={false} />
                 </div>
@@ -121,11 +121,20 @@ const LicenseOverlay: React.ForwardRefRenderFunction<HTMLDivElement, LicenseOver
                                             />
                                         </form>
                                         <div className="colAuto">
-                                            <button className='btnPrimary large' onClick={onActivateLicense} >Activate license</button>
+                                            <button className={`btnPrimary large btnActivate ${props.activationSuccessful ? 'success' : ''}`} onClick={onActivateLicense} >
+                                                <div className="horizontalLayout alignFlexHorizontalCenter">
+                                                    <div className="textContent colAuto alignFullCenterAndCenterText">
+                                                        {props.activationSuccessful ? "License is active" : props.isActivating ? "Activating" : "Activate license"}
+                                                    </div>
+                                                    <div id="indeterminateLoader" className={`colAuto alignVCenter indeterminateLoader small negative show ${props.isActivating ? '' : 'notDisplayed'}`}>
+                                                        <div className="dualRingLoader"></div>
+                                                    </div>
+                                                </div>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
-                                <div className="rowAuto errorText">
+                                <div className={`rowAuto  ${props.activationSuccessful ? 'successText' : 'errorText'}`}>
                                     {localValidationMessage}
                                 </div>
                             </div>

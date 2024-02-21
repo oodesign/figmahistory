@@ -53,6 +53,27 @@
     }
 }
 
+@mixin successText {
+    font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 13px;
+
+    &.spaced {
+        line-height: 20px;
+    }
+
+    @include for-theme(light) {
+        color: $light_successColor;
+    }
+
+    @include for-theme(dark) {
+        color: $dark_successColor;
+    }
+}
+
 .errorText {
     @include errorText;
+}
+
+.successText {
+    @include successText;
 }

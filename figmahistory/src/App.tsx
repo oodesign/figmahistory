@@ -39,6 +39,8 @@ const Start = () => {
   const [onLicenseKeyInputState, setOnLicenseKeyInputState] = useState<boolean>(false);
 
   const [licenseValidationMessage, setLicenseValidationMessage] = useState<string>("");
+  const [isActivating, setIsActivating] = useState<boolean>(false);
+  const [activationSuccessful, setActivationSuccessful] = useState<boolean>(false);
 
 
   const [loaderMessage, setLoaderMessage] = useState<string>("Connecting to Figma");
@@ -212,6 +214,8 @@ const Start = () => {
   }
 
   function onActivateLicenseClick(licenseKey: string): void {
+    setIsActivating(true);
+
     const email = globalState.user.email;
     const token = globalState.accessToken;
     // console.log("We will try to activate license." + email + "," + token + "," + licenseKey)
@@ -227,23 +231,33 @@ const Start = () => {
         if (responseObject) {
           if (responseObject.message == "License not valid") {
             console.log("License is not valid");
+            setIsActivating(false);
+            setActivationSuccessful(false);
             setLicenseValidationMessage("Apparently the license key is not valid")
           }
           else if (responseObject.message == "License already used") {
             console.log("License already used");
+            setIsActivating(false);
+            setActivationSuccessful(false);
             setLicenseValidationMessage("This license was already used for a different account")
           }
           else if (responseObject.message == "License was activated") {
             console.log("License was activated successfully")
+            setIsActivating(false);
+            setActivationSuccessful(true);
             setLicenseValidationMessage("License was activated successfully")
 
-            if (globalState.appState != AppState.TRIAL_ACTIVE) {
-              ProceedAsActiveUser();
-            }
+            setTimeout(() => {
+              if (globalState.appState != AppState.TRIAL_ACTIVE) {
+                ProceedAsActiveUser();
+              }
 
-            setAppState(AppState.ACTIVE);
-            setOnTrialExpiredState(false);
-            setOnLicenseKeyInputState(false);
+              setAppState(AppState.ACTIVE);
+              setOnTrialExpiredState(false);
+              setOnLicenseKeyInputState(false);
+            }, 1500)
+
+
           }
         }
       });
@@ -256,7 +270,7 @@ const Start = () => {
     <Comparer ref={comparerRef} gotDocumentName={gotDocumentName} initialLoadComplete={initialLoadComplete} onRegisterLicenseClick={onRegisterLicenseClick} className={`singleCellExtend animatedDiv invisible ${onComparerState ? 'fadeIn' : 'fadeOut'}`} />
     <FigmaFileInput ref={figmaFileInputRef} getDocument={getDocument} className={`singleCellExtend animatedDiv visible ${onInputState ? 'fadeIn' : 'fadeOut'}`} />
     <LicenseOverlay ref={licenseOverlayTrialRef} mode={LicenseOverlayMode.TRIAL_EXPIRED} onRegisterLicenseClick={onRegisterLicenseClick} className={`singleCellExtend animatedDiv invisible ${onTrialExpiredState ? 'fadeIn' : 'fadeOut'}`} />
-    <LicenseOverlay ref={licenseOverlayKeyRef} mode={LicenseOverlayMode.INPUT_LICENSE_KEY} onActivateLicenseClick={onActivateLicenseClick} validationMessage={licenseValidationMessage}  goBack={closeLicenseOverlay} className={`singleCellExtend animatedDiv fast invisible ${onLicenseKeyInputState ? 'fadeIn' : 'fadeOut'}`} />
+    <LicenseOverlay ref={licenseOverlayKeyRef} mode={LicenseOverlayMode.INPUT_LICENSE_KEY} onActivateLicenseClick={onActivateLicenseClick} isActivating={isActivating} activationSuccessful={activationSuccessful} validationMessage={licenseValidationMessage} goBack={closeLicenseOverlay} className={`singleCellExtend animatedDiv fast invisible ${onLicenseKeyInputState ? 'fadeIn' : 'fadeOut'}`} />
 
     <div className="logo">
       <ReactSVG src="/figmahistory/images/logo.svg" renumerateIRIElements={false} />
