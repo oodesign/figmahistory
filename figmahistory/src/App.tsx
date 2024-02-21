@@ -286,7 +286,7 @@ const Start = () => {
 const App = () => {
   return (
     <>
-      <HashRouter>
+      <HashRouter basename="/figmahistory">
         <Routes>
           <Route path="/start" Component={Start}></Route>
         </Routes>
