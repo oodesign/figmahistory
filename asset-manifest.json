@@ -1,18 +1,18 @@
 {
   "files": {
-    "main.css": "/figmahistory/app/static/css/main.307800a3.css",
-    "main.js": "/figmahistory/app/static/js/main.07c0ad99.js",
-    "static/media/bgDark.png": "/figmahistory/app/static/media/bgDark.56347278cde7f70b21bb.png",
-    "static/media/bgLight.png": "/figmahistory/app/static/media/bgLight.8f860122897bdbfb1da4.png",
-    "static/media/AvenirNextLTPro-Medium.ttf": "/figmahistory/app/static/media/AvenirNextLTPro-Medium.c98134b320d675490c4c.ttf",
-    "static/media/AvenirNextLTPro-Bold.ttf": "/figmahistory/app/static/media/AvenirNextLTPro-Bold.3c6bf152ce9d23ec3657.ttf",
-    "static/media/AvenirNextLTPro-Demi.ttf": "/figmahistory/app/static/media/AvenirNextLTPro-Demi.fb429fb77c296de90537.ttf",
-    "index.html": "/figmahistory/app/index.html",
-    "main.307800a3.css.map": "/figmahistory/app/static/css/main.307800a3.css.map",
-    "main.07c0ad99.js.map": "/figmahistory/app/static/js/main.07c0ad99.js.map"
+    "main.css": "/figmahistory/static/css/main.9789660c.css",
+    "main.js": "/figmahistory/static/js/main.a6d64163.js",
+    "static/media/bgDark.png": "/figmahistory/static/media/bgDark.56347278cde7f70b21bb.png",
+    "static/media/bgLight.png": "/figmahistory/static/media/bgLight.8f860122897bdbfb1da4.png",
+    "static/media/AvenirNextLTPro-Medium.ttf": "/figmahistory/static/media/AvenirNextLTPro-Medium.c98134b320d675490c4c.ttf",
+    "static/media/AvenirNextLTPro-Bold.ttf": "/figmahistory/static/media/AvenirNextLTPro-Bold.3c6bf152ce9d23ec3657.ttf",
+    "static/media/AvenirNextLTPro-Demi.ttf": "/figmahistory/static/media/AvenirNextLTPro-Demi.fb429fb77c296de90537.ttf",
+    "index.html": "/figmahistory/index.html",
+    "main.9789660c.css.map": "/figmahistory/static/css/main.9789660c.css.map",
+    "main.a6d64163.js.map": "/figmahistory/static/js/main.a6d64163.js.map"
   },
   "entrypoints": [
-    "static/css/main.307800a3.css",
-    "static/js/main.07c0ad99.js"
+    "static/css/main.9789660c.css",
+    "static/js/main.a6d64163.js"
   ]
 }
