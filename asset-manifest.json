@@ -1,15 +1,18 @@
 {
   "files": {
-    "main.css": "/figmahistory/static/css/main.f855e6bc.css",
-    "main.js": "/figmahistory/static/js/main.db8049f0.js",
-    "static/js/787.e7526b4b.chunk.js": "/figmahistory/static/js/787.e7526b4b.chunk.js",
+    "main.css": "/figmahistory/static/css/main.9789660c.css",
+    "main.js": "/figmahistory/static/js/main.15ce407c.js",
+    "static/media/bgDark.png": "/figmahistory/static/media/bgDark.56347278cde7f70b21bb.png",
+    "static/media/bgLight.png": "/figmahistory/static/media/bgLight.8f860122897bdbfb1da4.png",
+    "static/media/AvenirNextLTPro-Medium.ttf": "/figmahistory/static/media/AvenirNextLTPro-Medium.c98134b320d675490c4c.ttf",
+    "static/media/AvenirNextLTPro-Bold.ttf": "/figmahistory/static/media/AvenirNextLTPro-Bold.3c6bf152ce9d23ec3657.ttf",
+    "static/media/AvenirNextLTPro-Demi.ttf": "/figmahistory/static/media/AvenirNextLTPro-Demi.fb429fb77c296de90537.ttf",
     "index.html": "/figmahistory/index.html",
-    "main.f855e6bc.css.map": "/figmahistory/static/css/main.f855e6bc.css.map",
-    "main.db8049f0.js.map": "/figmahistory/static/js/main.db8049f0.js.map",
-    "787.e7526b4b.chunk.js.map": "/figmahistory/static/js/787.e7526b4b.chunk.js.map"
+    "main.9789660c.css.map": "/figmahistory/static/css/main.9789660c.css.map",
+    "main.15ce407c.js.map": "/figmahistory/static/js/main.15ce407c.js.map"
   },
   "entrypoints": [
-    "static/css/main.f855e6bc.css",
-    "static/js/main.db8049f0.js"
+    "static/css/main.9789660c.css",
+    "static/js/main.15ce407c.js"
   ]
 }
