@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/figmahistory/app/static/css/main.307800a3.css",
-    "main.js": "/figmahistory/app/static/js/main.424aedba.js",
+    "main.js": "/figmahistory/app/static/js/main.07c0ad99.js",
     "static/media/bgDark.png": "/figmahistory/app/static/media/bgDark.56347278cde7f70b21bb.png",
     "static/media/bgLight.png": "/figmahistory/app/static/media/bgLight.8f860122897bdbfb1da4.png",
     "static/media/AvenirNextLTPro-Medium.ttf": "/figmahistory/app/static/media/AvenirNextLTPro-Medium.c98134b320d675490c4c.ttf",
@@ -9,10 +9,10 @@
     "static/media/AvenirNextLTPro-Demi.ttf": "/figmahistory/app/static/media/AvenirNextLTPro-Demi.fb429fb77c296de90537.ttf",
     "index.html": "/figmahistory/app/index.html",
     "main.307800a3.css.map": "/figmahistory/app/static/css/main.307800a3.css.map",
-    "main.424aedba.js.map": "/figmahistory/app/static/js/main.424aedba.js.map"
+    "main.07c0ad99.js.map": "/figmahistory/app/static/js/main.07c0ad99.js.map"
   },
   "entrypoints": [
     "static/css/main.307800a3.css",
-    "static/js/main.424aedba.js"
+    "static/js/main.07c0ad99.js"
   ]
 }
