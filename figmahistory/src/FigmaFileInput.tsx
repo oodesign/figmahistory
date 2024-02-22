@@ -94,7 +94,7 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                                     id="figmaFileURL"
                                     type="text"
                                     autoFocus
-                                    placeholder="In Figma, click 'Share' and 'Copy link', and paste the link here"
+                                    placeholder="In Figma, click 'Share' and 'Copy link', and paste the link here."
                                     className='linkUrlInput displayFlex colAvailable'
                                 />
                             </form>
