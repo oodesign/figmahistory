@@ -3,11 +3,26 @@ import * as express from 'express';
 import * as cors from 'cors';
 import * as admin from 'firebase-admin';
 import { DocumentData, Timestamp } from 'firebase-admin/firestore'
-const { SecretManagerServiceClient } = require('@google-cloud/secret-manager');
-
 // import axios from 'axios';
 
+const app = express();
+const fetch = require('node-fetch');
 
+
+
+app.use(cors());
+
+const CLIENT_ID = "pLCXoLFHH1UngPRH0ENGzV";
+const CLIENT_SECRET = "ofJNB7vNpSpy0zhDHKIt8pItQ3RMC1";
+const REDIRECT_URI = "http://127.0.0.1:5002/callFigmaOAuth";
+const serviceAccount = require('../config/serviceAccountKey.json');
+
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    databaseURL: 'https://your-project-id.firebaseio.com',
+});
+
+const firestore = admin.firestore();
 
 enum AppState {
     NOT_REGISTERED,
@@ -45,40 +60,17 @@ interface Trial {
     trialStartDate: Timestamp;
 }
 
-const app = express();
-const fetch = require('node-fetch');
+// interface User {
+//     id: string;
+//     handle: string;
+//     img_url: string;
+//     email: string;
+// };
 
-
-
-app.use(cors());
-
-const CLIENT_ID = "pLCXoLFHH1UngPRH0ENGzV";
-const CLIENT_SECRET = "ofJNB7vNpSpy0zhDHKIt8pItQ3RMC1";
-const REDIRECT_URI = "http://127.0.0.1:5002/callFigmaOAuth";
-
-
-async function initializeFirebase() {
-    try {
-        const client = new SecretManagerServiceClient();
-        const [version] = await client.accessSecretVersion({
-            name: 'projects/505449888418/secrets/figmaHistoryFirebaseSettings/versions/latest',
-        });
-
-        const serviceAccountCredentials = JSON.parse(version.payload.data.toString('utf8'));
-
-        admin.initializeApp({
-            credential: admin.credential.cert(serviceAccountCredentials),
-            databaseURL: 'https://figma-history-server.firebaseio.com',
-        });
-
-
-    } catch (error) {
-        console.error('Error fetching secret or initializing Firebase:', error);
-    }
-}
-
-
-initializeFirebase();
+// interface TrialData {
+//     email: string;
+//     startDate: string;
+// }
 
 
 const addTrial = async (data: Trial): Promise<void> => {
@@ -104,7 +96,7 @@ async function getUser(token: string): Promise<User> {
 
 async function getTrialFromEmailAndUpdateToken(email: string, newToken: string): Promise<Trial | null> {
     try {
-        const trialsRef = admin.firestore().collection('Trials');
+        const trialsRef = firestore.collection('Trials');
         const querySnapshot = await trialsRef.where('email', '==', email).get();
         if (querySnapshot.empty) {
             return null; // No license found for the provided email
@@ -127,7 +119,7 @@ async function getTrialFromEmailAndUpdateToken(email: string, newToken: string):
 
 async function getLicenseFromKey(licenseKey: string): Promise<DocumentData | null> {
     try {
-        const licensesRef = admin.firestore().collection('Licenses');
+        const licensesRef = firestore.collection('Licenses');
         const querySnapshot = await licensesRef.where('licenseKey', '==', licenseKey).get();
         if (querySnapshot.empty) {
             return null; // No license found for the provided email
@@ -144,9 +136,8 @@ async function getLicenseFromKey(licenseKey: string): Promise<DocumentData | nul
 
 async function getLicenseFromEmailAndUpdateToken(email: string, newToken: string): Promise<License | null> {
     try {
-
-
-        const licensesRef = admin.firestore().collection('Licenses');
+        const licensesRef = firestore.collection('Licenses');
+        //const querySnapshot = await licensesRef.where('email', '==', email).get();
         const querySnapshot = await licensesRef.where('emails', 'array-contains', email).get();
         if (querySnapshot.empty) {
             return null; // No license found for the provided email
@@ -251,7 +242,7 @@ app.post('/activate-license', async (req, res) => {
                 if (licenseData.licenseType == "(Team license)") {
                     //If team license, add the email in the authorized emails array (if it's not there already)
                     if (!licenseData.emails.includes(email)) {
-                        const licensesRef = admin.firestore().collection('Licenses');
+                        const licensesRef = firestore.collection('Licenses');
                         //console.log("License exists. Updating authorized emails of:" + fbLicense.id)
                         await licensesRef.doc(fbLicense.id).update({
                             emails: [...licenseData.emails, email]
