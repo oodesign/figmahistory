@@ -15,11 +15,11 @@ app.use(cors());
 const CLIENT_ID = "pLCXoLFHH1UngPRH0ENGzV";
 const CLIENT_SECRET = "ofJNB7vNpSpy0zhDHKIt8pItQ3RMC1";
 const REDIRECT_URI = "https://us-central1-figma-history-server.cloudfunctions.net/api/callFigmaOAuth";//"http://127.0.0.1:5002/callFigmaOAuth";
-const serviceAccount = require('../config/serviceAccountKey.json');
+const serviceAccount = require('../fb/credentials.json');
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
-    databaseURL: 'https://your-project-id.firebaseio.com',
+    databaseURL: 'https://figma-history-server.firebaseio.com',
 });
 
 const firestore = admin.firestore();
