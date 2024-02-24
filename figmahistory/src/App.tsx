@@ -44,6 +44,10 @@ const Start = () => {
 
   const [loaderMessage, setLoaderMessage] = useState<string>("Connecting to Figma");
 
+  const developmentApiEndpoint: string = "http://localhost:5002";
+  const serverApiEndpoint: string = "https://us-central1-figma-history-server.cloudfunctions.net/api";
+
+  const apiEndpoint: string = serverApiEndpoint;
   // #region Authentication and access
 
 
@@ -55,7 +59,7 @@ const Start = () => {
   const handleFigmaAuthentication = async (code: string) => {
 
 
-    fetch(process.env.REACT_APP_API_END_POINT + '/get-figma-access-token', {
+    fetch(apiEndpoint + '/get-figma-access-token', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -118,7 +122,6 @@ const Start = () => {
 
 
   const getDocument = (id: string, nodeId: string) => {
-
     setOnInputState(false);
     setOnLoadingState(true);
     setOnComparerState(false);
@@ -165,7 +168,7 @@ const Start = () => {
 
   const openPopupWindow = () => {
 
-    const url = 'https://www.figma.com/oauth?client_id=pLCXoLFHH1UngPRH0ENGzV&redirect_uri='+process.env.REACT_APP_API_END_POINT+'/callFigmaOAuth&scope=files:read&state=qpolpolq&response_type=code'; // Replace with your actual URL
+    const url = 'https://www.figma.com/oauth?client_id=pLCXoLFHH1UngPRH0ENGzV&redirect_uri='+apiEndpoint+'/callFigmaOAuth&scope=files:read&state=qpolpolq&response_type=code'; // Replace with your actual URL
     const options = 'toolbar=no,\
      location=no,\
      status=no,\
@@ -219,7 +222,7 @@ const Start = () => {
     const email = globalState.user.email;
     const token = globalState.accessToken;
     // console.log("We will try to activate license." + email + "," + token + "," + licenseKey)
-    fetch(process.env.REACT_APP_API_END_POINT + '/activate-license', {
+    fetch(apiEndpoint + '/activate-license', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
