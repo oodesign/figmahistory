@@ -36,7 +36,7 @@ export interface Page {
     presentInVersionRight: boolean;
     flatNodes: Node[];
     boundingRect: Rect;
-    isLoaded: boolean
+    isLoaded: boolean;
 }
 
 export interface Version {

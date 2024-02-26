@@ -113,6 +113,24 @@ export function updateDocumentPageLeftBounds(pageId: string, boundingRect: Rect)
                 }
             }),
         },
+        loadedDocuments: globalState.loadedDocuments.map(document => {
+            if (document.version === globalState.documentLeft.version) {
+                return {
+                    ...document,
+                    pages: globalState.documentLeft.pages.map((page) => {
+                        if (page.id === pageId) {
+                            return {
+                                ...page,
+                                boundingRect: boundingRect,
+                            };
+                        } else {
+                            return page;
+                        }
+                    }),
+                };
+            }
+            return document;
+        }),
     };
 }
 
@@ -138,6 +156,36 @@ export function updateDocumentPageIsLoaded(documentId: string, pageId: string, i
             }
             return document;
         }),
+        documentLeft: {
+            ...globalState.documentLeft,
+            ...(globalState.documentLeft.version === documentId && {
+                pages: globalState.documentLeft.pages.map((page) => {
+                    if (page.id === pageId) {
+                        return {
+                            ...page,
+                            isLoaded: isLoaded,
+                        };
+                    } else {
+                        return page;
+                    }
+                }),
+            }),
+        },
+        documentRight: {
+            ...globalState.documentRight,
+            ...(globalState.documentRight.version === documentId && {
+                pages: globalState.documentRight.pages.map((page) => {
+                    if (page.id === pageId) {
+                        return {
+                            ...page,
+                            isLoaded: isLoaded,
+                        };
+                    } else {
+                        return page;
+                    }
+                }),
+            }),
+        },
     };
 }
 
@@ -163,28 +211,74 @@ export function updateDocumentPageChildrenFlatNodesAndBackground(documentId: str
             }
             return document;
         }),
-    };
-}
-
-
-export function updateDocumentPageLeftFlatNodes(pageId: string, flatNodes: Node[]) {
-    globalState = {
-        ...globalState,
         documentLeft: {
             ...globalState.documentLeft,
-            pages: globalState.documentLeft.pages.map((page) => {
-                if (page.id === pageId) {
-                    return {
-                        ...page,
-                        flatNodes: flatNodes,
-                    };
-                } else {
-                    return page;
-                }
+            ...(globalState.documentLeft.version === documentId && {
+                pages: globalState.documentLeft.pages.map((page) => {
+                    if (page.id === pageId) {
+                        return {
+                            ...page,
+                            children: pageChildren,
+                            flatNodes: flatNodes,
+                            backgroundColor: backgroundColor,
+                        };
+                    } else {
+                        return page;
+                    }
+                }),
+            }),
+        },
+        documentRight: {
+            ...globalState.documentRight,
+            ...(globalState.documentRight.version === documentId && {
+                pages: globalState.documentRight.pages.map((page) => {
+                    if (page.id === pageId) {
+                        return {
+                            ...page,
+                            children: pageChildren,
+                            flatNodes: flatNodes,
+                            backgroundColor: backgroundColor,
+                        };
+                    } else {
+                        return page;
+                    }
+                }),
             }),
         },
     };
 }
+
+
+export function updateDocumentPageLeftFlatNodes(page: Page, flatNodes: Node[]) {
+    globalState = {
+        ...globalState,
+        documentLeft: {
+            ...globalState.documentLeft,
+            pages: globalState.documentLeft.pages.map((currentPage) => {
+                return {
+                    ...currentPage,
+                    flatNodes: flatNodes,
+                };
+            }),
+        },
+        loadedDocuments: globalState.loadedDocuments.map(document => {
+            if (document.version === globalState.documentLeft.version) {
+                return {
+                    ...document,
+                    pages: globalState.documentLeft.pages.map((currentPage) => {
+                        return {
+                            ...currentPage,
+                            flatNodes: flatNodes,
+                        };
+                    }),
+                };
+            }
+            return document;
+        }),
+    };
+}
+
+
 export function updateDocumentPageLeftChildrenAndFlatNodes(pageId: string, pageChildren: any[], flatNodes: Node[]) {
     globalState = {
         ...globalState,
@@ -202,6 +296,25 @@ export function updateDocumentPageLeftChildrenAndFlatNodes(pageId: string, pageC
                 }
             }),
         },
+        loadedDocuments: globalState.loadedDocuments.map(document => {
+            if (document.version === globalState.documentLeft.version) {
+                return {
+                    ...document,
+                    pages: globalState.documentLeft.pages.map((page) => {
+                        if (page.id === pageId) {
+                            return {
+                                ...page,
+                                children: pageChildren,
+                                flatNodes: flatNodes,
+                            };
+                        } else {
+                            return page;
+                        }
+                    }),
+                };
+            }
+            return document;
+        }),
     };
 }
 
@@ -226,25 +339,53 @@ export function updateDocumentPageRightBounds(pageId: string, boundingRect: Rect
                 }
             }),
         },
+        loadedDocuments: globalState.loadedDocuments.map(document => {
+            if (document.version === globalState.documentRight.version) {
+                return {
+                    ...document,
+                    pages: globalState.documentRight.pages.map((page) => {
+                        if (page.id === pageId) {
+                            return {
+                                ...page,
+                                boundingRect: boundingRect,
+                            };
+                        } else {
+                            return page;
+                        }
+                    }),
+                };
+            }
+            return document;
+        }),
     };
 }
 
-export function updateDocumentPageRightFlatNodes(pageId: string, flatNodes: Node[]) {
+export function updateDocumentPageRightFlatNodes(page: Page, flatNodes: Node[]) {
     globalState = {
         ...globalState,
         documentRight: {
             ...globalState.documentRight,
-            pages: globalState.documentRight.pages.map((page) => {
-                if (page.id === pageId) {
-                    return {
-                        ...page,
-                        flatNodes: flatNodes,
-                    };
-                } else {
-                    return page;
-                }
+            pages: globalState.documentRight.pages.map((currentPage) => {
+                return {
+                    ...currentPage,
+                    flatNodes: flatNodes,
+                };
             }),
         },
+        loadedDocuments: globalState.loadedDocuments.map(document => {
+            if (document.version === globalState.documentRight.version) {
+                return {
+                    ...document,
+                    pages: globalState.documentRight.pages.map((currentPage) => {
+                        return {
+                            ...currentPage,
+                            flatNodes: flatNodes,
+                        };
+                    }),
+                };
+            }
+            return document;
+        }),
     };
 }
 
@@ -265,6 +406,25 @@ export function updateDocumentPageRightChildrenAndFlatNodes(pageId: string, page
                 }
             }),
         },
+        loadedDocuments: globalState.loadedDocuments.map(document => {
+            if (document.version === globalState.documentRight.version) {
+                return {
+                    ...document,
+                    pages: globalState.documentRight.pages.map((page) => {
+                        if (page.id === pageId) {
+                            return {
+                                ...page,
+                                children: pageChildren,
+                                flatNodes: flatNodes,
+                            };
+                        } else {
+                            return page;
+                        }
+                    }),
+                };
+            }
+            return document;
+        }),
     };
 }
 
@@ -286,6 +446,11 @@ export function setViewDiffs(viewDiffs: ViewDiffs) {
 
 export function setDocumentName(name: string) {
     globalState = { ...globalState, documentName: name };
+}
+
+export function sideToName(side: Side) {
+    if (side == Side.LEFT) return "Left";
+    else if (side == Side.RIGHT) return "Right";
 }
 
 

@@ -1,7 +1,7 @@
 import React, { ChangeEvent, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { ReactZoomPanPinchRef, TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
 import { User, Side, Color, Document, Version, Page, NodeWithImage, FigmaNode, Node, Difference, Rect, ViewDiffs, AppState } from './types';
-import { globalState, setDocumentID, setAccessToken, setDocumentLeft, setDocumentRight, updateDocumentPageLeftChildrenAndFlatNodes, updateDocumentPageRightChildrenAndFlatNodes, setSelectedPageId, updateDocumentPageLeftFlatNodes, updateDocumentPageRightFlatNodes, updateDocumentPageRightBounds, updateDocumentPageLeftBounds, setSelectedNodeId, setViewDiffs, addLoadedDocument, updateDocumentPageIsLoaded, updateDocumentPageChildrenFlatNodesAndBackground, setHasMultipleVersionPages, setVersionPagesCount, } from './globals';
+import { globalState, setDocumentID, setAccessToken, setDocumentLeft, setDocumentRight, updateDocumentPageLeftChildrenAndFlatNodes, updateDocumentPageRightChildrenAndFlatNodes, setSelectedPageId, updateDocumentPageLeftFlatNodes, updateDocumentPageRightFlatNodes, updateDocumentPageRightBounds, updateDocumentPageLeftBounds, setSelectedNodeId, setViewDiffs, addLoadedDocument, updateDocumentPageIsLoaded, updateDocumentPageChildrenFlatNodesAndBackground, setHasMultipleVersionPages, setVersionPagesCount, sideToName, } from './globals';
 import { ReactCompareSlider, ReactCompareSliderHandle, useReactCompareSliderRef } from 'react-compare-slider';
 import isEqual from 'lodash/isEqual';
 import Canvas from './Canvas';
@@ -314,8 +314,13 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
 
         const existingPage = getExistingPage(versionId, pageId);
 
+        if (existingPage)
+            console.log("fetchPage " + sideToName(side) + ". existingPage is defined, " + (existingPage.isLoaded ? "and loaded" : "but not loaded yet"));
+        else
+            console.log("fetchPage " + sideToName(side) + ". Page doesn't exist in document?")
+
         if (existingPage && existingPage.isLoaded) {
-            // console.log("Should not load this page because was already loaded");
+            console.log("Should not load this page because was already loaded");
 
             pageChildren = existingPage.children;
             pageFlatNodes = existingPage.flatNodes;
@@ -324,7 +329,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
 
         }
         else {
-            // console.log("Should load page because it hadn't been loaded yet.")
+            console.log("Should load page because it hadn't been loaded yet.")
 
             // console.log("Fetching page:" + pageId + " for side:" + side.valueOf());
             let depth = "";
@@ -343,9 +348,11 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                 pageFlatNodes = flattenNodes(responseJson.nodes[pageId].document);
                 pageBackground = responseJson.nodes[pageId].document.backgroundColor;
 
+                console.log("Record fetched page. versionId:" + versionId + " pageId:" + pageId);
+
                 updateDocumentPageIsLoaded(versionId, pageId, true);
                 updateDocumentPageChildrenFlatNodesAndBackground(versionId, pageId, pageChildren, pageFlatNodes, pageBackground);
-                // console.log("Page was fetched. children:" + pageChildren.length + " - flatNodes:" + pageFlatNodes.length + " - bgColor:" + pageBackground.r + " ," + pageBackground.g + " ," + pageBackground.b + " ," + pageBackground.a)
+                console.log("Page (for " + sideToName(side) + ") was fetched. children:" + pageChildren.length + " - flatNodes:" + pageFlatNodes.length + " - bgColor:" + pageBackground.r + " ," + pageBackground.g + " ," + pageBackground.b + " ," + pageBackground.a)
             }
         }
 
@@ -464,13 +471,6 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                 if (globalState.isDocumentLeftLoaded) props.initialLoadComplete();
             }
 
-
-            //TODO If node-id retrieved from URL belongs to a page, and globalState.selectedPageId has not been set yet, set it to the retrieved id.
-            // if (!globalState.selectedPageId && globalState.selectedNodeId) {
-            //     if (pages.some(page => page.id == globalState.selectedNodeId))
-            //         setSelectedPageId(globalState.selectedNodeId);
-            // }
-
             if (!globalState.selectedPageId) {
                 if (globalState.selectedNodeId) {
                     if (versionDocument.pages.some(page => page.id == globalState.selectedNodeId))
@@ -542,7 +542,6 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
 
         await fetchPage(versionId, pageId, side);
 
-        calculateDifferences(pageId);
 
         let page: Page | undefined = undefined;
         let leftPage = globalState.documentLeft.pages.find(page => page.id === pageId);
@@ -556,13 +555,57 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
             versionId = globalState.documentRight.version;
         }
 
+
+
+
+        if (leftPage && leftPage.isLoaded && rightPage && rightPage.isLoaded) {
+
+            console.log("Now that both pages are loaded we will try now to calculate differences btw both")
+            if (leftPage) {
+                console.log("For reference, leftPage (" + leftPage?.id + ") is:")
+                console.log(leftPage);
+            } else console.log("For reference, leftPage is undefined");
+            if (rightPage) {
+                console.log("For reference, rightPage (" + rightPage?.id + ") is:")
+                console.log(rightPage);
+            } else console.log("For reference, rightPage is undefined");
+
+            calculateDifferences(leftPage, rightPage);
+
+            let leftDifferences: Difference[] = [];
+            for (const node of leftPage.flatNodes) {
+                if (!node.isEqualToOtherVersion || !node.isPresentInOtherVersion) {
+                    leftDifferences.push({
+                        type: node.type,
+                        boundingRect: node.figmaNode.absoluteBoundingBox,
+                        isChildOfFrame: node.isChildOfFrame
+                    });
+                }
+            }
+
+            let rightDifferences: Difference[] = [];
+            for (const node of rightPage.flatNodes) {
+                if (!node.isEqualToOtherVersion || !node.isPresentInOtherVersion) {
+                    rightDifferences.push({
+                        type: node.type,
+                        boundingRect: node.figmaNode.absoluteBoundingBox,
+                        isChildOfFrame: node.isChildOfFrame
+                    });
+                }
+            }
+
+            console.log("Differences:");
+            console.log("leftDifferences: " + leftDifferences.length);
+            console.log("rightDifferences: " + rightDifferences.length);
+
+            setVersionLeftDifferences(leftDifferences);
+            setVersionRightDifferences(rightDifferences);
+        }
+
+
         if (page) {
 
             let allowedTypes = ['FRAME', 'SECTION', 'COMPONENT', 'COMPONENT_SET', 'INSTANCE', 'GROUP', 'FRAMEGROUP', 'TEXT', 'RECTANGLE', 'VECTOR', 'STAR', 'LINE', 'ELLIPSE', 'REGULAR_POLYGON', 'BOOLEAN_OPERATION'];
-
-
-
-
 
             // console.log("page:")
             // console.log(page);
@@ -642,39 +685,39 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                 setCanvasDimensionsAndOffset(pageId);
             }
 
-            if (leftPage && rightPage) {
+            if (leftPage && (leftPage.id == pageId) && rightPage && (rightPage.id == pageId)) {
                 // console.log("nodesInPage. Side:" + side)
                 // console.log(nodesInLeftPage)
                 // console.log(nodesInRightPage)
 
-                let leftDifferences: Difference[] = [];
-                for (const node of leftPage.flatNodes) {
-                    if (!node.isEqualToOtherVersion || !node.isPresentInOtherVersion) {
-                        leftDifferences.push({
-                            type: node.type,
-                            boundingRect: node.figmaNode.absoluteBoundingBox,
-                            isChildOfFrame: node.isChildOfFrame
-                        });
-                    }
-                }
+                // let leftDifferences: Difference[] = [];
+                // for (const node of leftPage.flatNodes) {
+                //     if (!node.isEqualToOtherVersion || !node.isPresentInOtherVersion) {
+                //         leftDifferences.push({
+                //             type: node.type,
+                //             boundingRect: node.figmaNode.absoluteBoundingBox,
+                //             isChildOfFrame: node.isChildOfFrame
+                //         });
+                //     }
+                // }
 
-                let rightDifferences: Difference[] = [];
-                for (const node of rightPage.flatNodes) {
-                    if (!node.isEqualToOtherVersion || !node.isPresentInOtherVersion) {
-                        rightDifferences.push({
-                            type: node.type,
-                            boundingRect: node.figmaNode.absoluteBoundingBox,
-                            isChildOfFrame: node.isChildOfFrame
-                        });
-                    }
-                }
+                // let rightDifferences: Difference[] = [];
+                // for (const node of rightPage.flatNodes) {
+                //     if (!node.isEqualToOtherVersion || !node.isPresentInOtherVersion) {
+                //         rightDifferences.push({
+                //             type: node.type,
+                //             boundingRect: node.figmaNode.absoluteBoundingBox,
+                //             isChildOfFrame: node.isChildOfFrame
+                //         });
+                //     }
+                // }
 
                 // console.log("Differences:");
-                // console.log(leftDifferences);
-                // console.log(rightDifferences);
+                // console.log("leftDifferences: " + leftDifferences.length);
+                // console.log("rightDifferences: " + rightDifferences.length);
 
-                setVersionLeftDifferences(leftDifferences);
-                setVersionRightDifferences(rightDifferences);
+                // setVersionLeftDifferences(leftDifferences);
+                // setVersionRightDifferences(rightDifferences);
             }
         }
 
@@ -779,24 +822,29 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
         }
     }
 
-    function calculateDifferences(pageId: string) {
+    function calculateDifferences(leftPage: Page, rightPage: Page) {
 
-        let pageLeftNodes = globalState.documentLeft.pages.find(page => page.id == pageId)?.flatNodes;
-        let pageRightNodes = globalState.documentRight.pages.find(page => page.id == pageId)?.flatNodes;
+        let pageLeftNodes = leftPage.flatNodes;
+        let pageRightNodes = rightPage.flatNodes;
 
-        // console.log("CalculateDifferences. pageLeftNodes:" + pageLeftNodes?.length + ". pageRightNodes:" + pageRightNodes?.length)
+        console.log("--- CalculateDifferences. leftPage.isLoaded:" + leftPage.isLoaded + ". rightPage.isLoaded:" + rightPage.isLoaded)
+
+        console.log("--- CalculateDifferences. pageLeftNodes:" + pageLeftNodes?.length + ". pageRightNodes:" + pageRightNodes?.length)
 
         if (pageLeftNodes && pageLeftNodes.length > 0 && pageRightNodes && pageRightNodes.length > 0) {
 
             const newDocumentLeftFlatNodes = getPageComparison(pageLeftNodes, pageRightNodes);
             const newDocumentRightFlatNodes = getPageComparison(pageRightNodes, pageLeftNodes);
 
-            updateDocumentPageLeftFlatNodes(pageId, newDocumentLeftFlatNodes);
-            updateDocumentPageRightFlatNodes(pageId, newDocumentRightFlatNodes);
+            leftPage.flatNodes = newDocumentLeftFlatNodes;
+            updateDocumentPageLeftFlatNodes(leftPage, newDocumentLeftFlatNodes);
+
+            rightPage.flatNodes = newDocumentRightFlatNodes;
+            updateDocumentPageRightFlatNodes(rightPage, newDocumentRightFlatNodes);
 
 
-            // console.log("--- Found" + newDocumentLeftFlatNodes.filter(node => node.isEqualToOtherVersion == false).length + " differences on LEFT");
-            // console.log("--- Found" + newDocumentRightFlatNodes.filter(node => node.isEqualToOtherVersion == false).length + " differences on RIGHT");
+            console.log("------ Found " + newDocumentLeftFlatNodes.filter(node => node.isEqualToOtherVersion == false || node.isPresentInOtherVersion == false).length + " differences on LEFT");
+            console.log("------ Found " + newDocumentRightFlatNodes.filter(node => node.isEqualToOtherVersion == false || node.isPresentInOtherVersion == false).length + " differences on RIGHT");
         }
 
 
@@ -1012,8 +1060,8 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
     }
 
     function registerLicense(): void {
-        if(props.onRegisterLicenseClick)
-        props.onRegisterLicenseClick();
+        if (props.onRegisterLicenseClick)
+            props.onRegisterLicenseClick();
     }
 
     // #endregion
@@ -1033,7 +1081,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
 
                     {(globalState.appState == AppState.TRIAL_ACTIVE) ? (
                         <div className="rowAuto trialMessage">
-                            <div className="secondaryText">You still have {globalState.appTrialDaysLeft} days of <br/>trial sunshine left. Enjoy! ☀️</div>
+                            <div className="secondaryText">You still have {globalState.appTrialDaysLeft} days of <br />trial sunshine left. Enjoy! ☀️</div>
                             <a href="https://oodesign.gumroad.com/l/figmahistory?option=x8JwFOfp2eKY-GgXKSg2aA%3D%3D&_gl=1*1xpb5kb*_ga*MTUwNTk1MDE5OS4xNjc4MTAzNjAz*_ga_6LJN6D94N6*MTcwODMyNDE5OC44NC4wLjE3MDgzMjQyMDIuMC4wLjA." target="_blank">
                                 <button className='btnPrimary'>Get Figma history</button>
                             </a>
