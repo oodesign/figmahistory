@@ -255,10 +255,14 @@ export function updateDocumentPageLeftFlatNodes(page: Page, flatNodes: Node[]) {
         documentLeft: {
             ...globalState.documentLeft,
             pages: globalState.documentLeft.pages.map((currentPage) => {
-                return {
-                    ...currentPage,
-                    flatNodes: flatNodes,
-                };
+                if (currentPage.id === page.id) {
+                    return {
+                        ...currentPage,
+                        flatNodes: flatNodes,
+                    };
+                } else {
+                    return page;
+                }
             }),
         },
         loadedDocuments: globalState.loadedDocuments.map(document => {
@@ -377,10 +381,14 @@ export function updateDocumentPageRightFlatNodes(page: Page, flatNodes: Node[]) 
                 return {
                     ...document,
                     pages: globalState.documentRight.pages.map((currentPage) => {
-                        return {
-                            ...currentPage,
-                            flatNodes: flatNodes,
-                        };
+                        if (currentPage.id === page.id) {
+                            return {
+                                ...currentPage,
+                                flatNodes: flatNodes,
+                            };
+                        } else {
+                            return page;
+                        }
                     }),
                 };
             }

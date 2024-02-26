@@ -598,8 +598,10 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
             console.log("leftDifferences: " + leftDifferences.length);
             console.log("rightDifferences: " + rightDifferences.length);
 
-            setVersionLeftDifferences(leftDifferences);
-            setVersionRightDifferences(rightDifferences);
+            setTimeout(() => {
+                setVersionLeftDifferences(leftDifferences);
+                setVersionRightDifferences(rightDifferences);
+            }, 500);
         }
 
 
@@ -684,43 +686,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
 
                 setCanvasDimensionsAndOffset(pageId);
             }
-
-            if (leftPage && (leftPage.id == pageId) && rightPage && (rightPage.id == pageId)) {
-                // console.log("nodesInPage. Side:" + side)
-                // console.log(nodesInLeftPage)
-                // console.log(nodesInRightPage)
-
-                // let leftDifferences: Difference[] = [];
-                // for (const node of leftPage.flatNodes) {
-                //     if (!node.isEqualToOtherVersion || !node.isPresentInOtherVersion) {
-                //         leftDifferences.push({
-                //             type: node.type,
-                //             boundingRect: node.figmaNode.absoluteBoundingBox,
-                //             isChildOfFrame: node.isChildOfFrame
-                //         });
-                //     }
-                // }
-
-                // let rightDifferences: Difference[] = [];
-                // for (const node of rightPage.flatNodes) {
-                //     if (!node.isEqualToOtherVersion || !node.isPresentInOtherVersion) {
-                //         rightDifferences.push({
-                //             type: node.type,
-                //             boundingRect: node.figmaNode.absoluteBoundingBox,
-                //             isChildOfFrame: node.isChildOfFrame
-                //         });
-                //     }
-                // }
-
-                // console.log("Differences:");
-                // console.log("leftDifferences: " + leftDifferences.length);
-                // console.log("rightDifferences: " + rightDifferences.length);
-
-                // setVersionLeftDifferences(leftDifferences);
-                // setVersionRightDifferences(rightDifferences);
-            }
         }
-
     }
 
 
