@@ -1,18 +1,18 @@
 {
   "files": {
-    "main.css": "/figmahistory/static/css/main.9789660c.css",
-    "main.js": "/figmahistory/static/js/main.d8cd501d.js",
-    "static/media/bgDark.png": "/figmahistory/static/media/bgDark.56347278cde7f70b21bb.png",
-    "static/media/bgLight.png": "/figmahistory/static/media/bgLight.8f860122897bdbfb1da4.png",
-    "static/media/AvenirNextLTPro-Medium.ttf": "/figmahistory/static/media/AvenirNextLTPro-Medium.c98134b320d675490c4c.ttf",
-    "static/media/AvenirNextLTPro-Bold.ttf": "/figmahistory/static/media/AvenirNextLTPro-Bold.3c6bf152ce9d23ec3657.ttf",
-    "static/media/AvenirNextLTPro-Demi.ttf": "/figmahistory/static/media/AvenirNextLTPro-Demi.fb429fb77c296de90537.ttf",
-    "index.html": "/figmahistory/index.html",
-    "main.9789660c.css.map": "/figmahistory/static/css/main.9789660c.css.map",
-    "main.d8cd501d.js.map": "/figmahistory/static/js/main.d8cd501d.js.map"
+    "main.css": "/static/css/main.54f6f4b1.css",
+    "main.js": "/static/js/main.28b6fa0c.js",
+    "static/media/bgDark.png": "/static/media/bgDark.56347278cde7f70b21bb.png",
+    "static/media/bgLight.png": "/static/media/bgLight.8f860122897bdbfb1da4.png",
+    "static/media/AvenirNextLTPro-Medium.ttf": "/static/media/AvenirNextLTPro-Medium.c98134b320d675490c4c.ttf",
+    "static/media/AvenirNextLTPro-Bold.ttf": "/static/media/AvenirNextLTPro-Bold.3c6bf152ce9d23ec3657.ttf",
+    "static/media/AvenirNextLTPro-Demi.ttf": "/static/media/AvenirNextLTPro-Demi.fb429fb77c296de90537.ttf",
+    "index.html": "/index.html",
+    "main.54f6f4b1.css.map": "/static/css/main.54f6f4b1.css.map",
+    "main.28b6fa0c.js.map": "/static/js/main.28b6fa0c.js.map"
   },
   "entrypoints": [
-    "static/css/main.9789660c.css",
-    "static/js/main.d8cd501d.js"
+    "static/css/main.54f6f4b1.css",
+    "static/js/main.28b6fa0c.js"
   ]
 }
