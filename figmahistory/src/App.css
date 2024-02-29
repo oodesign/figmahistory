@@ -955,22 +955,6 @@ input[type=text].hasMessage {
     color: #ffffff;
   }
 }
-.listItem .listItemIcon {
-  width: 12px;
-  height: 12px;
-  background-size: contain;
-  background-repeat: no-repeat;
-}
-@media (prefers-color-scheme: light) {
-  .listItem .listItemIcon.component {
-    background-image: url("images/componentIcon.png");
-  }
-}
-@media (prefers-color-scheme: dark) {
-  .listItem .listItemIcon.component {
-    background-image: url("images/componentIcon.png");
-  }
-}
 
 .tooltip {
   position: relative;

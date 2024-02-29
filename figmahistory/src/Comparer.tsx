@@ -105,7 +105,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
     ) => {
         return (
             <components.DropdownIndicator {...props}>
-                <ReactSVG src="/figmahistory/images/chevronDown.svg" />
+                <ReactSVG src={globalState.urlPaths + "/images/chevronDown.svg"} />
             </components.DropdownIndicator>
         );
     };
@@ -1194,25 +1194,25 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                             Show changes in
                         </span>
                         <button className={`colAuto btnSecondary iconButton ${globalState.viewDiffs.showSections ? 'checked' : ''}`} onClick={() => onDiffChange('sections')} data-tooltip-id="showDiffSectionsTooltip">
-                            <ReactSVG src="/figmahistory/images/sectionIcon.svg" />
+                            <ReactSVG src={globalState.urlPaths + "/images/sectionIcon.svg"} />
                         </button>
                         <button className={`colAuto btnSecondary iconButton ${globalState.viewDiffs.showFrames ? 'checked' : ''}`} onClick={() => onDiffChange('frames')} data-tooltip-id="showDiffFramesTooltip">
-                            <ReactSVG src="/figmahistory/images/frameIcon.svg" />
+                            <ReactSVG src={globalState.urlPaths + "/images/frameIcon.svg"} />
                         </button>
                         <button className={`colAuto btnSecondary iconButton ${globalState.viewDiffs.showComponents ? 'checked' : ''}`} onClick={() => onDiffChange('components')} data-tooltip-id="showDiffComponentsTooltip">
-                            <ReactSVG src="/figmahistory/images/componentIcon.svg" />
+                            <ReactSVG src={globalState.urlPaths + "/images/componentIcon.svg"} />
                         </button>
                         <button className={`colAuto btnSecondary iconButton ${globalState.viewDiffs.showInstances ? 'checked' : ''}`} onClick={() => onDiffChange('instances')} data-tooltip-id="showDiffInstancesTooltip">
-                            <ReactSVG src="/figmahistory/images/instanceIcon.svg" />
+                            <ReactSVG src={globalState.urlPaths + "/images/instanceIcon.svg"} />
                         </button>
                         <button className={`colAuto btnSecondary iconButton ${globalState.viewDiffs.showGroups ? 'checked' : ''}`} onClick={() => onDiffChange('groups')} data-tooltip-id="showDiffGroupsTooltip">
-                            <ReactSVG src="/figmahistory/images/groupIcon.svg" />
+                            <ReactSVG src={globalState.urlPaths + "/images/groupIcon.svg"} />
                         </button>
                         <button className={`colAuto btnSecondary iconButton ${globalState.viewDiffs.showText ? 'checked' : ''}`} onClick={() => onDiffChange('text')} data-tooltip-id="showDiffTextTooltip">
-                            <ReactSVG src="/figmahistory/images/textIcon.svg" />
+                            <ReactSVG src={globalState.urlPaths + "/images/textIcon.svg"} />
                         </button>
                         <button className={`colAuto btnSecondary iconButton ${globalState.viewDiffs.showShapes ? 'checked' : ''}`} onClick={() => onDiffChange('shapes')} data-tooltip-id="showDiffShapesTooltip">
-                            <ReactSVG src="/figmahistory/images/shapesIcon.svg" />
+                            <ReactSVG src={globalState.urlPaths + "/images/shapesIcon.svg"} />
                         </button>
                     </div>
 

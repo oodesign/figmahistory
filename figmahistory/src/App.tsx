@@ -5,7 +5,7 @@ import ImageDiff from 'react-image-diff';
 import ReactCompareImage from 'react-compare-image';
 import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slider';
 import { TransformWrapper, TransformComponent, ReactZoomPanPinchRef } from "react-zoom-pan-pinch";
-import { globalState, setDocumentID, setAccessToken, setDocumentLeft, setDocumentRight, updateDocumentPageLeftChildrenAndFlatNodes, updateDocumentPageRightChildrenAndFlatNodes, setSelectedPageId, updateDocumentPageLeftFlatNodes, updateDocumentPageRightFlatNodes, updateDocumentPageRightBounds, updateDocumentPageLeftBounds, setSelectedNodeId, setUser, setDocumentName, setAppState, setAppTrialDaysLeft } from './globals';
+import { globalState, setDocumentID, setAccessToken, setDocumentLeft, setDocumentRight, updateDocumentPageLeftChildrenAndFlatNodes, updateDocumentPageRightChildrenAndFlatNodes, setSelectedPageId, updateDocumentPageLeftFlatNodes, updateDocumentPageRightFlatNodes, updateDocumentPageRightBounds, updateDocumentPageLeftBounds, setSelectedNodeId, setUser, setDocumentName, setAppState, setAppTrialDaysLeft, setDocumentUrlPaths } from './globals';
 
 import { User, Side, Color, Document, Version, Page, NodeWithImage, FigmaNode, Node, Difference, Rect, AppResponse, AppState, LicenseOverlayMode } from './types';
 
@@ -168,7 +168,7 @@ const Start = () => {
 
   const openPopupWindow = () => {
 
-    const url = 'https://www.figma.com/oauth?client_id=pLCXoLFHH1UngPRH0ENGzV&redirect_uri='+apiEndpoint+'/callFigmaOAuth&scope=files:read&state=qpolpolq&response_type=code'; // Replace with your actual URL
+    const url = 'https://www.figma.com/oauth?client_id=pLCXoLFHH1UngPRH0ENGzV&redirect_uri=' + apiEndpoint + '/callFigmaOAuth&scope=files:read&state=qpolpolq&response_type=code'; // Replace with your actual URL
     const options = 'toolbar=no,\
      location=no,\
      status=no,\
@@ -189,6 +189,8 @@ const Start = () => {
     //TODO Retrieve token from storage
     // const token = "figu_c3F858MxN07ZBhWSXewYZglB_c_hGa4l0tx_MLrb";
     // setAccessToken(token);
+    // if (process.env.NODE_ENV == "production") setDocumentUrlPaths("")
+    // else if (process.env.NODE_ENV == "development") setDocumentUrlPaths("/figmahistory")
   }, []);
 
 
@@ -276,7 +278,7 @@ const Start = () => {
     <LicenseOverlay ref={licenseOverlayKeyRef} mode={LicenseOverlayMode.INPUT_LICENSE_KEY} onActivateLicenseClick={onActivateLicenseClick} isActivating={isActivating} activationSuccessful={activationSuccessful} validationMessage={licenseValidationMessage} goBack={closeLicenseOverlay} className={`singleCellExtend animatedDiv fast invisible ${onLicenseKeyInputState ? 'fadeIn' : 'fadeOut'}`} />
 
     <div className="logo">
-      <ReactSVG src="/figmahistory/images/logo.svg" renumerateIRIElements={false} />
+      <ReactSVG src={globalState.urlPaths + '/images/logo.svg'} renumerateIRIElements={false} />
     </div>
 
     <div className={`userData alignVerticalCenter animatedDiv invisible ${globalState.user.img_url ? 'fadeIn' : 'fadeOut'}`}>

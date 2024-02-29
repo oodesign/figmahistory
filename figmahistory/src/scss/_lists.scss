@@ -47,23 +47,6 @@
     }
 
 
-    .listItemIcon {
-        width: 12px;
-        height: 12px;
-        background-size: contain;
-        background-repeat: no-repeat;
-
-
-        &.component {
-            @include for-theme(light) {
-                background-image: url("images/componentIcon.png");
-            }
-
-            @include for-theme(dark) {
-                background-image: url("images/componentIcon.png");
-            }
-        }
-    }
 
 
 }

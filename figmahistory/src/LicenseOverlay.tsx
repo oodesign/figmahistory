@@ -65,7 +65,7 @@ const LicenseOverlay: React.ForwardRefRenderFunction<HTMLDivElement, LicenseOver
         <div className={`${props.className} verticalLayout licenseOverlay`}>
             <div className="mainContent alignVCenter verticalLayout">
                 <div className='rowAuto logoBig'>
-                    <ReactSVG src="/figmahistory/images/logoBig.svg" renumerateIRIElements={false} />
+                    <ReactSVG src={globalState.urlPaths + "/images/logoBig.svg"} renumerateIRIElements={false} />
                 </div>
 
                 {localMode == LicenseOverlayMode.TRIAL_EXPIRED ? (

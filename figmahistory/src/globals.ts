@@ -20,6 +20,7 @@ export interface GlobalState {
     loadedDocuments: Document[];
     appState: AppState;
     appTrialDaysLeft: number;
+    urlPaths: string;
 }
 
 export let globalState: GlobalState = {
@@ -59,11 +60,16 @@ export let globalState: GlobalState = {
     versionPagesCount: 1,
     loadedDocuments: [],
     appState: AppState.NOT_REGISTERED,
-    appTrialDaysLeft: 0
+    appTrialDaysLeft: 0,
+    urlPaths: ""
 };
 
 export function setDocumentID(id: string) {
     globalState = { ...globalState, documentId: id };
+}
+
+export function setDocumentUrlPaths(urlPath: string) {
+    globalState = { ...globalState, urlPaths: urlPath };
 }
 
 export function setAppState(state: AppState) {

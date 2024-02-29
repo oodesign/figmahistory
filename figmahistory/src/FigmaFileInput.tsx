@@ -1,6 +1,7 @@
 import React, { SyntheticEvent, useEffect, useRef, useState } from 'react';
 import { ReactCompareSlider, useReactCompareSliderRef } from 'react-compare-slider';
 import { ReactSVG } from 'react-svg';
+import { globalState } from './globals';
 
 interface FigmaFileInputProps {
     getDocument: (id: string, nodeId: string) => void;
@@ -72,12 +73,12 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                     <ReactCompareSlider ref={reactCompareSliderRef} transition="0.75s ease-in-out" position={100} onPositionChange={onSliderPositionChange} onlyHandleDraggable
                         itemOne={
                             <div className={`extend front ${isLogoAnimated ? 'animated' : ''}`} style={{ clipPath }}>
-                                <ReactSVG src="/figmahistory/images/logoSlider.svg" renumerateIRIElements={false} />
+                                <ReactSVG src={globalState.urlPaths + "/images/logoSlider.svg"} renumerateIRIElements={false} />
                             </div>
                         }
                         itemTwo={
                             <div className="extend back">
-                                <ReactSVG src="/figmahistory/images/logoSlider.svg" renumerateIRIElements={false} />
+                                <ReactSVG src={globalState.urlPaths + "/images/logoSlider.svg"} renumerateIRIElements={false} />
                             </div>
                         }
                     />
