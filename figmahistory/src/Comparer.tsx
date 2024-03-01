@@ -1,7 +1,7 @@
 import React, { ChangeEvent, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { ReactZoomPanPinchRef, TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
 import { User, Side, Color, Document, Version, Page, NodeWithImage, FigmaNode, Node, Difference, Rect, ViewDiffs, AppState } from './types';
-import { globalState, setDocumentID, setAccessToken, setDocumentLeft, setDocumentRight, updateDocumentPageLeftChildrenAndFlatNodes, updateDocumentPageRightChildrenAndFlatNodes, setSelectedPageId, updateDocumentPageLeftFlatNodes, updateDocumentPageRightFlatNodes, updateDocumentPageRightBounds, updateDocumentPageLeftBounds, setSelectedNodeId, setViewDiffs, addLoadedDocument, updateDocumentPageIsLoaded, updateDocumentPageChildrenFlatNodesAndBackground, setHasMultipleVersionPages, setVersionPagesCount, sideToName, } from './globals';
+import { globalState, setDocumentID, setAccessToken, setDocumentLeftId, setDocumentRightId, updateDocumentPageLeftChildrenAndFlatNodes, updateDocumentPageRightChildrenAndFlatNodes, setSelectedPageId, updateDocumentPageLeftFlatNodes, updateDocumentPageRightFlatNodes, updateDocumentPageRightBounds, updateDocumentPageLeftBounds, setSelectedNodeId, setViewDiffs, addLoadedDocument, updateDocumentPageIsLoaded, updateDocumentPageChildrenFlatNodesAndBackground, setHasMultipleVersionPages, setVersionPagesCount, sideToName, } from './globals';
 import { ReactCompareSlider, ReactCompareSliderHandle, useReactCompareSliderRef } from 'react-compare-slider';
 import isEqual from 'lodash/isEqual';
 import Canvas from './Canvas';
@@ -297,7 +297,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
     }
 
     function getExistingPage(versionId: string, pageId: string) {
-        const existingDocument = globalState.loadedDocuments.find(document => document.version == versionId);
+        const existingDocument = globalState.loadedDocuments[versionId];
         if (existingDocument) {
             const existingPage = existingDocument.pages.find(page => page.documentId == versionId && page.id == pageId);
             if (existingPage) return existingPage;
@@ -386,12 +386,12 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
 
 
         if (side == Side.LEFT) {
-            updateDocumentPageLeftBounds(pageId, pageDimensions);
-            updateDocumentPageLeftChildrenAndFlatNodes(pageId, pageChildren, pageFlatNodes);
+            updateDocumentPageLeftBounds(versionId, pageId, pageDimensions);
+            updateDocumentPageLeftChildrenAndFlatNodes(versionId, pageId, pageChildren, pageFlatNodes);
         }
         else if (side == Side.RIGHT) {
-            updateDocumentPageRightBounds(pageId, pageDimensions);
-            updateDocumentPageRightChildrenAndFlatNodes(pageId, pageChildren, pageFlatNodes);
+            updateDocumentPageRightBounds(versionId, pageId, pageDimensions);
+            updateDocumentPageRightChildrenAndFlatNodes(versionId, pageId, pageChildren, pageFlatNodes);
         }
 
     }
@@ -409,7 +409,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
         // console.log("Fetching version:" + versionId + " for side:" + side.valueOf());
         // console.log("At this point, globalPageId is:" + globalState.selectedPageId);
 
-        let versionDocument = globalState.loadedDocuments.find(document => document.version == versionId);
+        let versionDocument = globalState.loadedDocuments[versionId];
 
         if (!versionDocument) {
             // console.log("Need to fetch document")
@@ -457,14 +457,14 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
 
         if (versionDocument) {
             if (side == Side.LEFT) {
-                setDocumentLeft(versionDocument);
+                setDocumentLeftId(versionDocument.version);
                 setPagesListVersionLeft(versionDocument.pages);
                 setIsLoadingLeftPage(false);
                 globalState.isDocumentLeftLoaded = true;
                 if (globalState.isDocumentRightLoaded) props.initialLoadComplete();
             }
             if (side == Side.RIGHT) {
-                setDocumentRight(versionDocument);
+                setDocumentRightId(versionDocument.version);
                 setPagesListVersionRight(versionDocument.pages);
                 setIsLoadingRightPage(false);
                 globalState.isDocumentRightLoaded = true;
@@ -496,9 +496,9 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
 
     function getBothDocumentVersionsMergedPagesList() {
         const mergedPageList: Page[] = [];
-        if (globalState.documentLeft && globalState.documentRight) {
-            for (const leftPage of globalState.documentLeft.pages) {
-                const rightPage = globalState.documentRight.pages.find(rightPage => rightPage.id == leftPage.id)
+        if (globalState.loadedDocuments[globalState.documentLeftId] && globalState.loadedDocuments[globalState.documentRightId]) {
+            for (const leftPage of globalState.loadedDocuments[globalState.documentLeftId].pages) {
+                const rightPage = globalState.loadedDocuments[globalState.documentRightId].pages.find(rightPage => rightPage.id == leftPage.id)
                 if (rightPage) {
                     leftPage.presentInVersionRight = true;
                     leftPage.nameOtherVersion = rightPage.name;
@@ -509,8 +509,8 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                 }
                 if (!mergedPageList.some(page => page.id == leftPage.id)) mergedPageList.push(leftPage);
             }
-            for (const rightPage of globalState.documentRight.pages) {
-                const leftPage = globalState.documentLeft.pages.find(leftPage => leftPage.id == rightPage.id)
+            for (const rightPage of globalState.loadedDocuments[globalState.documentRightId].pages) {
+                const leftPage = globalState.loadedDocuments[globalState.documentLeftId].pages.find(leftPage => leftPage.id == rightPage.id)
                 if (leftPage) {
                     rightPage.presentInVersionLeft = true;
                     rightPage.nameOtherVersion = leftPage.name;
@@ -535,24 +535,22 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
         let versionId = "";
 
         if (side == Side.LEFT) {
-            versionId = globalState.documentLeft.version;
+            versionId = globalState.documentLeftId;
         } else if (side == Side.RIGHT) {
-            versionId = globalState.documentRight.version;
+            versionId = globalState.documentRightId;
         }
 
         await fetchPage(versionId, pageId, side);
 
 
         let page: Page | undefined = undefined;
-        let leftPage = globalState.documentLeft.pages.find(page => page.id === pageId);
-        let rightPage = globalState.documentRight.pages.find(page => page.id === pageId);
+        let leftPage = globalState.loadedDocuments[globalState.documentLeftId].pages.find(page => page.id === pageId);
+        let rightPage = globalState.loadedDocuments[globalState.documentRightId].pages.find(page => page.id === pageId);
 
         if (side == Side.LEFT) {
-            versionId = globalState.documentLeft.version;
             page = leftPage;
         } else if (side == Side.RIGHT) {
             page = rightPage;
-            versionId = globalState.documentRight.version;
         }
 
 
@@ -695,8 +693,8 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
 
 
     function setCanvasDimensionsAndOffset(pageId: string) {
-        let pageLeftBounds = globalState.documentLeft.pages.find(page => page.id == pageId)?.boundingRect;
-        let pageRightBounds = globalState.documentRight.pages.find(page => page.id == pageId)?.boundingRect;
+        let pageLeftBounds = globalState.loadedDocuments[globalState.documentLeftId].pages.find(page => page.id == pageId)?.boundingRect;
+        let pageRightBounds = globalState.loadedDocuments[globalState.documentRightId].pages.find(page => page.id == pageId)?.boundingRect;
 
 
         // console.log("Trying to setCanvasDimensionsAndOffset.");
@@ -803,10 +801,10 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
             const newDocumentRightFlatNodes = getPageComparison(pageRightNodes, pageLeftNodes);
 
             leftPage.flatNodes = newDocumentLeftFlatNodes;
-            updateDocumentPageLeftFlatNodes(leftPage, newDocumentLeftFlatNodes);
+            updateDocumentPageLeftFlatNodes(leftPage.documentId, leftPage.id, newDocumentLeftFlatNodes);
 
             rightPage.flatNodes = newDocumentRightFlatNodes;
-            updateDocumentPageRightFlatNodes(rightPage, newDocumentRightFlatNodes);
+            updateDocumentPageRightFlatNodes(rightPage.documentId, rightPage.id, newDocumentRightFlatNodes);
 
 
             console.log("------ Found " + newDocumentLeftFlatNodes.filter(node => node.isEqualToOtherVersion == false || node.isPresentInOtherVersion == false).length + " differences on LEFT");

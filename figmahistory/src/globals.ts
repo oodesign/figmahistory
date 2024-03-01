@@ -7,8 +7,8 @@ export interface GlobalState {
     documentId: string;
     documentName: string;
     accessToken: string;
-    documentLeft: Document;
-    documentRight: Document;
+    documentLeftId: string;
+    documentRightId: string;
     selectedPageId: string;
     selectedNodeId: string;
     isDocumentLeftLoaded: boolean;
@@ -17,7 +17,7 @@ export interface GlobalState {
     viewDiffs: ViewDiffs;
     hasMultipleVersionPages: boolean;
     versionPagesCount: number;
-    loadedDocuments: Document[];
+    loadedDocuments: { [version: string]: Document };
     appState: AppState;
     appTrialDaysLeft: number;
     urlPaths: string;
@@ -27,16 +27,8 @@ export let globalState: GlobalState = {
     documentId: "",
     documentName: "",
     accessToken: "",
-    documentLeft: {
-        name: "",
-        version: "",
-        pages: [],
-    },
-    documentRight: {
-        name: "",
-        version: "",
-        pages: [],
-    },
+    documentLeftId: "",
+    documentRightId: "",
     selectedPageId: "",
     selectedNodeId: "",
     isDocumentLeftLoaded: false,
@@ -58,7 +50,7 @@ export let globalState: GlobalState = {
     },
     hasMultipleVersionPages: false,
     versionPagesCount: 1,
-    loadedDocuments: [],
+    loadedDocuments: {},
     appState: AppState.NOT_REGISTERED,
     appTrialDaysLeft: 0,
     urlPaths: ""
@@ -84,16 +76,20 @@ export function setAccessToken(token: string) {
     globalState = { ...globalState, accessToken: token };
 }
 
-export function setDocumentLeft(doc: Document) {
-    globalState = { ...globalState, documentLeft: doc };
+export function setDocumentLeftId(id: string) {
+    globalState = { ...globalState, documentLeftId: id };
 }
 
 export function addLoadedDocument(doc: Document) {
     globalState = {
         ...globalState,
-        loadedDocuments: [...globalState.loadedDocuments, doc],
+        loadedDocuments: {
+            ...globalState.loadedDocuments,
+            [doc.version]: doc,
+        },
     };
 }
+
 
 export function setHasMultipleVersionPages(hasMultipleVersionPages: boolean) {
     globalState = { ...globalState, hasMultipleVersionPages: hasMultipleVersionPages };
@@ -103,40 +99,25 @@ export function setVersionPagesCount(versionPagesCount: number) {
     globalState = { ...globalState, versionPagesCount: versionPagesCount };
 }
 
-export function updateDocumentPageLeftBounds(pageId: string, boundingRect: Rect) {
+export function updateDocumentPageLeftBounds(documentId: string, pageId: string, boundingRect: Rect) {
     globalState = {
         ...globalState,
-        documentLeft: {
-            ...globalState.documentLeft,
-            pages: globalState.documentLeft.pages.map((page) => {
-                if (page.id === pageId) {
-                    return {
-                        ...page,
-                        boundingRect: boundingRect,
-                    };
-                } else {
-                    return page;
-                }
-            }),
+        loadedDocuments: {
+            ...globalState.loadedDocuments,
+            [documentId]: {
+                ...globalState.loadedDocuments[documentId],
+                pages: globalState.loadedDocuments[documentId].pages.map((page) => {
+                    if (page.id === pageId) {
+                        return {
+                            ...page,
+                            boundingRect: boundingRect,
+                        };
+                    } else {
+                        return page;
+                    }
+                }),
+            },
         },
-        loadedDocuments: globalState.loadedDocuments.map(document => {
-            if (document.version === globalState.documentLeft.version) {
-                return {
-                    ...document,
-                    pages: globalState.documentLeft.pages.map((page) => {
-                        if (page.id === pageId) {
-                            return {
-                                ...page,
-                                boundingRect: boundingRect,
-                            };
-                        } else {
-                            return page;
-                        }
-                    }),
-                };
-            }
-            return document;
-        }),
     };
 }
 
@@ -145,27 +126,11 @@ export function updateDocumentPageLeftBounds(pageId: string, boundingRect: Rect)
 export function updateDocumentPageIsLoaded(documentId: string, pageId: string, isLoaded: boolean) {
     globalState = {
         ...globalState,
-        loadedDocuments: globalState.loadedDocuments.map(document => {
-            if (document.version === documentId) {
-                return {
-                    ...document,
-                    pages: document.pages.map(page => {
-                        if (page.id === pageId) {
-                            return {
-                                ...page,
-                                isLoaded: isLoaded,
-                            };
-                        }
-                        return page;
-                    }),
-                };
-            }
-            return document;
-        }),
-        documentLeft: {
-            ...globalState.documentLeft,
-            ...(globalState.documentLeft.version === documentId && {
-                pages: globalState.documentLeft.pages.map((page) => {
+        loadedDocuments: {
+            ...globalState.loadedDocuments,
+            [documentId]: {
+                ...globalState.loadedDocuments[documentId],
+                pages: globalState.loadedDocuments[documentId].pages.map((page) => {
                     if (page.id === pageId) {
                         return {
                             ...page,
@@ -175,22 +140,7 @@ export function updateDocumentPageIsLoaded(documentId: string, pageId: string, i
                         return page;
                     }
                 }),
-            }),
-        },
-        documentRight: {
-            ...globalState.documentRight,
-            ...(globalState.documentRight.version === documentId && {
-                pages: globalState.documentRight.pages.map((page) => {
-                    if (page.id === pageId) {
-                        return {
-                            ...page,
-                            isLoaded: isLoaded,
-                        };
-                    } else {
-                        return page;
-                    }
-                }),
-            }),
+            },
         },
     };
 }
@@ -198,29 +148,11 @@ export function updateDocumentPageIsLoaded(documentId: string, pageId: string, i
 export function updateDocumentPageChildrenFlatNodesAndBackground(documentId: string, pageId: string, pageChildren: any[], flatNodes: Node[], backgroundColor: Color) {
     globalState = {
         ...globalState,
-        loadedDocuments: globalState.loadedDocuments.map(document => {
-            if (document.version === documentId) {
-                return {
-                    ...document,
-                    pages: document.pages.map(page => {
-                        if (page.id === pageId) {
-                            return {
-                                ...page,
-                                children: pageChildren,
-                                flatNodes: flatNodes,
-                                backgroundColor: backgroundColor,
-                            };
-                        }
-                        return page;
-                    }),
-                };
-            }
-            return document;
-        }),
-        documentLeft: {
-            ...globalState.documentLeft,
-            ...(globalState.documentLeft.version === documentId && {
-                pages: globalState.documentLeft.pages.map((page) => {
+        loadedDocuments: {
+            ...globalState.loadedDocuments,
+            [documentId]: {
+                ...globalState.loadedDocuments[documentId],
+                pages: globalState.loadedDocuments[documentId].pages.map((page) => {
                     if (page.id === pageId) {
                         return {
                             ...page,
@@ -232,213 +164,128 @@ export function updateDocumentPageChildrenFlatNodesAndBackground(documentId: str
                         return page;
                     }
                 }),
-            }),
-        },
-        documentRight: {
-            ...globalState.documentRight,
-            ...(globalState.documentRight.version === documentId && {
-                pages: globalState.documentRight.pages.map((page) => {
-                    if (page.id === pageId) {
-                        return {
-                            ...page,
-                            children: pageChildren,
-                            flatNodes: flatNodes,
-                            backgroundColor: backgroundColor,
-                        };
-                    } else {
-                        return page;
-                    }
-                }),
-            }),
+            },
         },
     };
 }
 
-
-export function updateDocumentPageLeftFlatNodes(page: Page, flatNodes: Node[]) {
+export function updateDocumentPageLeftFlatNodes(documentId: string, pageId: string, flatNodes: Node[]) {
     globalState = {
         ...globalState,
-        documentLeft: {
-            ...globalState.documentLeft,
-            pages: globalState.documentLeft.pages.map((currentPage) => {
-                if (currentPage.id === page.id) {
-                    return {
-                        ...currentPage,
-                        flatNodes: flatNodes,
-                    };
-                } else {
-                    return page;
-                }
-            }),
-        },
-        loadedDocuments: globalState.loadedDocuments.map(document => {
-            if (document.version === globalState.documentLeft.version) {
-                return {
-                    ...document,
-                    pages: globalState.documentLeft.pages.map((currentPage) => {
+        loadedDocuments: {
+            ...globalState.loadedDocuments,
+            [documentId]: {
+                ...globalState.loadedDocuments[documentId],
+                pages: globalState.loadedDocuments[documentId].pages.map((currentPage) => {
+                    if (currentPage.id === pageId) {
                         return {
                             ...currentPage,
                             flatNodes: flatNodes,
                         };
-                    }),
-                };
-            }
-            return document;
-        }),
+                    } else {
+                        return currentPage;
+                    }
+                }),
+            },
+        },
     };
 }
 
 
-export function updateDocumentPageLeftChildrenAndFlatNodes(pageId: string, pageChildren: any[], flatNodes: Node[]) {
+
+
+export function updateDocumentPageLeftChildrenAndFlatNodes(documentId: string, pageId: string, pageChildren: any[], flatNodes: Node[]) {
     globalState = {
         ...globalState,
-        documentLeft: {
-            ...globalState.documentLeft,
-            pages: globalState.documentLeft.pages.map((page) => {
-                if (page.id === pageId) {
-                    return {
-                        ...page,
-                        children: pageChildren,
-                        flatNodes: flatNodes,
-                    };
-                } else {
-                    return page;
-                }
-            }),
+        loadedDocuments: {
+            ...globalState.loadedDocuments,
+            [documentId]: {
+                ...globalState.loadedDocuments[documentId],
+                pages: globalState.loadedDocuments[documentId].pages.map((page) => {
+                    if (page.id === pageId) {
+                        return {
+                            ...page,
+                            children: pageChildren,
+                            flatNodes: flatNodes,
+                        };
+                    } else {
+                        return page;
+                    }
+                }),
+            },
         },
-        loadedDocuments: globalState.loadedDocuments.map(document => {
-            if (document.version === globalState.documentLeft.version) {
-                return {
-                    ...document,
-                    pages: globalState.documentLeft.pages.map((page) => {
-                        if (page.id === pageId) {
-                            return {
-                                ...page,
-                                children: pageChildren,
-                                flatNodes: flatNodes,
-                            };
-                        } else {
-                            return page;
-                        }
-                    }),
-                };
-            }
-            return document;
-        }),
     };
 }
 
-export function setDocumentRight(doc: Document) {
-    globalState = { ...globalState, documentRight: doc };
+export function setDocumentRightId(id: string) {
+    globalState = { ...globalState, documentRightId: id };
 }
 
 
-export function updateDocumentPageRightBounds(pageId: string, boundingRect: Rect) {
+export function updateDocumentPageRightBounds(documentId: string, pageId: string, boundingRect: Rect) {
     globalState = {
         ...globalState,
-        documentRight: {
-            ...globalState.documentRight,
-            pages: globalState.documentRight.pages.map((page) => {
-                if (page.id === pageId) {
-                    return {
-                        ...page,
-                        boundingRect: boundingRect,
-                    };
-                } else {
-                    return page;
-                }
-            }),
+        loadedDocuments: {
+            ...globalState.loadedDocuments,
+            [documentId]: {
+                ...globalState.loadedDocuments[documentId],
+                pages: globalState.loadedDocuments[documentId].pages.map((page) => {
+                    if (page.id === pageId) {
+                        return {
+                            ...page,
+                            boundingRect: boundingRect,
+                        };
+                    } else {
+                        return page;
+                    }
+                }),
+            },
         },
-        loadedDocuments: globalState.loadedDocuments.map(document => {
-            if (document.version === globalState.documentRight.version) {
-                return {
-                    ...document,
-                    pages: globalState.documentRight.pages.map((page) => {
-                        if (page.id === pageId) {
-                            return {
-                                ...page,
-                                boundingRect: boundingRect,
-                            };
-                        } else {
-                            return page;
-                        }
-                    }),
-                };
-            }
-            return document;
-        }),
     };
 }
 
-export function updateDocumentPageRightFlatNodes(page: Page, flatNodes: Node[]) {
+export function updateDocumentPageRightFlatNodes(documentId: string, pageId: string, flatNodes: Node[]) {
     globalState = {
         ...globalState,
-        documentRight: {
-            ...globalState.documentRight,
-            pages: globalState.documentRight.pages.map((currentPage) => {
-                return {
-                    ...currentPage,
-                    flatNodes: flatNodes,
-                };
-            }),
+        loadedDocuments: {
+            ...globalState.loadedDocuments,
+            [documentId]: {
+                ...globalState.loadedDocuments[documentId],
+                pages: globalState.loadedDocuments[documentId].pages.map((currentPage) => {
+                    if (currentPage.id === pageId) {
+                        return {
+                            ...currentPage,
+                            flatNodes: flatNodes,
+                        };
+                    } else {
+                        return currentPage;
+                    }
+                }),
+            },
         },
-        loadedDocuments: globalState.loadedDocuments.map(document => {
-            if (document.version === globalState.documentRight.version) {
-                return {
-                    ...document,
-                    pages: globalState.documentRight.pages.map((currentPage) => {
-                        if (currentPage.id === page.id) {
-                            return {
-                                ...currentPage,
-                                flatNodes: flatNodes,
-                            };
-                        } else {
-                            return page;
-                        }
-                    }),
-                };
-            }
-            return document;
-        }),
     };
 }
 
-export function updateDocumentPageRightChildrenAndFlatNodes(pageId: string, pageChildren: any[], flatNodes: Node[]) {
+export function updateDocumentPageRightChildrenAndFlatNodes(documentId: string, pageId: string, pageChildren: any[], flatNodes: Node[]) {
     globalState = {
         ...globalState,
-        documentRight: {
-            ...globalState.documentRight,
-            pages: globalState.documentRight.pages.map((page) => {
-                if (page.id === pageId) {
-                    return {
-                        ...page,
-                        children: pageChildren,
-                        flatNodes: flatNodes,
-                    };
-                } else {
-                    return page;
-                }
-            }),
+        loadedDocuments: {
+            ...globalState.loadedDocuments,
+            [documentId]: {
+                ...globalState.loadedDocuments[documentId],
+                pages: globalState.loadedDocuments[documentId].pages.map((page) => {
+                    if (page.id === pageId) {
+                        return {
+                            ...page,
+                            children: pageChildren,
+                            flatNodes: flatNodes,
+                        };
+                    } else {
+                        return page;
+                    }
+                }),
+            },
         },
-        loadedDocuments: globalState.loadedDocuments.map(document => {
-            if (document.version === globalState.documentRight.version) {
-                return {
-                    ...document,
-                    pages: globalState.documentRight.pages.map((page) => {
-                        if (page.id === pageId) {
-                            return {
-                                ...page,
-                                children: pageChildren,
-                                flatNodes: flatNodes,
-                            };
-                        } else {
-                            return page;
-                        }
-                    }),
-                };
-            }
-            return document;
-        }),
     };
 }
 
