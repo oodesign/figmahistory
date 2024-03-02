@@ -5,7 +5,7 @@ import ImageDiff from 'react-image-diff';
 import ReactCompareImage from 'react-compare-image';
 import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slider';
 import { TransformWrapper, TransformComponent, ReactZoomPanPinchRef } from "react-zoom-pan-pinch";
-import { globalState, setDocumentID, setAccessToken, setDocumentLeftId, setDocumentRightId, updateDocumentPageLeftChildrenAndFlatNodes, updateDocumentPageRightChildrenAndFlatNodes, setSelectedPageId, updateDocumentPageLeftFlatNodes, updateDocumentPageRightFlatNodes, updateDocumentPageRightBounds, updateDocumentPageLeftBounds, setSelectedNodeId, setUser, setDocumentName, setAppState, setAppTrialDaysLeft, setDocumentUrlPaths } from './globals';
+import { globalState, setDocumentID, setAccessToken, setDocumentLeftId, setDocumentRightId, updateDocumentPageLeftChildrenAndFlatNodes, updateDocumentPageRightChildrenAndFlatNodes, setSelectedPageId, updateDocumentPageLeftFlatNodes, updateDocumentPageRightFlatNodes, updateDocumentPageRightBounds, updateDocumentPageLeftBounds, setSelectedNodeId, setUser, setDocumentName, setAppState, setAppTrialDaysLeft, setDocumentUrlPaths, setParentDocumentID, setParentDocumentName } from './globals';
 
 import { User, Side, Color, Document, Version, Page, NodeWithImage, FigmaNode, Node, Difference, Rect, AppResponse, AppState, LicenseOverlayMode } from './types';
 
@@ -43,6 +43,7 @@ const Start = () => {
 
 
   const [loaderMessage, setLoaderMessage] = useState<string>("Connecting to Figma");
+  const [loaderDescription, setLoaderDescription] = useState<string>("");
 
   const developmentApiEndpoint: string = "http://localhost:5002";
   const serverApiEndpoint: string = "https://us-central1-figma-history-server.cloudfunctions.net/api";
@@ -109,9 +110,18 @@ const Start = () => {
   };
 
 
-  const gotDocumentName = (name: string) => {
+  const gotDocumentName = (parentDocumentName: string, name: string) => {
+    setParentDocumentName(parentDocumentName);
     setDocumentName(name);
-    setLoaderMessage("Loading " + name);
+
+    if (parentDocumentName) {
+      setLoaderMessage("Loading " + parentDocumentName);
+      setLoaderDescription(name);
+    }
+    else {
+      setLoaderMessage("Loading " + name);
+      setLoaderDescription("");
+    }
   }
 
   const initialLoadComplete = () => {
@@ -121,15 +131,15 @@ const Start = () => {
   }
 
 
-  const getDocument = (id: string, nodeId: string) => {
+  const getDocument = (id: string, branchId: string, nodeId: string) => {
     setOnInputState(false);
     setOnLoadingState(true);
     setOnComparerState(false);
 
 
-    setDocumentID(id);
+    setParentDocumentID(branchId ? id : undefined);
+    setDocumentID(branchId ? branchId : id);
     setSelectedNodeId(nodeId);
-
 
     if (globalState.accessToken && globalState.documentId) {
       if (comparerRef.current)
@@ -271,7 +281,7 @@ const Start = () => {
 
   return <div className='gridExtender app'>
 
-    <Loader ref={loaderRef} message={loaderMessage} className={`singleCellExtend animatedDiv invisible ${onLoadingState ? 'fadeIn' : 'fadeOut'}`} />
+    <Loader ref={loaderRef} message={loaderMessage} description={loaderDescription} className={`singleCellExtend animatedDiv invisible ${onLoadingState ? 'fadeIn' : 'fadeOut'}`} />
     <Comparer ref={comparerRef} gotDocumentName={gotDocumentName} initialLoadComplete={initialLoadComplete} onRegisterLicenseClick={onRegisterLicenseClick} className={`singleCellExtend animatedDiv invisible ${onComparerState ? 'fadeIn' : 'fadeOut'}`} />
     <FigmaFileInput ref={figmaFileInputRef} getDocument={getDocument} className={`singleCellExtend animatedDiv visible ${onInputState ? 'fadeIn' : 'fadeOut'}`} />
     <LicenseOverlay ref={licenseOverlayTrialRef} mode={LicenseOverlayMode.TRIAL_EXPIRED} onRegisterLicenseClick={onRegisterLicenseClick} className={`singleCellExtend animatedDiv invisible ${onTrialExpiredState ? 'fadeIn' : 'fadeOut'}`} />

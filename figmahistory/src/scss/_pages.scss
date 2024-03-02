@@ -6,9 +6,9 @@
         left: 24px;
         width: 140px;
 
-        svg{
-            width:100%;
-            height:100%;
+        svg {
+            width: 100%;
+            height: 100%;
         }
 
         img {
@@ -539,7 +539,7 @@
             background-color: $dark_backgroundColor2;
         }
 
-        padding-top:80px;
+        padding-top:72px;
         padding-bottom:64px;
 
 
@@ -553,7 +553,18 @@
             padding-left: 24px;
             padding-right: 24px;
             margin-bottom: 32px;
-            font-size: 16px;
+            font-size: 14px;
+
+            &.hasSubtitle {
+                margin-bottom: 4px;
+            }
+        }
+
+        .subtitle {
+            @include secondaryText;
+            padding-left: 24px;
+            padding-right: 24px;
+            margin-bottom: 32px;
         }
 
         .header {

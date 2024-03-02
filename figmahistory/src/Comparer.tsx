@@ -14,7 +14,7 @@ import * as numberToWords from 'number-to-words';
 interface ComparerProps {
     className: string;
 
-    gotDocumentName: (name: string) => void;
+    gotDocumentName: (parentDocumentName: string, name: string) => void;
     initialLoadComplete: () => void;
     onRegisterLicenseClick?: () => void;
 }
@@ -187,6 +187,25 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
             return "";
     }
 
+    async function getParentDocumentName(): Promise<string> {
+        if (globalState.parentDocumentId) {
+            const response = await fetch('https://api.figma.com/v1/files/' + globalState.parentDocumentId + "?depth=1", {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${globalState.accessToken}`
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                return data.name;
+            }
+            else
+                return "";
+        }
+        return "";
+    }
+
     async function fetchVersionList(): Promise<Version[]> {
         const versions: Version[] = [];
 
@@ -244,9 +263,10 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
 
     const fetchFigmaFiles = async () => {
 
+        const parentDocumentName: string = await getParentDocumentName();
         const documentName: string = await getDocumentName();
 
-        props.gotDocumentName(documentName);
+        props.gotDocumentName(parentDocumentName, documentName);
 
         const allVersions: Version[] = await fetchVersionList();
 
@@ -475,6 +495,8 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                 if (globalState.selectedNodeId) {
                     if (versionDocument.pages.some(page => page.id == globalState.selectedNodeId))
                         setSelectedPageId(globalState.selectedNodeId);
+                    else
+                        setSelectedPageId(versionDocument.pages[0].id);
                 }
                 else
                     setSelectedPageId(versionDocument.pages[0].id);
@@ -1034,9 +1056,13 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
         <div className={`comparer rowAvailable horizontalLayout ${props.className}`}>
             <div className={`colAuto sidePanel ${pagesListVersionLeft && pagesListVersionRight ? '' : 'collapsed'}`}>
                 <div className="verticalLayout sidePanelContent">
-                    <div className="rowAuto title">
+                    <div className={`rowAuto title ${globalState.parentDocumentName ? 'hasSubtitle' : ''}`}>
+                        {globalState.parentDocumentName ? globalState.parentDocumentName : globalState.documentName}
+                    </div>
+                    <div className={`rowAuto subtitle ${!globalState.parentDocumentName ? 'notDisplayed' : ''}`}>
                         {globalState.documentName}
                     </div>
+
                     <div className="rowAuto header">
                         Pages
                     </div>

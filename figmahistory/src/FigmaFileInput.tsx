@@ -4,7 +4,7 @@ import { ReactSVG } from 'react-svg';
 import { globalState } from './globals';
 
 interface FigmaFileInputProps {
-    getDocument: (id: string, nodeId: string) => void;
+    getDocument: (id: string, branchId: string, nodeId: string) => void;
     className: string;
 }
 
@@ -21,7 +21,7 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
         const inputElement = document.getElementById("figmaFileURL") as HTMLInputElement;
         const inputURL = inputElement.value;
 
-        const regex = /^((http|https):\/\/)?(www\.)?figma\.com\/file\/([a-zA-Z0-9]{22})(?:.*node-id=([0-9]+-[0-9]+))?/
+        const regex = /^((http|https):\/\/)?(www\.)?figma\.com\/file\/([a-zA-Z0-9]{22})(?:\/branch\/([a-zA-Z0-9]+))?(?:.*node-id=([0-9]+%3A[0-9]+))?/;
         const matches = inputURL.match(regex);
 
         if (!matches) {
@@ -29,11 +29,13 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
         }
         else {
             const id = matches[4] || "";
-            let nodeId = matches[5] || "";
+            const branchId = matches[5] || "";
+            let nodeId = matches[6] || "";
             nodeId = nodeId.replace("-", ":")
 
-            if (id) {
-                props.getDocument(id, nodeId);
+
+            if (id || branchId) {
+                props.getDocument(id, branchId, nodeId);
             }
             else {
                 //TODO Handle incorrect format error

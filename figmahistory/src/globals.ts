@@ -5,7 +5,9 @@ import { User, Side, Color, Document, Version, Page, FigmaNode, Node, Rect, View
 
 export interface GlobalState {
     documentId: string;
+    parentDocumentId: string | undefined;
     documentName: string;
+    parentDocumentName: string;
     accessToken: string;
     documentLeftId: string;
     documentRightId: string;
@@ -25,7 +27,9 @@ export interface GlobalState {
 
 export let globalState: GlobalState = {
     documentId: "",
+    parentDocumentId: "",
     documentName: "",
+    parentDocumentName: "",
     accessToken: "",
     documentLeftId: "",
     documentRightId: "",
@@ -56,6 +60,9 @@ export let globalState: GlobalState = {
     urlPaths: ""
 };
 
+export function setParentDocumentID(id: string | undefined) {
+    globalState = { ...globalState, parentDocumentId: id };
+}
 export function setDocumentID(id: string) {
     globalState = { ...globalState, documentId: id };
 }
@@ -307,6 +314,10 @@ export function setViewDiffs(viewDiffs: ViewDiffs) {
 
 export function setDocumentName(name: string) {
     globalState = { ...globalState, documentName: name };
+}
+
+export function setParentDocumentName(name: string) {
+    globalState = { ...globalState, parentDocumentName: name };
 }
 
 export function sideToName(side: Side) {

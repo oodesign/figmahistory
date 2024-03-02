@@ -275,6 +275,9 @@ div::-webkit-scrollbar-thumb {
   opacity: 0;
   transition: opacity 0.3s ease-in-out;
 }
+.indeterminateLoader .message {
+  margin-bottom: 4px;
+}
 .indeterminateLoader .loaderMessage {
   font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 13px;
@@ -1524,7 +1527,7 @@ input[type=text].hasMessage {
 .comparer .sidePanel {
   width: 240px;
   transition: all 0.3s ease-out;
-  padding-top: 80px;
+  padding-top: 72px;
   padding-bottom: 64px;
 }
 @media (prefers-color-scheme: light) {
@@ -1547,7 +1550,7 @@ input[type=text].hasMessage {
   padding-left: 24px;
   padding-right: 24px;
   margin-bottom: 32px;
-  font-size: 16px;
+  font-size: 14px;
 }
 @media (prefers-color-scheme: light) {
   .comparer .sidePanel .title {
@@ -1557,6 +1560,29 @@ input[type=text].hasMessage {
 @media (prefers-color-scheme: dark) {
   .comparer .sidePanel .title {
     color: #ffffff;
+  }
+}
+.comparer .sidePanel .title.hasSubtitle {
+  margin-bottom: 4px;
+}
+.comparer .sidePanel .subtitle {
+  font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px;
+  padding-left: 24px;
+  padding-right: 24px;
+  margin-bottom: 32px;
+}
+.comparer .sidePanel .subtitle.spaced {
+  line-height: 20px;
+}
+@media (prefers-color-scheme: light) {
+  .comparer .sidePanel .subtitle {
+    color: #868688;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .comparer .sidePanel .subtitle {
+    color: #848494;
   }
 }
 .comparer .sidePanel .header {

@@ -5,6 +5,10 @@
     opacity: 0;
     transition: opacity 0.3s ease-in-out;
 
+    .message{
+        margin-bottom: 4px;
+    }
+
     .loaderMessage {
         @include secondaryText;
         margin-top: 16px;
