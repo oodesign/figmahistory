@@ -26,7 +26,7 @@ const List: React.FC<ListProps> = (props) => {
             if (selectedPage) setLocalSelectedItem(selectedPage);
         }
 
-    }, [props.selectedItemId]);
+    }, [props.selectedItemId, props.pageList]);
 
 
     return (
