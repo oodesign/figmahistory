@@ -263,6 +263,8 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
 
     const fetchFigmaFiles = async () => {
 
+        //TODO HANDLE FIGMA FETCH FILES ERROR (COULD NOT ACCESS)
+
         const parentDocumentName: string = await getParentDocumentName();
         const documentName: string = await getDocumentName();
 

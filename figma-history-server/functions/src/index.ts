@@ -12,9 +12,10 @@ const fetch = require('node-fetch');
 
 app.use(cors());
 
-const CLIENT_ID = "pLCXoLFHH1UngPRH0ENGzV";
-const CLIENT_SECRET = "ofJNB7vNpSpy0zhDHKIt8pItQ3RMC1";
-const REDIRECT_URI = "https://us-central1-figma-history-server.cloudfunctions.net/api/callFigmaOAuth";//"http://127.0.0.1:5002/callFigmaOAuth";
+const CLIENT_ID = "ECsZGdpdZooHd5lBmVoGfc";
+const CLIENT_SECRET = "cnri8wIswQlPDmFSOnWom8EAOUj5G1";
+const REDIRECT_URI = "https://us-central1-figma-history-server.cloudfunctions.net/api/figmaCallback";
+//const REDIRECT_URI = "http://127.0.0.1:5001/figma-history-server/us-central1/api/figmaCallback";
 const serviceAccount = require('../fb/credentials.json');
 
 admin.initializeApp({
@@ -54,6 +55,11 @@ interface License {
     activationDate: Timestamp
 }
 
+interface AuthorizedToken {
+    uuid: string;
+    token: string;
+}
+
 interface Trial {
     email: string;
     token: string;
@@ -83,6 +89,11 @@ const addLicense = async (data: License): Promise<void> => {
     await licensesRef.add(data);
 };
 
+const addAuthorizedToken = async (data: AuthorizedToken): Promise<void> => {
+    const authorizedTokenRef = admin.firestore().collection('AuthorizedTokens');
+    await authorizedTokenRef.add(data);
+};
+
 
 async function getUser(token: string): Promise<User> {
     const response = await fetch('https://api.figma.com/v1/me/', {
@@ -92,6 +103,25 @@ async function getUser(token: string): Promise<User> {
         }
     });
     return response.json();
+}
+
+
+async function getAuthorizedToken(uuid: string): Promise<AuthorizedToken | null> {
+    try {
+        const authorizedTokensRef = firestore.collection('AuthorizedTokens');
+        const querySnapshot = await authorizedTokensRef.where('uuid', '==', uuid).get();
+        if (querySnapshot.empty) {
+            return null; // No license found for the provided email
+        }
+
+        const tokenDoc = querySnapshot.docs[0];
+        const tokenData = tokenDoc.data() as AuthorizedToken;
+        return tokenData;
+
+    } catch (error) {
+        console.error('Error checking license:', error);
+        throw error;
+    }
 }
 
 async function getTrialFromEmailAndUpdateToken(email: string, newToken: string): Promise<Trial | null> {
@@ -381,24 +411,45 @@ app.post('/get-figma-access-token', async (req, res) => {
     }
 });
 
-app.get('/callFigmaOAuth', async (req, res) => {
+app.get('/figmaCallback', async (req, res) => {
+    // console.log("This is figmaCallback");
     try {
+        // console.log("--- Storing authorizedToken");
 
-        console.error("Woooo this is server callFigmaOAuth")
-        const code = req.query.code;
+        const state = req.query.state?.toString();
+        const code = req.query.code?.toString();
 
-        let responseData = {
-            figmaSentCode: code,
-        };
+
+        // console.log("--- Received state:" + state + " - code:" + code);
+
+        if (state && code) {
+
+            addAuthorizedToken({
+                uuid: state,
+                token: code
+            });
+        }
+
         res.send(`
             <script>
-              window.opener.postMessage(${JSON.stringify(responseData)}, "*");
+                window.close();
             </script>
           `);
+        // console.log("--- Sent response");
     } catch (error: any) {
-        console.error('Error calling Figma OAuth:', error.message);
+        // console.log("--- But FAILED:");
+        console.error('Error calling figmaCallback:', error.message);
         res.status(500).json({ error: 'Internal Server Error' });
     }
+});
+
+app.post('/poll-authentication', async (req, res) => {
+    // console.log("Polling auth token")
+    const uuid = req.body.uuid;
+    const figmaResponseData = await getAuthorizedToken(uuid);
+    // console.log("Got the token:")
+    // console.log(figmaResponseData);
+    res.json(figmaResponseData);
 });
 
 

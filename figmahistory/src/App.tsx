@@ -7,8 +7,8 @@ import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slide
 import { TransformWrapper, TransformComponent, ReactZoomPanPinchRef } from "react-zoom-pan-pinch";
 import { globalState, setDocumentID, setAccessToken, setDocumentLeftId, setDocumentRightId, updateDocumentPageLeftChildrenAndFlatNodes, updateDocumentPageRightChildrenAndFlatNodes, setSelectedPageId, updateDocumentPageLeftFlatNodes, updateDocumentPageRightFlatNodes, updateDocumentPageRightBounds, updateDocumentPageLeftBounds, setSelectedNodeId, setUser, setDocumentName, setAppState, setAppTrialDaysLeft, setDocumentUrlPaths, setParentDocumentID, setParentDocumentName } from './globals';
 
-import { User, Side, Color, Document, Version, Page, NodeWithImage, FigmaNode, Node, Difference, Rect, AppResponse, AppState, LicenseOverlayMode } from './types';
-
+import { User, Side, Color, Document, Version, Page, NodeWithImage, FigmaNode, Node, Difference, Rect, AppResponse, AppState, LicenseOverlayMode, AuthorizedToken } from './types';
+import { v4 as uuidv4 } from 'uuid';
 import Canvas from './Canvas';
 import './App.css';
 import { timeout } from 'q';
@@ -22,8 +22,7 @@ import { ReactSVG } from 'react-svg';
 import LicenseOverlay from './LicenseOverlay';
 
 const Start = () => {
-
-  const [popupWindow, setPopupWindow] = useState<Window | null>(null);
+  const authPollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const figmaFileInputRef = useRef<HTMLDivElement>(null);
   const licenseOverlayTrialRef = useRef<HTMLDivElement>(null);
@@ -46,7 +45,9 @@ const Start = () => {
   const [loaderDescription, setLoaderDescription] = useState<string>("");
 
   const developmentApiEndpoint: string = "http://localhost:5002";
+  const developmentApiEndpoint2: string = "http://127.0.0.1:5001/figma-history-server/us-central1/api";
   const serverApiEndpoint: string = "https://us-central1-figma-history-server.cloudfunctions.net/api";
+  const clientId: string = "ECsZGdpdZooHd5lBmVoGfc";
 
   const apiEndpoint: string = serverApiEndpoint;
   // #region Authentication and access
@@ -176,9 +177,44 @@ const Start = () => {
 
   // #region Helpers
 
+  const pollAuthenticationStatus = async (uuid) => {
+    try {
+      const response = await fetch(apiEndpoint + "/poll-authentication", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ uuid: uuid }),
+      });
+      if (response.ok) {
+        // console.log('Poll response ok');
+        const responseData = await response.json();
+        const authorizedToken: AuthorizedToken = responseData;
+        // console.log(authorizedToken);
+        if (authorizedToken) {
+          // console.log("Got it!");
+          if (authPollingIntervalRef.current) {
+            clearInterval(authPollingIntervalRef.current);
+            // console.log("Clear interval");
+            handleFigmaAuthentication(authorizedToken.token)
+          }
+          else
+          {
+            // console.log("Can't clear interval");
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error during Figma authentication:', error);
+    }
+  };
+
+
   const openPopupWindow = () => {
 
-    const url = 'https://www.figma.com/oauth?client_id=pLCXoLFHH1UngPRH0ENGzV&redirect_uri=' + apiEndpoint + '/callFigmaOAuth&scope=files:read&state=qpolpolq&response_type=code'; // Replace with your actual URL
+    const state = uuidv4();
+
+    const url = 'https://www.figma.com/oauth?client_id=' + clientId + '&redirect_uri=' + apiEndpoint + '/figmaCallback&scope=files:read&state=' + state + '&response_type=code'; // Replace with your actual URL
     const options = 'toolbar=no,\
      location=no,\
      status=no,\
@@ -189,7 +225,8 @@ const Start = () => {
      height=768';
 
     const popup = window.open(url, 'targetWindow', options);
-    setPopupWindow(popup);
+
+    authPollingIntervalRef.current = setInterval(() => pollAuthenticationStatus(state), 5000);
   };
 
   // #endregion
@@ -202,26 +239,6 @@ const Start = () => {
     // if (process.env.NODE_ENV == "production") setDocumentUrlPaths("")
     // else if (process.env.NODE_ENV == "development") setDocumentUrlPaths("/figmahistory")
   }, []);
-
-
-
-  useEffect(() => {
-    const handlePopupData = (event: MessageEvent) => {
-      if (event.data && event.data.figmaSentCode) {
-        handleFigmaAuthentication(event.data.figmaSentCode);
-
-        if (popupWindow) {
-          popupWindow.close();
-        }
-      }
-    };
-
-    window.addEventListener('message', handlePopupData);
-
-    return () => {
-      window.removeEventListener('message', handlePopupData);
-    };
-  }, [popupWindow]);
 
 
   function onRegisterLicenseClick(): void {
@@ -245,19 +262,19 @@ const Start = () => {
         const responseObject = await response.json();
         if (responseObject) {
           if (responseObject.message == "License not valid") {
-            console.log("License is not valid");
+            // console.log("License is not valid");
             setIsActivating(false);
             setActivationSuccessful(false);
             setLicenseValidationMessage("Apparently the license key is not valid")
           }
           else if (responseObject.message == "License already used") {
-            console.log("License already used");
+            // console.log("License already used");
             setIsActivating(false);
             setActivationSuccessful(false);
             setLicenseValidationMessage("This license was already used for a different account")
           }
           else if (responseObject.message == "License was activated") {
-            console.log("License was activated successfully")
+            // console.log("License was activated successfully")
             setIsActivating(false);
             setActivationSuccessful(true);
             setLicenseValidationMessage("License was activated successfully")

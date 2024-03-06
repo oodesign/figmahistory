@@ -48,6 +48,12 @@ export interface Version {
     value: string;
 };
 
+
+export interface AuthorizedToken {
+    uuid: string;
+    token: string;
+}
+
 export interface NodeWithImage {
     id: string;
     child: any;
