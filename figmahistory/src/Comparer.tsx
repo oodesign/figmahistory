@@ -554,6 +554,32 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
 
     // #region Draw pages
 
+
+    function getPromisesForAllNodeIds(contentIds: string, versionId: string) {
+        const chunkSize = 30;
+        const contentIdsArray = contentIds.split(',');
+
+        const fetchPromises: Promise<Response>[] = [];
+        while (contentIdsArray.length > 0) {
+            const chunk = contentIdsArray.splice(0, chunkSize);
+            const queryString = chunk.join(',');
+            const url = `https://api.figma.com/v1/images/${globalState.documentId}?ids=${queryString}&format=png&scale=1&version=${versionId}`;
+
+            fetchPromises.push(
+                fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${globalState.accessToken}`,
+                    },
+                })
+            );
+        }
+
+        console.log("getPromisesForAllNodeIds. In total this resulted in " + fetchPromises.length + " promises");
+
+        return fetchPromises;
+    }
+
     async function drawPage(pageId: string, side: Side) {
 
         let versionId = "";
@@ -643,69 +669,67 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
 
                 let contentIds: string = newNodesWithImages.map((node: NodeWithImage) => node.child.id).join(',');
 
-                // console.log("page.children:")
-                // console.log(page.children)
-                // console.log("newNodesWithImages:")
-                // console.log(newNodesWithImages)
-
-
-                // console.log("contentIds:" + contentIds)
-
                 if (contentIds && contentIds != "") {
+                    const fetchPromises = getPromisesForAllNodeIds(contentIds, versionId);
 
-                    let getPagesVersionImages = await fetch('https://api.figma.com/v1/images/' + globalState.documentId + "?ids=" + contentIds + "&format=png&scale=1&version=" + versionId, {
-                        method: 'GET',
-                        headers: {
-                            'Authorization': `Bearer ${globalState.accessToken}` // Replace FigmaAPIKey with your actual access token
+                    const responses = await Promise.all(fetchPromises);
+
+                    const responseJsonArray = await Promise.all(responses.map(async (response) => {
+                        if (response.ok) {
+                            return await response.json();
+                        } else {
+                            throw new Error(`Error fetching data: ${response.statusText}`);
                         }
-                    })
+                    }));
 
-                    if (getPagesVersionImages.ok) {
-                        const responseJson = await getPagesVersionImages.json();
+                    let mapper: any = [];
 
-                        // console.log(responseJson.images);
-
-                        let mapper = newNodesWithImages.map((node) => {
-                            const imageUrl = responseJson.images[node.id] || '';
-
-                            return {
-                                ...node,
-                                imageUrl,
-                            };
+                    const newNodesWithImagesArray = responseJsonArray.map((responseJson) => {
+                        newNodesWithImages.forEach((nodeWithImage) => {
+                            const imageUrl = responseJson.images[nodeWithImage.id];
+                            if (imageUrl !== undefined) {
+                                // Only push to mapper if there is a related image
+                                mapper.push({
+                                    id: nodeWithImage.id,
+                                    child: nodeWithImage.child,
+                                    imageUrl: imageUrl,
+                                });
+                            }
                         });
+                    });
 
-                        if (side == Side.LEFT) {
-                            setVersionLeftNodesWithImages(mapper);
-                            setSelectedPageColorLeft(leftPage ? rgbaToString(leftPage.backgroundColor) : "transparent");
-                            setIsLeftPageAvailable(true);
-                            setIsLoadingLeftPage(false);
-                            setHasLeftPageContent(true);
-                        }
-                        else if (side == Side.RIGHT) {
-                            setVersionRightNodesWithImages(mapper);
-                            setSelectedPageColorRight(rightPage ? rgbaToString(rightPage.backgroundColor) : "transparent");
-                            setIsRightPageAvailable(true);
-                            setIsLoadingRightPage(false);
-                            setHasRightPageContent(true);
-                        }
 
-                        setCanvasDimensionsAndOffset(pageId);
-                    }
-                }
-                else {
                     if (side == Side.LEFT) {
+                        setVersionLeftNodesWithImages(mapper);
+                        setSelectedPageColorLeft(leftPage ? rgbaToString(leftPage.backgroundColor) : "transparent");
                         setIsLeftPageAvailable(true);
                         setIsLoadingLeftPage(false);
-                        setHasLeftPageContent(false);
+                        setHasLeftPageContent(true);
                     }
                     else if (side == Side.RIGHT) {
+                        setVersionRightNodesWithImages(mapper);
+                        setSelectedPageColorRight(rightPage ? rgbaToString(rightPage.backgroundColor) : "transparent");
                         setIsRightPageAvailable(true);
                         setIsLoadingRightPage(false);
-                        setHasRightPageContent(false);
+                        setHasRightPageContent(true);
                     }
 
                     setCanvasDimensionsAndOffset(pageId);
                 }
+            }
+            else {
+                if (side == Side.LEFT) {
+                    setIsLeftPageAvailable(true);
+                    setIsLoadingLeftPage(false);
+                    setHasLeftPageContent(false);
+                }
+                else if (side == Side.RIGHT) {
+                    setIsRightPageAvailable(true);
+                    setIsLoadingRightPage(false);
+                    setHasRightPageContent(false);
+                }
+
+                setCanvasDimensionsAndOffset(pageId);
             }
         } else {
             console.log("Not drawing page " + pageId + " because apparently now the selectedpage is " + globalState.selectedPageId);
@@ -816,8 +840,8 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
         let pageLeftNodes = leftPage.flatNodes;
         let pageRightNodes = rightPage.flatNodes;
 
-        console.log("--- CalculateDifferences. leftPage.isLoaded:" + leftPage.isLoaded + ". rightPage.isLoaded:" + rightPage.isLoaded)
-        console.log("--- CalculateDifferences. pageLeftNodes:" + pageLeftNodes?.length + ". pageRightNodes:" + pageRightNodes?.length)
+        // console.log("--- CalculateDifferences. leftPage.isLoaded:" + leftPage.isLoaded + ". rightPage.isLoaded:" + rightPage.isLoaded)
+        // console.log("--- CalculateDifferences. pageLeftNodes:" + pageLeftNodes?.length + ". pageRightNodes:" + pageRightNodes?.length)
 
         if (pageLeftNodes && pageLeftNodes.length > 0 && pageRightNodes && pageRightNodes.length > 0) {
 
@@ -831,8 +855,8 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
             updateDocumentPageRightFlatNodes(rightPage.documentId, rightPage.id, newDocumentRightFlatNodes);
 
 
-            console.log("------ Found " + newDocumentLeftFlatNodes.filter(node => node.isEqualToOtherVersion == false || node.isPresentInOtherVersion == false).length + " differences on LEFT");
-            console.log("------ Found " + newDocumentRightFlatNodes.filter(node => node.isEqualToOtherVersion == false || node.isPresentInOtherVersion == false).length + " differences on RIGHT");
+            // console.log("------ Found " + newDocumentLeftFlatNodes.filter(node => node.isEqualToOtherVersion == false || node.isPresentInOtherVersion == false).length + " differences on LEFT");
+            // console.log("------ Found " + newDocumentRightFlatNodes.filter(node => node.isEqualToOtherVersion == false || node.isPresentInOtherVersion == false).length + " differences on RIGHT");
         }
 
 
@@ -1258,3 +1282,4 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
 
 
 export default React.forwardRef(Comparer);
+

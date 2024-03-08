@@ -51,7 +51,7 @@ const LicenseOverlay: React.ForwardRefRenderFunction<HTMLDivElement, LicenseOver
         if (!matches) {
             //TODO Handle incorrect format error
             // return { id: "", nodeId: "" };
-            console.log("License format is not correct")
+            // console.log("License format is not correct")
             setLocalValidationMessage("The license key format is not correct")
         }
         else {
