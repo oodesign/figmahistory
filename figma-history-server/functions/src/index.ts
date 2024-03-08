@@ -14,8 +14,8 @@ app.use(cors());
 
 const CLIENT_ID = "ECsZGdpdZooHd5lBmVoGfc";
 const CLIENT_SECRET = "cnri8wIswQlPDmFSOnWom8EAOUj5G1";
-const REDIRECT_URI = "https://us-central1-figma-history-server.cloudfunctions.net/api/figmaCallback";
-//const REDIRECT_URI = "http://127.0.0.1:5001/figma-history-server/us-central1/api/figmaCallback";
+//const REDIRECT_URI = "https://us-central1-figma-history-server.cloudfunctions.net/api/figmaCallback";
+const REDIRECT_URI = "http://127.0.0.1:5001/figma-history-server/us-central1/api/figmaCallback";
 const serviceAccount = require('../fb/credentials.json');
 
 admin.initializeApp({
@@ -42,14 +42,11 @@ interface User {
 
 interface AppResponse {
     state: AppState,
-    user: User | undefined,
-    token: string,
     trialDaysLeft: number
 }
 
 interface License {
     emails: string[];
-    token: string;
     licenseKey: string;
     licenseType: string;
     activationDate: Timestamp
@@ -57,12 +54,12 @@ interface License {
 
 interface AuthorizedToken {
     uuid: string;
+    user: User;
     token: string;
 }
 
 interface Trial {
     email: string;
-    token: string;
     trialStartDate: Timestamp;
 }
 
@@ -124,22 +121,19 @@ async function getAuthorizedToken(uuid: string): Promise<AuthorizedToken | null>
     }
 }
 
-async function getTrialFromEmailAndUpdateToken(email: string, newToken: string): Promise<Trial | null> {
+async function getTrialFromEmail(email: string): Promise<Trial | null> {
     try {
+        console.log("Checking if there is a trial with this email:" + email)
         const trialsRef = firestore.collection('Trials');
         const querySnapshot = await trialsRef.where('email', '==', email).get();
         if (querySnapshot.empty) {
+            console.log("--- Apparently there isn't");
             return null; // No license found for the provided email
         }
 
         const trialDoc = querySnapshot.docs[0];
-        const trialId = trialDoc.id;
-
-        await trialsRef.doc(trialId).update({
-            token: newToken,
-        });
-
         const trialData = trialDoc.data() as Trial;
+        console.log("--- Apparently there is. Returning related trial.");
         return trialData;
     } catch (error) {
         console.error('Error checking license:', error);
@@ -164,25 +158,21 @@ async function getLicenseFromKey(licenseKey: string): Promise<DocumentData | nul
     }
 }
 
-async function getLicenseFromEmailAndUpdateToken(email: string, newToken: string): Promise<License | null> {
+async function getLicenseFromEmail(email: string): Promise<License | null> {
     try {
+        console.log("Checking if there is a license with this email:" + email)
         const licensesRef = firestore.collection('Licenses');
         //const querySnapshot = await licensesRef.where('email', '==', email).get();
         const querySnapshot = await licensesRef.where('emails', 'array-contains', email).get();
         if (querySnapshot.empty) {
+            console.log("--- Apparently there isn't");
             return null; // No license found for the provided email
         }
 
         const licenseDoc = querySnapshot.docs[0];
-        const licenseId = licenseDoc.id;
-
-        await licensesRef.doc(licenseId).update({
-            token: newToken,
-        });
-
         const licenseData = licenseDoc.data() as License;
-        licenseData.token = newToken;
 
+        console.log("--- Apparently there is. Returning related license.");
         return licenseData;
     } catch (error) {
         console.error('Error checking license:', error);
@@ -252,7 +242,6 @@ app.post('/activate-license', async (req, res) => {
     try {
         // Extract the code from the request body or wherever it is provided
         const email = req.body.email;
-        const token = req.body.token;
         const licenseKey = req.body.licenseKey;
 
         //console.log("Activating license!" + email + "," + token + "," + licenseKey)
@@ -296,14 +285,12 @@ app.post('/activate-license', async (req, res) => {
                 //If license doesn't exist in Firebase then needs to be created.
                 addLicense({
                     emails: [email],
-                    token: token,
                     licenseKey: licenseKey,
                     licenseType: licenseType,
                     activationDate: Timestamp.now()
                 })
                 licenseData = {
                     emails: [email],
-                    token: token,
                     licenseKey: licenseKey,
                     licenseType: licenseType,
                     activationDate: Timestamp.now()
@@ -324,82 +311,67 @@ app.post('/activate-license', async (req, res) => {
 });
 
 
-app.post('/get-figma-access-token', async (req, res) => {
+app.post('/getAccessDetails', async (req, res) => {
 
     try {
-        // Extract the code from the request body or wherever it is provided
-        const code = req.body.code;
+        // Extract the token from the request body or wherever it is provided
+        const uuid = req.body.uuid;
 
-        // Create the request body as URLSearchParams
-        const requestBody = new URLSearchParams();
-        requestBody.append('client_id', CLIENT_ID);
-        requestBody.append('client_secret', CLIENT_SECRET);
-        requestBody.append('redirect_uri', REDIRECT_URI);
-        requestBody.append('code', code);
-        requestBody.append('grant_type', 'authorization_code');
 
-        // Make a POST request to the Figma API to exchange the code for an access token
-        const figmaResponse = await fetch('https://www.figma.com/api/oauth/token', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: requestBody,
-        });
+        console.log("getAccessDetails")
 
         let appResponse: AppResponse = {
             state: AppState.NOT_REGISTERED,
-            user: undefined,
-            token: '',
             trialDaysLeft: 0
         }
 
-        // Handle the response from the Figma API
-        const figmaData = await figmaResponse.json();
-        //console.log("Getting user")
-        const user = await getUser(figmaData.access_token);
-        if (user) {
-            appResponse.user = user;
-            //console.log("Getting license from email. Email is:" + user.email)
-            const license = await getLicenseFromEmailAndUpdateToken(user.email, figmaData.access_token);
-            if (license) {
-                const gumroadlicenseResponse = await getGumroadLicense(license.licenseKey);
-                if (gumroadlicenseResponse.success) {
-                    appResponse.state = AppState.ACTIVE;
-                    appResponse.token = license.token;
-                    //console.log("User was already registered. Here license data:");
+        if (uuid) {
+            const authorizedToken = await getAuthorizedToken(uuid);
+            console.log("--- authorizedToken is:");
+            console.log(authorizedToken)
+            if (authorizedToken) {
+                //console.log("Getting license from email. Email is:" + user.email)
+                const license = await getLicenseFromEmail(authorizedToken.user.email);
+                if (license) {
+                    console.log("--- Checking GUmroad license key. Key is:"+license.licenseKey);
+                    const gumroadlicenseResponse = await getGumroadLicense(license.licenseKey);
+                    if (gumroadlicenseResponse.success) {
+                        appResponse.state = AppState.ACTIVE;
+                        console.log("User was already registered.");
+                    }
+                    else {
+                        console.log("Gumroad returned License invalid");
+                        appResponse.state = AppState.LICENSE_DISABLED;
+                    }
                 }
                 else {
-                    appResponse.state = AppState.LICENSE_DISABLED;
-                    appResponse.token = "";
-                }
-            }
-            else {
-                //console.log("Getting trial from email. Email is:" + user.email)
-                const trial = await getTrialFromEmailAndUpdateToken(user.email, figmaData.access_token);
-                //console.log(trial);
-                if (trial) {
-                    const trialActive = isTrialActive(trial);
-                    appResponse.state = trialActive ? AppState.TRIAL_ACTIVE : AppState.TRIAL_EXPIRED;
-                    appResponse.token = figmaData.access_token;
-                    appResponse.trialDaysLeft = getTrialDaysLeft(trial.trialStartDate);
-                    //console.log("User is in trial." + (trialActive ? "Trial is active" : "But trial has expired") + ". Here trial data:");
+                    //console.log("Getting trial from email. Email is:" + user.email)
+                    const trial = await getTrialFromEmail(authorizedToken.user.email);
                     //console.log(trial);
-                }
-                else {
-                    //console.log("User is not registered. Let's enable a free trial");
-                    addTrial({
-                        email: user.email,
-                        token: figmaData.access_token,
-                        trialStartDate: Timestamp.now()
-                    });
-                    appResponse.state = AppState.TRIAL_ACTIVE;
-                    appResponse.token = figmaData.access_token;
-                    appResponse.trialDaysLeft = getTrialDaysLeft(Timestamp.now());
+                    if (trial) {
+                        const trialActive = isTrialActive(trial);
+                        appResponse.state = trialActive ? AppState.TRIAL_ACTIVE : AppState.TRIAL_EXPIRED;
+                        appResponse.trialDaysLeft = getTrialDaysLeft(trial.trialStartDate);
+                        //console.log("User is in trial." + (trialActive ? "Trial is active" : "But trial has expired") + ". Here trial data:");
+                        //console.log(trial);
+                    }
+                    else {
+                        //console.log("User is not registered. Let's enable a free trial");
+                        addTrial({
+                            email: authorizedToken.user.email,
+                            trialStartDate: Timestamp.now()
+                        });
+                        appResponse.state = AppState.TRIAL_ACTIVE;
+                        appResponse.trialDaysLeft = getTrialDaysLeft(Timestamp.now());
+                    }
                 }
             }
 
         }
+
+
+        console.log("Concluded getAccessDetails. appResponse is:");
+        console.log(appResponse);
 
         // Send a response back to your client
         res.status(200).json({ appResponse });
@@ -424,10 +396,17 @@ app.get('/figmaCallback', async (req, res) => {
 
         if (state && code) {
 
+            const figmaToken = await getUserFigmaToken(code);
+            const user = await getUser(figmaToken);
+
             addAuthorizedToken({
                 uuid: state,
-                token: code
+                user: user,
+                token: figmaToken
             });
+
+
+            console.log("--- Stored in DB:" + state + " - token:" + figmaToken);
         }
 
         res.send(`
@@ -444,13 +423,47 @@ app.get('/figmaCallback', async (req, res) => {
 });
 
 app.post('/poll-authentication', async (req, res) => {
-    // console.log("Polling auth token")
+    console.log("Polling auth token")
     const uuid = req.body.uuid;
-    const figmaResponseData = await getAuthorizedToken(uuid);
-    // console.log("Got the token:")
-    // console.log(figmaResponseData);
-    res.json(figmaResponseData);
+    const authorizedToken = await getAuthorizedToken(uuid);
+    console.log("Got the token:")
+    console.log(authorizedToken);
+    res.json(authorizedToken);
 });
 
 
 export const api = functions.https.onRequest(app);
+
+async function getUserFigmaToken(code: string) {
+    try {
+        // Create the request body as URLSearchParams
+        const requestBody = new URLSearchParams();
+        requestBody.append('client_id', CLIENT_ID);
+        requestBody.append('client_secret', CLIENT_SECRET);
+        requestBody.append('redirect_uri', REDIRECT_URI);
+        requestBody.append('code', code);
+        requestBody.append('grant_type', 'authorization_code');
+
+        // Make a POST request to the Figma API to exchange the code for an access token
+        const figmaResponse = await fetch('https://www.figma.com/api/oauth/token', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: requestBody,
+        });
+
+
+        // Handle the response from the Figma API
+        const figmaData = await figmaResponse.json();
+        const userFigmaToken = figmaData.access_token;
+
+        console.log("Got the user Figma token from Figma. Token is:" + userFigmaToken);
+
+        return userFigmaToken;
+
+    } catch (error: any) {
+        // console.log("--- But FAILED:");
+        console.error('Error calling getUserFigmaToken:', error.message);
+    }
+}

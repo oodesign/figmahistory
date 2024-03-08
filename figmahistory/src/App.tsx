@@ -49,7 +49,7 @@ const Start = () => {
   const serverApiEndpoint: string = "https://us-central1-figma-history-server.cloudfunctions.net/api";
   const clientId: string = "ECsZGdpdZooHd5lBmVoGfc";
 
-  const apiEndpoint: string = serverApiEndpoint;
+  const apiEndpoint: string = developmentApiEndpoint2;
   // #region Authentication and access
 
 
@@ -58,15 +58,14 @@ const Start = () => {
       comparerRef.current.fetchFigmaFiles();
   }
 
-  const handleFigmaAuthentication = async (code: string) => {
+  const handleFigmaAuthentication = async (uuid: string) => {
 
-
-    fetch(apiEndpoint + '/get-figma-access-token', {
+    fetch(apiEndpoint + '/getAccessDetails', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ code }),
+      body: JSON.stringify({ uuid }),
     })
       .then(async response => {
         const responseObject = await response.json();
@@ -76,8 +75,6 @@ const Start = () => {
           if (appResponse) {
             setAppState(appResponse.state);
             setAppTrialDaysLeft(appResponse.trialDaysLeft);
-            if (appResponse.user) setUser(appResponse.user);
-            if (appResponse.token) setAccessToken(appResponse.token);
 
             switch (appResponse.state) {
               case AppState.ACTIVE:
@@ -196,7 +193,9 @@ const Start = () => {
           if (authPollingIntervalRef.current) {
             clearInterval(authPollingIntervalRef.current);
             // console.log("Clear interval");
-            handleFigmaAuthentication(authorizedToken.token)
+            handleFigmaAuthentication(uuid)
+            if (responseData.user) setUser(responseData.user);
+            if (responseData.token) setAccessToken(responseData.token);
           }
           else
           {

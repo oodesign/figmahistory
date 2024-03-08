@@ -51,7 +51,8 @@ export interface Version {
 
 export interface AuthorizedToken {
     uuid: string;
-    token: string;
+    user: User;
+    figmaToken: string;
 }
 
 export interface NodeWithImage {
@@ -109,7 +110,7 @@ export enum AppState {
     LICENSE_DISABLED
 }
 
-export enum LicenseOverlayMode{
+export enum LicenseOverlayMode {
     TRIAL_EXPIRED,
     INPUT_LICENSE_KEY
 }
@@ -117,7 +118,5 @@ export enum LicenseOverlayMode{
 
 export interface AppResponse {
     state: AppState,
-    user: User | undefined,
-    token: string,
     trialDaysLeft: number
 }
