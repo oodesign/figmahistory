@@ -29,6 +29,7 @@ const Start = () => {
   const licenseOverlayKeyRef = useRef<HTMLDivElement>(null);
   const loaderRef = useRef<HTMLDivElement>(null);
   const comparerRef = useRef<ComparerRef>(null);
+  let connectionAttempts = useRef<number>(0);
 
   const [onInputState, setOnInputState] = useState<boolean>(true);
   const [onLoadingState, setOnLoadingState] = useState<boolean>(false);
@@ -44,12 +45,13 @@ const Start = () => {
   const [loaderMessage, setLoaderMessage] = useState<string>("Connecting to Figma");
   const [loaderDescription, setLoaderDescription] = useState<string>("");
 
-  const developmentApiEndpoint: string = "http://localhost:5002";
-  const developmentApiEndpoint2: string = "http://127.0.0.1:5001/figma-history-server/us-central1/api";
+  const [validationMessage, setValidationMessage] = useState<string>("");
+
+  const developmentApiEndpoint: string = "http://127.0.0.1:5001/figma-history-server/us-central1/api";
   const serverApiEndpoint: string = "https://us-central1-figma-history-server.cloudfunctions.net/api";
   const clientId: string = "ECsZGdpdZooHd5lBmVoGfc";
 
-  const apiEndpoint: string = developmentApiEndpoint2;
+  const apiEndpoint: string = developmentApiEndpoint;
   // #region Authentication and access
 
 
@@ -103,7 +105,16 @@ const Start = () => {
       .then(data => {
         // console.log(data) 
       })
-      .catch(error => console.error('Error:', error));
+      .catch(error => {
+        console.error('Error:', error);
+        setValidationMessage("We couldn't connect with Figma. Could you please try again?");
+        setOnInputState(true);
+        setOnLoadingState(false);
+        setOnComparerState(false);
+        if (authPollingIntervalRef.current) {
+          clearInterval(authPollingIntervalRef.current);
+        }
+      });
 
   };
 
@@ -150,25 +161,17 @@ const Start = () => {
 
 
 
+  const accessFailed = () => {
+    setOnInputState(true);
+    setOnLoadingState(false);
+    setOnComparerState(false);
+    setAccessToken("");
+    setValidationMessage("Apparently you don't have access to this file with the selected Figma account.");
+  }
+
   const closeLicenseOverlay = () => {
     setOnLicenseKeyInputState(false);
   }
-
-  // async function getUser(): Promise<void> {
-
-  //   const response = await fetch('https://api.figma.com/v1/me/', {
-  //     method: 'GET',
-  //     headers: {
-  //       'Authorization': `Bearer ${globalState.accessToken}`
-  //     }
-  //   });
-
-  //   if (response.ok) {
-  //     const data = await response.json();
-  //     setUser(data);
-  //     setUserData(data);
-  //   }
-  // }
 
   // #endregion
 
@@ -176,6 +179,15 @@ const Start = () => {
 
   const pollAuthenticationStatus = async (uuid) => {
     try {
+      if (connectionAttempts.current && connectionAttempts.current > 3) {
+        setValidationMessage("We tried several times, but couldn't connect with Figma. Could you please try again?");
+        setOnInputState(true);
+        setOnLoadingState(false);
+        setOnComparerState(false);
+        if (authPollingIntervalRef.current) {
+          clearInterval(authPollingIntervalRef.current);
+        }
+      }
       const response = await fetch(apiEndpoint + "/poll-authentication", {
         method: 'POST',
         headers: {
@@ -184,27 +196,30 @@ const Start = () => {
         body: JSON.stringify({ uuid: uuid }),
       });
       if (response.ok) {
-        // console.log('Poll response ok');
         const responseData = await response.json();
         const authorizedToken: AuthorizedToken = responseData;
-        // console.log(authorizedToken);
         if (authorizedToken) {
-          // console.log("Got it!");
           if (authPollingIntervalRef.current) {
             clearInterval(authPollingIntervalRef.current);
-            // console.log("Clear interval");
             handleFigmaAuthentication(uuid)
             if (responseData.user) setUser(responseData.user);
             if (responseData.token) setAccessToken(responseData.token);
           }
-          else
-          {
+          else {
             // console.log("Can't clear interval");
           }
         }
       }
+
     } catch (error) {
       console.error('Error during Figma authentication:', error);
+      setValidationMessage("We couldn't connect with Figma. Could you please try again?");
+      setOnInputState(true);
+      setOnLoadingState(false);
+      setOnComparerState(false);
+      if (authPollingIntervalRef.current) {
+        clearInterval(authPollingIntervalRef.current);
+      }
     }
   };
 
@@ -298,8 +313,8 @@ const Start = () => {
   return <div className='gridExtender app'>
 
     <Loader ref={loaderRef} message={loaderMessage} description={loaderDescription} className={`singleCellExtend animatedDiv invisible ${onLoadingState ? 'fadeIn' : 'fadeOut'}`} />
-    <Comparer ref={comparerRef} gotDocumentName={gotDocumentName} initialLoadComplete={initialLoadComplete} onRegisterLicenseClick={onRegisterLicenseClick} className={`singleCellExtend animatedDiv invisible ${onComparerState ? 'fadeIn' : 'fadeOut'}`} />
-    <FigmaFileInput ref={figmaFileInputRef} getDocument={getDocument} className={`singleCellExtend animatedDiv visible ${onInputState ? 'fadeIn' : 'fadeOut'}`} />
+    <Comparer ref={comparerRef} gotDocumentName={gotDocumentName} accessFailed={accessFailed} initialLoadComplete={initialLoadComplete} onRegisterLicenseClick={onRegisterLicenseClick} className={`singleCellExtend animatedDiv invisible ${onComparerState ? 'fadeIn' : 'fadeOut'}`} />
+    <FigmaFileInput ref={figmaFileInputRef} getDocument={getDocument} validationMessage={validationMessage} className={`singleCellExtend animatedDiv visible ${onInputState ? 'fadeIn' : 'fadeOut'}`} />
     <LicenseOverlay ref={licenseOverlayTrialRef} mode={LicenseOverlayMode.TRIAL_EXPIRED} onRegisterLicenseClick={onRegisterLicenseClick} className={`singleCellExtend animatedDiv invisible ${onTrialExpiredState ? 'fadeIn' : 'fadeOut'}`} />
     <LicenseOverlay ref={licenseOverlayKeyRef} mode={LicenseOverlayMode.INPUT_LICENSE_KEY} onActivateLicenseClick={onActivateLicenseClick} isActivating={isActivating} activationSuccessful={activationSuccessful} validationMessage={licenseValidationMessage} goBack={closeLicenseOverlay} className={`singleCellExtend animatedDiv fast invisible ${onLicenseKeyInputState ? 'fadeIn' : 'fadeOut'}`} />
 

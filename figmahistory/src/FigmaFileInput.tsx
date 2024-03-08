@@ -5,6 +5,7 @@ import { globalState } from './globals';
 
 interface FigmaFileInputProps {
     getDocument: (id: string, branchId: string, nodeId: string) => void;
+    validationMessage?: string;
     className: string;
 }
 
@@ -16,6 +17,9 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
     const [clipPath, setClipPath] = useState<string | undefined>(/* initial clip-path */);
     const [localValidationMessage, setLocalValidationMessage] = useState<string>("");
 
+    useEffect(() => {
+        if (props.validationMessage) setLocalValidationMessage(props.validationMessage);
+    }, [props.validationMessage]);
 
     const getFigmaDocumentInfo = () => {
         const inputElement = document.getElementById("figmaFileURL") as HTMLInputElement;

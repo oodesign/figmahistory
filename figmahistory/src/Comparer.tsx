@@ -15,6 +15,7 @@ interface ComparerProps {
     className: string;
 
     gotDocumentName: (parentDocumentName: string, name: string) => void;
+    accessFailed: () => void;
     initialLoadComplete: () => void;
     onRegisterLicenseClick?: () => void;
 }
@@ -170,26 +171,9 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
         return `${month} ${day}, ${year}, ${hour}.${minute} ${date.getHours() < 12 ? 'AM' : 'PM'}`;
     };
 
-    async function getDocumentName(): Promise<string> {
-
-        const response = await fetch('https://api.figma.com/v1/files/' + globalState.documentId + "?depth=1", {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${globalState.accessToken}`
-            }
-        });
-
-        if (response.ok) {
-            const data = await response.json();
-            return data.name;
-        }
-        else
-            return "";
-    }
-
-    async function getParentDocumentName(): Promise<string> {
-        if (globalState.parentDocumentId) {
-            const response = await fetch('https://api.figma.com/v1/files/' + globalState.parentDocumentId + "?depth=1", {
+    async function getDocumentName(): Promise<string | null> {
+        try {
+            const response = await fetch('https://api.figma.com/v1/files/' + globalState.documentId + "?depth=1", {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${globalState.accessToken}`
@@ -203,7 +187,35 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
             else
                 return "";
         }
-        return "";
+        catch (error) {
+            console.error('Could not access document:', error);
+            return null;
+        }
+    }
+
+    async function getParentDocumentName(): Promise<string | null> {
+        try {
+            if (globalState.parentDocumentId) {
+                const response = await fetch('https://api.figma.com/v1/files/' + globalState.parentDocumentId + "?depth=1", {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${globalState.accessToken}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    return data.name;
+                }
+                else
+                    return "";
+            }
+            return "";
+        }
+        catch (error) {
+            console.error('Could not access document:', error);
+            return null;
+        }
     }
 
     async function fetchVersionList(): Promise<Version[]> {
@@ -263,26 +275,30 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
 
     const fetchFigmaFiles = async () => {
 
-        //TODO HANDLE FIGMA FETCH FILES ERROR (COULD NOT ACCESS)
+        const parentDocumentName: string | null = await getParentDocumentName();
+        const documentName: string | null = await getDocumentName();
+        if (documentName) {
+            if (parentDocumentName != null)
+                props.gotDocumentName(parentDocumentName, documentName);
 
-        const parentDocumentName: string = await getParentDocumentName();
-        const documentName: string = await getDocumentName();
+            const allVersions: Version[] = await fetchVersionList();
 
-        props.gotDocumentName(parentDocumentName, documentName);
+            setFileVersionsList(allVersions);
 
-        const allVersions: Version[] = await fetchVersionList();
+            setViewDifferences();
 
-        setFileVersionsList(allVersions);
+            setSelectVersionLeftSelectedOption(allVersions[0]);
+            setSelectedVersionNameLeft(allVersions[0].label);
+            setSelectVersionRightSelectedOption(allVersions[1]);
+            setSelectedVersionNameRight(allVersions[1].label);
 
-        setViewDifferences();
-
-        setSelectVersionLeftSelectedOption(allVersions[0]);
-        setSelectedVersionNameLeft(allVersions[0].label);
-        setSelectVersionRightSelectedOption(allVersions[1]);
-        setSelectedVersionNameRight(allVersions[1].label);
-
-        fetchDocumentVersion(allVersions[0].id, Side.LEFT);
-        fetchDocumentVersion(allVersions[1].id, Side.RIGHT);
+            fetchDocumentVersion(allVersions[0].id, Side.LEFT);
+            fetchDocumentVersion(allVersions[1].id, Side.RIGHT);
+        }
+        else {
+            console.error("Apparently you don't have access to this document.")
+            props.accessFailed();
+        }
 
     };
 
@@ -575,7 +591,7 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
             );
         }
 
-        console.log("getPromisesForAllNodeIds. In total this resulted in " + fetchPromises.length + " promises");
+        //console.log("getPromisesForAllNodeIds. In total this resulted in " + fetchPromises.length + " promises");
 
         return fetchPromises;
     }
