@@ -56,17 +56,9 @@
     }
 }
 
-.figmaFileInput {
-    @include for-theme(light) {
-        background-image: url('./images/bgLight.png');
-    }
+.mainSite {
 
-    @include for-theme(dark) {
-        background-image: url('./images/bgDark.png');
-    }
 
-    background-repeat: no-repeat;
-    background-position: right bottom;
 
     .alignVCenter {
         margin-left: 10%;
@@ -81,89 +73,76 @@
         }
     }
 
+    .content {
+        max-width: $smallDesktopBreak;
+        @include alignHorizontalCenter;
+    }
+
 
     .alignFullCenter {
         bottom: 60px;
     }
 
-    .logoSlider {
-        width: 446px;
-        height: 112px;
-        margin-bottom: 64px;
+    .hero {
+        padding-top: 80px;
+        width: 800px;
+        @include alignHorizontalCenter;
+    }
 
-        .front {
-            &.animated {
-                transition: clip-path 0.75s ease-in-out;
+    .logoCircle {
+        width: 96px;
+        height: 96px;
+        margin-bottom: 40px;
+    }
+
+    .productName {
+        text-align: center;
+        margin-bottom: 24px;
+    }
+
+    .title {
+        text-align: center;
+        margin-bottom: 24px;
+
+        .decorated {
+            @include for-theme(light) {
+                border: 1px solid $light_differenceColor;
             }
 
-            #figma {
+            @include for-theme(dark) {
+                border: 1px solid $dark_differenceColor;
+            }
+
+            &::after {
+                content: "Changed";
+                position: absolute;
+                left: -1px;
+                top: -20px;
+                height: 20px;
+                padding: 4px 8px;
+                border-radius: 2px 2px 0 0;
+                font-size: 10px;
+                @include alignFullCenter;
+                text-transform: uppercase;
+
                 @include for-theme(light) {
-                    fill: $light_primaryColor;
+                    background-color: $light_differenceColor;
+                    color: $light_differenceTextColor;
                 }
 
                 @include for-theme(dark) {
-                    fill: $dark_primaryColor;
-                }
-            }
-
-            #history {
-                @include for-theme(light) {
-                    fill: url(#history_dark_gradient) #fff;
-                }
-
-                @include for-theme(dark) {
-                    fill: url(#history_dark_gradient) #fff;
-                }
-            }
-
-            #subtitle {
-                @include for-theme(light) {
-                    fill: $light_primaryColor;
-                }
-
-                @include for-theme(dark) {
-                    fill: $dark_primaryColor;
+                    background-color: $dark_differenceColor;
+                    color: $dark_differenceTextColor;
                 }
             }
         }
+    }
 
-        .back {
-            &.animated {
-                transition: clip-path 0.75s ease-in-out;
-            }
 
-            #figma {
-                @include for-theme(light) {
-                    fill: $light_tertiaryColor;
-                }
-
-                @include for-theme(dark) {
-                    fill: $dark_tertiaryColor;
-                }
-            }
-
-            #history {
-                @include for-theme(light) {
-                    fill: url(#history_dark_gradient) #fff;
-                    opacity: 0.3;
-                }
-
-                @include for-theme(dark) {
-                    fill: url(#history_dark_gradient) #fff;
-                    opacity: 0.3;
-                }
-            }
-
-            #subtitle {
-                @include for-theme(light) {
-                    fill: $light_tertiaryColor;
-                }
-
-                @include for-theme(dark) {
-                    fill: $dark_tertiaryColor;
-                }
-            }
-        }
+    .subtitle {
+        @include webSecondaryText;
+        text-align: center;
+        margin-bottom: 40px;
     }
 
     .label {
@@ -174,8 +153,23 @@
 
     .linkUrlInput {
         @include flex;
-        height: $componentHeightLarge;
-        margin-right: $horizontalSeparationDefault;
+        height: $componentHeightExtraLarge;
+        margin-bottom: 8px;
+
+        .inputField {
+            margin-right: $horizontalSeparationDefault;
+        }
+
+        input[type="text"] {
+            height: 100%;
+            width: 100%;
+            padding: 12px 16px;
+        }
+
+        .btnPrimary{
+            width: 160px;
+            height: 100%;
+        }
     }
 
     .inputForm {

@@ -77,3 +77,52 @@
 .successText {
     @include successText;
 }
+
+@mixin webPrimaryText {
+    font-family: Inter-SemiBold, sans-serif;
+    font-size: 16px;
+
+    @include for-theme(light) {
+        color: $light_primaryColor;
+    }
+
+    @include for-theme(dark) {
+        color: $dark_primaryColor;
+    }
+}
+
+.webPrimaryText {
+    @include webPrimaryText;
+}
+
+@mixin webSecondaryText {
+    font-family: Inter-SemiBold, sans-serif;
+    font-size: 16px;
+
+    @include for-theme(light) {
+        color: $light_secondaryColor;
+    }
+
+    @include for-theme(dark) {
+        color: $dark_secondaryColor;
+    }
+}
+
+.webSecondaryText {
+    @include webSecondaryText;
+}
+
+h1 {
+    font-family: Inter-Bold, sans-serif;
+    font-size: 48px;
+}
+
+h3 {
+    font-family: Inter-SemiBold, sans-serif;
+    font-size: 24px;
+}
+
+h6 {
+    font-family: Inter-SemiBold, sans-serif;
+    font-size: 18px;
+}

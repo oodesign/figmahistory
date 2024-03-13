@@ -48,23 +48,23 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
         }
     }
 
-    useEffect(() => {
-        const fireTransition = async () => {
-            await new Promise(resolve => setTimeout(() => {
-                reactCompareSliderRef.current.setPosition(50);
-                resolve(true);
-            }, 100));
-            await new Promise(resolve => setTimeout(() => {
-                reactCompareSliderRef.current.setPosition(75);
-                resolve(true);
-            }, 750));
-            await new Promise(resolve => setTimeout(() => {
-                setIsLogoAnimated(false);
-                resolve(true);
-            }, 850));
-        };
-        fireTransition();
-    }, [reactCompareSliderRef]);
+    // useEffect(() => {
+    //     const fireTransition = async () => {
+    //         await new Promise(resolve => setTimeout(() => {
+    //             reactCompareSliderRef.current.setPosition(50);
+    //             resolve(true);
+    //         }, 100));
+    //         await new Promise(resolve => setTimeout(() => {
+    //             reactCompareSliderRef.current.setPosition(75);
+    //             resolve(true);
+    //         }, 750));
+    //         await new Promise(resolve => setTimeout(() => {
+    //             setIsLogoAnimated(false);
+    //             resolve(true);
+    //         }, 850));
+    //     };
+    //     fireTransition();
+    // }, [reactCompareSliderRef]);
 
     function onSliderPositionChange(position: number): void {
         const calculatedClipPath = `polygon(0% 0%, ${position}% 0%, ${position}% 100%, 0% 100%)`;
@@ -73,52 +73,56 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
 
     return (
 
-        <div className={`${props.className} verticalLayout figmaFileInput`}>
-            <div className="alignVCenter verticalLayout">
-                <div className='rowAuto logoSlider'>
-                    <ReactCompareSlider ref={reactCompareSliderRef} transition="0.75s ease-in-out" position={100} onPositionChange={onSliderPositionChange} onlyHandleDraggable
-                        itemOne={
-                            <div className={`extend front ${isLogoAnimated ? 'animated' : ''}`} style={{ clipPath }}>
-                                <ReactSVG src={globalState.urlPaths + "/images/logoSlider.svg"} renumerateIRIElements={false} />
-                            </div>
-                        }
-                        itemTwo={
-                            <div className="extend back">
-                                <ReactSVG src={globalState.urlPaths + "/images/logoSlider.svg"} renumerateIRIElements={false} />
-                            </div>
-                        }
-                    />
-                </div>
-
-                <div className="rowAuto inputForm">
-                    <div className="rowAuto label secondaryText">
-                        Paste your Figma file link below
-                    </div>
-                    <div className="rowAuto ">
-                        <div className=" horizontalLayout">
-                            <form className="colAvailable displayFlex" onSubmit={getFigmaDocumentInfo}>
-                                <input
-                                    id="figmaFileURL"
-                                    type="text"
-                                    autoFocus
-                                    placeholder="In Figma, click 'Share' and 'Copy link', and paste the link here"
-                                    className='linkUrlInput displayFlex colAvailable'
-                                />
-                            </form>
-                            <div className="colAuto">
-                                <button className='btnPrimary large' onClick={getFigmaDocumentInfo}>Compare</button>
+        <div className={`${props.className} verticalLayout mainSite`}>
+            <div className='content verticalLayout'>
+                <div className='rowAuto hero'>
+                    <div className='verticalLayout'>
+                        <div className='rowAuto alignHorizontalCenter logoCircle'>
+                            <ReactSVG src={globalState.urlPaths + "/images/logoCircle.svg"} renumerateIRIElements={false} />
+                        </div>
+                        <div className='rowAuto alignHorizontalCenter productName'>
+                            <h3>Figma history</h3>
+                        </div>
+                        <div className='rowAuto alignHorizontalCenter title'>
+                            <h1><span>What has </span><span className='decorated'>changed</span><span> in the design since the last time </span><span className='decorated'>you saw it</span><span> ?</span></h1>
+                        </div>
+                        <div className='rowAuto alignHorizontalCenter subtitle'>
+                            <h6>Easily see and compare different versions of a Figma file</h6>
+                        </div>
+                        <div className='rowAuto alignHorizontalCenter linkUrlInput'>
+                            <div className="horizontalLayout">
+                                <div className="colAvailable inputField">
+                                    <input
+                                        id="figmaFileURL"
+                                        type="text"
+                                        autoFocus
+                                        placeholder="In Figma, click 'Share' and 'Copy link', and paste the link here"
+                                        className=' displayFlex'
+                                    />
+                                </div>
+                                <div className="colAuto">
+                                    <button className='btnPrimary' onClick={getFigmaDocumentInfo}>Compare</button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div className="rowAuto errorText">
-                        {localValidationMessage}
+                        <div className="rowAuto errorText">
+                            {localValidationMessage}
+                        </div>
                     </div>
                 </div>
-                <div className="rowAuto secondaryText spaced">
-                    Access to designs is only used for comparison rendering.<br />
-                    We do not (and will never) store, analyze, or share your designs. We do not track analytics. <br />
-                    Your designs are (and will continue to be) just for your eyes.
-                </div>
+
+                {/* <div className="rowAuto">
+                    <div className='verticalLayout'>
+
+
+                     
+                        <div className="rowAuto secondaryText spaced">
+                            Access to designs is only used for comparison rendering.<br />
+                            We do not (and will never) store, analyze, or share your designs. We do not track analytics. <br />
+                            Your designs are (and will continue to be) just for your eyes.
+                        </div>
+                    </div>
+                </div> */}
             </div>
         </div>
     );

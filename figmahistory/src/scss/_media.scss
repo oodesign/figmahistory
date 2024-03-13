@@ -1,15 +1,28 @@
+$smallDesktopBreak: 1280px;
+$largeDesktopBreak: 2400px;
+
 @mixin for-theme($theme) {
- @if $theme == light {
-   @media (prefers-color-scheme: light) { @content; }
- } @else if $theme == dark {
-   @media (prefers-color-scheme: dark) { @content; }
- }
+  @if $theme ==light {
+    @media (prefers-color-scheme: light) {
+      @content;
+    }
+  }
+
+  @else if $theme ==dark {
+    @media (prefers-color-scheme: dark) {
+      @content;
+    }
+  }
 }
 
 @mixin smallDesktop {
-  @media (max-width: 1280px) { @content; }
+  @media (max-width: $smallDesktopBreak) {
+    @content;
+  }
 }
 
 @mixin largeDesktop {
-  @media (min-width: 2400px) { @content; }
+  @media (min-width: $largeDesktopBreak) {
+    @content;
+  }
 }
