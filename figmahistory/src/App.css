@@ -68,8 +68,9 @@
 }
 
 .webPrimaryText {
-  font-family: Inter-SemiBold, sans-serif;
+  font-family: Inter-Medium, sans-serif;
   font-size: 16px;
+  line-height: 150%;
 }
 @media (prefers-color-scheme: light) {
   .webPrimaryText {
@@ -83,8 +84,9 @@
 }
 
 .webSecondaryText {
-  font-family: Inter-SemiBold, sans-serif;
+  font-family: Inter-Medium, sans-serif;
   font-size: 16px;
+  line-height: 150%;
 }
 @media (prefers-color-scheme: light) {
   .webSecondaryText {
@@ -93,6 +95,22 @@
 }
 @media (prefers-color-scheme: dark) {
   .webSecondaryText {
+    color: #a9a9B4;
+  }
+}
+
+.webTertiaryText {
+  font-family: Inter-Medium, sans-serif;
+  font-size: 16px;
+  line-height: 150%;
+}
+@media (prefers-color-scheme: light) {
+  .webTertiaryText {
+    color: #a2a2a2;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .webTertiaryText {
     color: #848494;
   }
 }
@@ -937,8 +955,9 @@ input[type=text].hasMessage {
 }
 
 .webPrimaryText {
-  font-family: Inter-SemiBold, sans-serif;
+  font-family: Inter-Medium, sans-serif;
   font-size: 16px;
+  line-height: 150%;
 }
 @media (prefers-color-scheme: light) {
   .webPrimaryText {
@@ -952,8 +971,9 @@ input[type=text].hasMessage {
 }
 
 .webSecondaryText {
-  font-family: Inter-SemiBold, sans-serif;
+  font-family: Inter-Medium, sans-serif;
   font-size: 16px;
+  line-height: 150%;
 }
 @media (prefers-color-scheme: light) {
   .webSecondaryText {
@@ -962,6 +982,22 @@ input[type=text].hasMessage {
 }
 @media (prefers-color-scheme: dark) {
   .webSecondaryText {
+    color: #a9a9B4;
+  }
+}
+
+.webTertiaryText {
+  font-family: Inter-Medium, sans-serif;
+  font-size: 16px;
+  line-height: 150%;
+}
+@media (prefers-color-scheme: light) {
+  .webTertiaryText {
+    color: #a2a2a2;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .webTertiaryText {
     color: #848494;
   }
 }
@@ -1204,6 +1240,7 @@ h6 {
   padding-top: 80px;
   width: 800px;
   margin: 0 auto;
+  margin-bottom: 96px;
 }
 .mainSite .logoCircle {
   width: 96px;
@@ -1212,11 +1249,11 @@ h6 {
 }
 .mainSite .productName {
   text-align: center;
-  margin-bottom: 24px;
+  margin-bottom: 40px;
 }
 .mainSite .title {
   text-align: center;
-  margin-bottom: 24px;
+  margin-bottom: 32px;
 }
 @media (prefers-color-scheme: light) {
   .mainSite .title .decorated {
@@ -1255,10 +1292,11 @@ h6 {
   }
 }
 .mainSite .subtitle {
-  font-family: Inter-SemiBold, sans-serif;
+  font-family: Inter-Medium, sans-serif;
   font-size: 16px;
+  line-height: 150%;
   text-align: center;
-  margin-bottom: 40px;
+  margin-bottom: 56px;
 }
 @media (prefers-color-scheme: light) {
   .mainSite .subtitle {
@@ -1267,13 +1305,8 @@ h6 {
 }
 @media (prefers-color-scheme: dark) {
   .mainSite .subtitle {
-    color: #848494;
+    color: #a9a9B4;
   }
-}
-.mainSite .label {
-  width: 50%;
-  text-align: left;
-  margin-bottom: 8px;
 }
 .mainSite .linkUrlInput {
   display: flex;
@@ -1287,15 +1320,121 @@ h6 {
   height: 100%;
   width: 100%;
   padding: 12px 16px;
+  font-family: Inter-Medium, sans-serif;
+  font-size: 16px;
+  line-height: 150%;
+}
+@media (prefers-color-scheme: light) {
+  .mainSite .linkUrlInput input[type=text] {
+    color: #323232;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .mainSite .linkUrlInput input[type=text] {
+    color: #ffffff;
+  }
 }
 .mainSite .linkUrlInput .btnPrimary {
   width: 160px;
   height: 100%;
+  font-size: 16px;
+  font-family: Inter-SemiBold, sans-serif;
 }
-.mainSite .inputForm {
-  width: 65%;
-  max-width: 1600px;
-  margin-bottom: 56px;
+.mainSite .comparer {
+  width: 1000px;
+  margin: 0 auto;
+  margin-bottom: 160px;
+}
+.mainSite .comparer .screen {
+  border-radius: 36px;
+  margin-bottom: 8px;
+  height: 640px;
+  padding: 24px;
+}
+@media (prefers-color-scheme: light) {
+  .mainSite .comparer .screen {
+    background-color: #0f0f0f;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .mainSite .comparer .screen {
+    background-color: #323234;
+  }
+}
+.mainSite .comparer .screen .content {
+  width: 100%;
+  height: 100%;
+  border-radius: 16px;
+}
+.mainSite .comparer .imageNote {
+  margin-left: 24px;
+  font-family: Inter-Medium, sans-serif;
+  font-size: 16px;
+  line-height: 150%;
+  font-size: 12px;
+}
+@media (prefers-color-scheme: light) {
+  .mainSite .comparer .imageNote {
+    color: #868688;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .mainSite .comparer .imageNote {
+    color: #a9a9B4;
+  }
+}
+.mainSite .leftContentBlock {
+  width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  align-content: center;
+  align-items: center;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.mainSite .leftContentBlock .left {
+  grid-column: 1;
+}
+.mainSite .leftContentBlock .right {
+  grid-column: 2;
+}
+.mainSite .leftContentBlock .blockTitle {
+  margin-bottom: 32px;
+}
+.mainSite .leftContentBlock .blockDescription {
+  width: 480px;
+  font-family: Inter-Medium, sans-serif;
+  font-size: 16px;
+  line-height: 150%;
+}
+@media (prefers-color-scheme: light) {
+  .mainSite .leftContentBlock .blockDescription {
+    color: #868688;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .mainSite .leftContentBlock .blockDescription {
+    color: #a9a9B4;
+  }
+}
+.mainSite .leftContentBlock .blockDescription p {
+  margin-bottom: 16px;
+}
+.mainSite .leftContentBlock .blockDescription .highlight {
+  font-family: Inter-Medium, sans-serif;
+  font-size: 16px;
+  line-height: 150%;
+  font-family: Inter-Bold, sans-serif;
+}
+@media (prefers-color-scheme: light) {
+  .mainSite .leftContentBlock .blockDescription .highlight {
+    color: #323232;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .mainSite .leftContentBlock .blockDescription .highlight {
+    color: #ffffff;
+  }
 }
 
 .licenseOverlay {
@@ -1820,6 +1959,10 @@ h6 {
 @font-face {
   font-family: AvenirNextLTPro-Demi;
   src: url(./fonts/AvenirNextLTPro-Demi.ttf) format("truetype");
+}
+@font-face {
+  font-family: Inter-Medium;
+  src: url(./fonts/Inter-Medium.ttf) format("truetype");
 }
 @font-face {
   font-family: Inter-SemiBold;

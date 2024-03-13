@@ -1,5 +1,5 @@
 import React, { SyntheticEvent, useEffect, useRef, useState } from 'react';
-import { ReactCompareSlider, useReactCompareSliderRef } from 'react-compare-slider';
+import { ReactCompareSlider, ReactCompareSliderImage, useReactCompareSliderRef } from 'react-compare-slider';
 import { ReactSVG } from 'react-svg';
 import { globalState } from './globals';
 
@@ -73,7 +73,7 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
 
     return (
 
-        <div className={`${props.className} verticalLayout mainSite`}>
+        <div className={`${props.className}  mainSite scrollable`}>
             <div className='content verticalLayout'>
                 <div className='rowAuto hero'>
                     <div className='verticalLayout'>
@@ -107,6 +107,39 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                         </div>
                         <div className="rowAuto errorText">
                             {localValidationMessage}
+                        </div>
+                    </div>
+                </div>
+
+                <div className='rowAuto comparer'>
+                    <div className='screen'>
+                        <div className='content'>
+                            <ReactCompareSlider ref={reactCompareSliderRef} transition="0.75s ease-in-out" position={50} boundsPadding={20} onlyHandleDraggable
+                                itemOne={
+                                    <ReactCompareSliderImage src="./images/comparisonNew.png" alt="Image one" />
+                                }
+                                itemTwo={
+                                    <ReactCompareSliderImage src="./images/comparisonOld.png" alt="Image one" />
+                                }
+                            />
+                        </div>
+                    </div>
+                    <div className="rowAuto imageNote">
+                        Design inspired on the <a href="https://www.figma.com/community/file/1013369588870007180">Travel App UI UX Exploration</a> design, by <a href="https://www.figma.com/@febysbl">Feby Sabihul Hanafi</a>, in the Figma community.
+                    </div>
+                </div>
+
+                <div className='rowAuto leftContentBlock'>
+                    <div className='left verticalLayout'>
+                        <div className='rowAuto blockTitle'>
+                            <h1>Overlay and <br/>side by side views</h1>
+                        </div>
+                        <div className='rowAuto blockDescription'>
+                            <p><span className='highlight'>Overlaying</span> both versions is super handy to easily spot or show what changed to stakeholders.</p>
+
+                            <p>But... when it's about A/B-ing or going for detail <span className='highlight'>Side by side</span> is definitely a winner.</p>
+
+                            <p>Oh my! Can't pick just one! 🤩</p>
                         </div>
                     </div>
                 </div>

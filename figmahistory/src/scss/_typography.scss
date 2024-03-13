@@ -79,15 +79,16 @@
 }
 
 @mixin webPrimaryText {
-    font-family: Inter-SemiBold, sans-serif;
+    font-family: Inter-Medium, sans-serif;
     font-size: 16px;
+    line-height: 150%;
 
     @include for-theme(light) {
-        color: $light_primaryColor;
+        color: $light_webPrimaryColor;
     }
 
     @include for-theme(dark) {
-        color: $dark_primaryColor;
+        color: $dark_webPrimaryColor;
     }
 }
 
@@ -96,20 +97,39 @@
 }
 
 @mixin webSecondaryText {
-    font-family: Inter-SemiBold, sans-serif;
+    font-family: Inter-Medium, sans-serif;
     font-size: 16px;
+    line-height: 150%;
 
     @include for-theme(light) {
-        color: $light_secondaryColor;
+        color: $light_webSecondaryColor;
     }
 
     @include for-theme(dark) {
-        color: $dark_secondaryColor;
+        color: $dark_webSecondaryColor;
     }
 }
 
 .webSecondaryText {
     @include webSecondaryText;
+}
+
+@mixin webTertiaryText {
+    font-family: Inter-Medium, sans-serif;
+    font-size: 16px;
+    line-height: 150%;
+
+    @include for-theme(light) {
+        color: $light_webTertiaryColor;
+    }
+
+    @include for-theme(dark) {
+        color: $dark_webTertiaryColor;
+    }
+}
+
+.webTertiaryText {
+    @include webTertiaryText;
 }
 
 h1 {
