@@ -2,6 +2,7 @@ import React, { SyntheticEvent, useEffect, useRef, useState } from 'react';
 import { ReactCompareSlider, ReactCompareSliderImage, useReactCompareSliderRef } from 'react-compare-slider';
 import { ReactSVG } from 'react-svg';
 import { globalState } from './globals';
+import { Tooltip as ReactTooltip } from "react-tooltip";
 
 interface FigmaFileInputProps {
     getDocument: (id: string, branchId: string, nodeId: string) => void;
@@ -18,7 +19,17 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
     const [localValidationMessage, setLocalValidationMessage] = useState<string>("");
 
 
+
     const [viewComparer_showOverlay, setViewComparer_showOverlay] = useState<boolean>(true);
+
+
+    const [showSections, setShowSections] = useState<boolean>(true);
+    const [showFrames, setShowFrames] = useState<boolean>(true);
+    const [showComponents, setShowComponents] = useState<boolean>(true);
+    const [showInstances, setShowInstances] = useState<boolean>(true);
+    const [showGroups, setShowGroups] = useState<boolean>(false);
+    const [showText, setShowText] = useState<boolean>(false);
+    const [showShapes, setShowShapes] = useState<boolean>(false);
 
     useEffect(() => {
         if (props.validationMessage) setLocalValidationMessage(props.validationMessage);
@@ -77,6 +88,36 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
     function chooseView(option: number): void {
         setViewComparer_showOverlay(option == 0);
     }
+
+
+
+    function onDiffChange(type: string): void {
+
+        switch (type) {
+            case 'sections':
+                setShowSections(!showSections);
+                break;
+            case 'frames':
+                setShowFrames(!showFrames);
+                break;
+            case 'components':
+                setShowComponents(!showComponents);
+                break;
+            case 'instances':
+                setShowInstances(!showInstances);
+                break;
+            case 'groups':
+                setShowGroups(!showGroups);
+                break;
+            case 'text':
+                setShowText(!showText);
+                break;
+            case 'shapes':
+                setShowShapes(!showShapes);
+                break;
+        }
+    }
+
 
     return (
 
@@ -161,13 +202,81 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                             />
                         </div>
                         <div className={`rowAuto blockImage ${!viewComparer_showOverlay ? '' : 'notDisplayed'}`}>
-                            <img src="./images/views_Sidebyside.png" alt="Newer version showing differences with previous one" />
+                            <img src="./images/views_Sidebyside.png" alt="Both versions presented side by side and showing differences between both" />
                         </div>
                         <div className='rowAuto '>
                             <div className='horizontalLayout alignFullCenter'>
                                 <button className={`btnSecondary ${viewComparer_showOverlay ? 'checked' : ''} optionButton`} onClick={() => chooseView(0)} >Overlay</button>
                                 <button className={`btnSecondary ${!viewComparer_showOverlay ? 'checked' : ''}`} onClick={() => chooseView(1)}>Side by side</button>
                             </div>
+                        </div>
+                    </div>
+                </div>
+                <div className='rowAuto leftContentBlock'>
+                    <div className='left '>
+                        <div className={`rowAuto blockImage`}>
+                            <img src="./images/types_Base.png" alt="Two frames of a design" />
+                        </div>
+
+                        <div className={`rowAuto blockImage animatedDiv fast typeOverlay ${showSections ? 'fadeIn' : 'fadeOut'}`}>
+                            <img src="./images/types_Sections.png" alt="Two frames of a design" />
+                        </div>
+                        <div className={`rowAuto blockImage animatedDiv fast typeOverlay ${showFrames ? 'fadeIn' : 'fadeOut'}`}>
+                            <img src="./images/types_Frames.png" alt="Two frames of a design" />
+                        </div>
+                        <div className={`rowAuto blockImage animatedDiv fast typeOverlay ${showComponents ? 'fadeIn' : 'fadeOut'}`}>
+                            <img src="./images/types_Components.png" alt="Two frames of a design" />
+                        </div>
+                        <div className={`rowAuto blockImage animatedDiv fast typeOverlay ${showInstances ? 'fadeIn' : 'fadeOut'}`}>
+                            <img src="./images/types_Instances.png" alt="Two frames of a design" />
+                        </div>
+                        <div className={`rowAuto blockImage animatedDiv fast typeOverlay ${showGroups ? 'fadeIn' : 'fadeOut'}`}>
+                            <img src="./images/types_Groups.png" alt="Two frames of a design" />
+                        </div>
+                        <div className={`rowAuto blockImage animatedDiv fast typeOverlay ${showText ? 'fadeIn' : 'fadeOut'}`}>
+                            <img src="./images/types_Texts.png" alt="Two frames of a design" />
+                        </div>
+                        <div className={`rowAuto blockImage animatedDiv fast typeOverlay ${showShapes ? 'fadeIn' : 'fadeOut'}`}>
+                            <img src="./images/types_Shapes.png" alt="Two frames of a design" />
+                        </div>
+
+                    </div>
+                    <div className='right '>
+                        <div className='rowAuto blockTitle'>
+                            <h1>Pick which elements you want to show changes for</h1>
+                        </div>
+                        <div className='rowAuto blockDescription'>
+                            <div>Designs change a lot from version to version. From entire frames to tiny tweaks in texts. And sometimes showing all changes... well, just gets in the way.</div>
+                            <div className="horizontalLayout rightElements">
+                                <button className={`colAuto btnSecondary iconButton ${showSections ? 'checked' : ''}`} onClick={() => onDiffChange('sections')} data-tooltip-id="showDiffSectionsTooltip">
+                                    <ReactSVG src={globalState.urlPaths + "/images/sectionIcon.svg"} />
+                                </button>
+                                <button className={`colAuto btnSecondary iconButton ${showFrames ? 'checked' : ''}`} onClick={() => onDiffChange('frames')} data-tooltip-id="showDiffFramesTooltip">
+                                    <ReactSVG src={globalState.urlPaths + "/images/frameIcon.svg"} />
+                                </button>
+                                <button className={`colAuto btnSecondary iconButton ${showComponents ? 'checked' : ''}`} onClick={() => onDiffChange('components')} data-tooltip-id="showDiffComponentsTooltip">
+                                    <ReactSVG src={globalState.urlPaths + "/images/componentIcon.svg"} />
+                                </button>
+                                <button className={`colAuto btnSecondary iconButton ${showInstances ? 'checked' : ''}`} onClick={() => onDiffChange('instances')} data-tooltip-id="showDiffInstancesTooltip">
+                                    <ReactSVG src={globalState.urlPaths + "/images/instanceIcon.svg"} />
+                                </button>
+                                <button className={`colAuto btnSecondary iconButton ${showGroups ? 'checked' : ''}`} onClick={() => onDiffChange('groups')} data-tooltip-id="showDiffGroupsTooltip">
+                                    <ReactSVG src={globalState.urlPaths + "/images/groupIcon.svg"} />
+                                </button>
+                                <button className={`colAuto btnSecondary iconButton ${showText ? 'checked' : ''}`} onClick={() => onDiffChange('text')} data-tooltip-id="showDiffTextTooltip">
+                                    <ReactSVG src={globalState.urlPaths + "/images/textIcon.svg"} />
+                                </button>
+                                <button className={`colAuto btnSecondary iconButton ${showShapes ? 'checked' : ''}`} onClick={() => onDiffChange('shapes')} data-tooltip-id="showDiffShapesTooltip">
+                                    <ReactSVG src={globalState.urlPaths + "/images/shapesIcon.svg"} />
+                                </button>
+                            </div>
+                            <ReactTooltip id="showDiffSectionsTooltip" place="top" content="Sections" />
+                            <ReactTooltip id="showDiffFramesTooltip" place="top" content="Frames" />
+                            <ReactTooltip id="showDiffComponentsTooltip" place="top" content="Components" />
+                            <ReactTooltip id="showDiffInstancesTooltip" place="top" content="Instances" />
+                            <ReactTooltip id="showDiffGroupsTooltip" place="top" content="Groups" />
+                            <ReactTooltip id="showDiffTextTooltip" place="top" content="Text" />
+                            <ReactTooltip id="showDiffShapesTooltip" place="top" content="Shapes" />
                         </div>
                     </div>
                 </div>

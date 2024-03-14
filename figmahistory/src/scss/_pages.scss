@@ -206,6 +206,7 @@
         @include alignVerticalCenter;
         display: grid;
         grid-template-columns: 1fr 1fr;
+        margin-bottom: 160px;
 
         .left {
             grid-column: 1;
@@ -231,6 +232,12 @@
                 @include webPrimaryText;
                 font-family: Inter-Bold, sans-serif;
             }
+
+            .iconButton{
+                margin-top: 48px;
+                width: 36px;
+                margin-right: 8px;
+            }
         }
 
         .blockComparer {
@@ -244,11 +251,18 @@
             height: 590px;
             @include flex;
             margin-bottom: 24px;
+            position: relative;
 
             img {
                 @include alignHorizontalCenter;
                 max-width: 100%;
                 height: 100%;
+            }
+
+            &.typeOverlay{
+                position: absolute;
+                top:0;
+                left:0;
             }
         }
 
