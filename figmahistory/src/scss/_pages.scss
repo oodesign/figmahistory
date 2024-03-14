@@ -281,6 +281,145 @@
         }
 
     }
+
+    .fullWidthBlock {
+        margin-bottom: 160px;
+
+        h1 {
+            margin-bottom: 48px;
+        }
+
+        h3 {
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            margin-bottom: 120px;
+        }
+
+        .pricing {
+            max-width: 1000px;
+            @include alignHorizontalCenter;
+        }
+
+        .twoColumns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .pricingBlock {
+            &.left {
+                height: 500px;
+                grid-column: 1;
+            }
+
+            &.right {
+                height: 568px;
+                margin-left: -32px;
+                margin-top: -32px;
+                grid-column: 2;
+
+                .price {
+                    margin-bottom: 64px;
+                }
+
+                img {
+                    margin-bottom: 48px;
+                }
+            }
+
+            img {
+                @include flex;
+                @include alignHorizontalCenter;
+                height: 160px;
+                margin-bottom: 32px;
+                text-align: center;
+            }
+
+            .title {
+                @include webPrimaryText;
+                text-align: left;
+                margin-bottom: 16px;
+            }
+
+            .subtitle {
+                @include webSecondaryText;
+                text-align: left;
+                margin-bottom: 16px;
+            }
+
+            .price {
+                @include webAccentText;
+                text-align: left;
+                margin-bottom: 24px;
+            }
+
+            .btnPrimary,
+            .btnSecondary {
+                height: 56px;
+                border-radius: 12px;
+                font-size: 16px;
+            }
+
+            border-radius: 40px;
+
+            @include for-theme(light) {
+                background-color: #ffffff;
+                box-shadow: 0px 28px 37px 7px rgba(0, 0, 0, 0.05);
+            }
+
+            @include for-theme(dark) {
+                background-color: #26262a;
+                box-shadow: 0px 28px 37px 14px rgba(255, 255, 255, 0.03);
+            }
+
+            padding: 64px 64px 48px 64px;
+        }
+    }
+
+    .faqItem {
+        padding: 48px 64px;
+        max-width: 1000px;
+        @include alignHorizontalCenter;
+
+        @include for-theme(light) {
+            border-bottom: 1px solid red;
+        }
+
+        @include for-theme(dark) {
+            border-bottom: 1px solid #28282a;
+        }
+
+        .faqTitle {
+            text-align: center;
+            @include webPrimaryText;
+            font-family: Inter-SemiBold, sans-serif;
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .faqDescription {
+            text-align: center;
+            @include webSecondaryText;
+
+
+            .highlight {
+                @include webPrimaryText;
+                text-decoration: underline;
+                font-family: Inter-Bold, sans-serif;
+            }
+        }
+
+        p {
+            @include alignHorizontalCenter;
+            margin-bottom: 32px;
+            max-width: 600px;
+
+            &:last-of-type {
+                margin-bottom: 0;
+            }
+        }
+    }
 }
 
 

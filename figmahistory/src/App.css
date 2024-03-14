@@ -115,9 +115,30 @@
   }
 }
 
+.webAccentText {
+  font-family: Inter-Medium, sans-serif;
+  font-size: 16px;
+  line-height: 150%;
+}
+@media (prefers-color-scheme: light) {
+  .webAccentText {
+    color: #a2a2a2;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .webAccentText {
+    color: #848494;
+  }
+}
+
 h1 {
   font-family: Inter-Bold, sans-serif;
   font-size: 48px;
+}
+
+h2 {
+  font-family: Inter-Bold, sans-serif;
+  font-size: 32px;
 }
 
 h3 {
@@ -126,7 +147,7 @@ h3 {
 }
 
 h6 {
-  font-family: Inter-SemiBold, sans-serif;
+  font-family: Inter-Medium, sans-serif;
   font-size: 18px;
 }
 
@@ -485,7 +506,6 @@ div::-webkit-scrollbar-thumb {
 
 .btnSecondary {
   background-color: transparent;
-  width: 100px;
   height: 34px;
   border-radius: 6px;
   background-origin: border-box;
@@ -1002,9 +1022,30 @@ input[type=text].hasMessage {
   }
 }
 
+.webAccentText {
+  font-family: Inter-Medium, sans-serif;
+  font-size: 16px;
+  line-height: 150%;
+}
+@media (prefers-color-scheme: light) {
+  .webAccentText {
+    color: #a2a2a2;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .webAccentText {
+    color: #848494;
+  }
+}
+
 h1 {
   font-family: Inter-Bold, sans-serif;
   font-size: 48px;
+}
+
+h2 {
+  font-family: Inter-Bold, sans-serif;
+  font-size: 32px;
 }
 
 h3 {
@@ -1013,7 +1054,7 @@ h3 {
 }
 
 h6 {
-  font-family: Inter-SemiBold, sans-serif;
+  font-family: Inter-Medium, sans-serif;
   font-size: 18px;
 }
 
@@ -1473,6 +1514,197 @@ h6 {
 }
 .mainSite .leftContentBlock .optionButton {
   margin-right: 8px;
+}
+.mainSite .fullWidthBlock {
+  margin-bottom: 160px;
+}
+.mainSite .fullWidthBlock h1 {
+  margin-bottom: 48px;
+}
+.mainSite .fullWidthBlock h3 {
+  margin-bottom: 8px;
+}
+.mainSite .fullWidthBlock .subtitle {
+  margin-bottom: 120px;
+}
+.mainSite .fullWidthBlock .pricing {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+.mainSite .fullWidthBlock .twoColumns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.mainSite .fullWidthBlock .pricingBlock {
+  border-radius: 40px;
+  padding: 64px 64px 48px 64px;
+}
+.mainSite .fullWidthBlock .pricingBlock.left {
+  height: 500px;
+  grid-column: 1;
+}
+.mainSite .fullWidthBlock .pricingBlock.right {
+  height: 568px;
+  margin-left: -32px;
+  margin-top: -32px;
+  grid-column: 2;
+}
+.mainSite .fullWidthBlock .pricingBlock.right .price {
+  margin-bottom: 64px;
+}
+.mainSite .fullWidthBlock .pricingBlock.right img {
+  margin-bottom: 48px;
+}
+.mainSite .fullWidthBlock .pricingBlock img {
+  display: flex;
+  margin: 0 auto;
+  height: 160px;
+  margin-bottom: 32px;
+  text-align: center;
+}
+.mainSite .fullWidthBlock .pricingBlock .title {
+  font-family: Inter-Medium, sans-serif;
+  font-size: 16px;
+  line-height: 150%;
+  text-align: left;
+  margin-bottom: 16px;
+}
+@media (prefers-color-scheme: light) {
+  .mainSite .fullWidthBlock .pricingBlock .title {
+    color: #323232;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .mainSite .fullWidthBlock .pricingBlock .title {
+    color: #ffffff;
+  }
+}
+.mainSite .fullWidthBlock .pricingBlock .subtitle {
+  font-family: Inter-Medium, sans-serif;
+  font-size: 16px;
+  line-height: 150%;
+  text-align: left;
+  margin-bottom: 16px;
+}
+@media (prefers-color-scheme: light) {
+  .mainSite .fullWidthBlock .pricingBlock .subtitle {
+    color: #868688;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .mainSite .fullWidthBlock .pricingBlock .subtitle {
+    color: #a9a9B4;
+  }
+}
+.mainSite .fullWidthBlock .pricingBlock .price {
+  font-family: Inter-Medium, sans-serif;
+  font-size: 16px;
+  line-height: 150%;
+  text-align: left;
+  margin-bottom: 24px;
+}
+@media (prefers-color-scheme: light) {
+  .mainSite .fullWidthBlock .pricingBlock .price {
+    color: #615AB8;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .mainSite .fullWidthBlock .pricingBlock .price {
+    color: #ABA4FF;
+  }
+}
+.mainSite .fullWidthBlock .pricingBlock .btnPrimary,
+.mainSite .fullWidthBlock .pricingBlock .btnSecondary {
+  height: 56px;
+  border-radius: 12px;
+  font-size: 16px;
+}
+@media (prefers-color-scheme: light) {
+  .mainSite .fullWidthBlock .pricingBlock {
+    background-color: #ffffff;
+    box-shadow: 0px 28px 37px 7px rgba(0, 0, 0, 0.05);
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .mainSite .fullWidthBlock .pricingBlock {
+    background-color: #26262a;
+    box-shadow: 0px 28px 37px 14px rgba(255, 255, 255, 0.03);
+  }
+}
+.mainSite .faqItem {
+  padding: 48px 64px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+@media (prefers-color-scheme: light) {
+  .mainSite .faqItem {
+    border-bottom: 1px solid red;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .mainSite .faqItem {
+    border-bottom: 1px solid #28282a;
+  }
+}
+.mainSite .faqItem .faqTitle {
+  text-align: center;
+  font-family: Inter-Medium, sans-serif;
+  font-size: 16px;
+  line-height: 150%;
+  font-family: Inter-SemiBold, sans-serif;
+  font-size: 20px;
+  margin-bottom: 8px;
+}
+@media (prefers-color-scheme: light) {
+  .mainSite .faqItem .faqTitle {
+    color: #323232;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .mainSite .faqItem .faqTitle {
+    color: #ffffff;
+  }
+}
+.mainSite .faqItem .faqDescription {
+  text-align: center;
+  font-family: Inter-Medium, sans-serif;
+  font-size: 16px;
+  line-height: 150%;
+}
+@media (prefers-color-scheme: light) {
+  .mainSite .faqItem .faqDescription {
+    color: #868688;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .mainSite .faqItem .faqDescription {
+    color: #a9a9B4;
+  }
+}
+.mainSite .faqItem .faqDescription .highlight {
+  font-family: Inter-Medium, sans-serif;
+  font-size: 16px;
+  line-height: 150%;
+  text-decoration: underline;
+  font-family: Inter-Bold, sans-serif;
+}
+@media (prefers-color-scheme: light) {
+  .mainSite .faqItem .faqDescription .highlight {
+    color: #323232;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .mainSite .faqItem .faqDescription .highlight {
+    color: #ffffff;
+  }
+}
+.mainSite .faqItem p {
+  margin: 0 auto;
+  margin-bottom: 32px;
+  max-width: 600px;
+}
+.mainSite .faqItem p:last-of-type {
+  margin-bottom: 0;
 }
 
 .licenseOverlay {

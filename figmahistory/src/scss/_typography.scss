@@ -132,9 +132,34 @@
     @include webTertiaryText;
 }
 
+
+
+@mixin webAccentText {
+    font-family: Inter-Medium, sans-serif;
+    font-size: 16px;
+    line-height: 150%;
+
+    @include for-theme(light) {
+        color: #615AB8;
+    }
+
+    @include for-theme(dark) {
+        color: #ABA4FF;
+    }
+}
+
+.webAccentText {
+    @include webTertiaryText;
+}
+
 h1 {
     font-family: Inter-Bold, sans-serif;
     font-size: 48px;
+}
+
+h2 {
+    font-family: Inter-Bold, sans-serif;
+    font-size: 32px;
 }
 
 h3 {
@@ -143,6 +168,6 @@ h3 {
 }
 
 h6 {
-    font-family: Inter-SemiBold, sans-serif;
+    font-family: Inter-Medium, sans-serif;
     font-size: 18px;
 }

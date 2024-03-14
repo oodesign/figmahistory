@@ -282,6 +282,94 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                     </div>
                 </div>
 
+
+                <div className='rowAuto fullWidthBlock'>
+                    <div className='rowAuto title'>
+                        <h1>This is saving us a lot of time.<br />Hope it will for you too.</h1>
+                    </div>
+                    <div className='rowAuto subtitle'>
+                        <h3>Developers always know what changed and don't miss anything</h3>
+                        <h3>Designers can focus on designing and avoid communication overload</h3>
+                        <h3>PMs can easily keep track of what changed and when</h3>
+                    </div>
+                    <div className='pricing twoColumns'>
+                        <div className='columnLeft pricingBlock left verticalLayout'>
+                            <div className='rowAuto'>
+                                <img src="./images/pricing_Single.png" alt="Two frames of a design" />
+                            </div>
+                            <div className='rowAuto title'>
+                                <h2>Single license</h2>
+                            </div>
+                            <div className='rowAuto subtitle'>
+                                <h6>A single license for a single Figma account</h6>
+                            </div>
+                            <div className='rowAuto price'>
+                                <h6>for $5/year</h6>
+                            </div>
+                            <button className='btnPrimary'>I want a single license</button>
+                        </div>
+                        <div className='columnRight pricingBlock right verticalLayout'>
+                            <div className='rowAuto'>
+                                <img src="./images/pricing_Team.png" alt="Two frames of a design" />
+                            </div>
+                            <div className='rowAuto title'>
+                                <h2>Team license</h2>
+                            </div>
+                            <div className='rowAuto subtitle'>
+                                <h6>A shared license for the team. As many Figma accounts as you need.</h6>
+                            </div>
+                            <div className='rowAuto price'>
+                                <h6>for $45/year</h6>
+                            </div>
+                            <button className='btnPrimary'>Get a license for my team</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div className='rowAuto fullWidthBlock'>
+                    <div className='rowAuto title'>
+                        <h1>Frequently asked questions</h1>
+                    </div>
+
+                    <div className='rowAuto faqItem'>
+                        <div className='faqTitle'>May I try it out before getting it?</div>
+                        <div className='faqDescription'>
+                            <p>Sure! Figma history has a completely functional 7-day free trial.<br/>
+                            Copy your file link, click Compare, and your trial will automatically begin. </p>
+                        </div>
+                    </div>
+                    <div className='rowAuto faqItem'>
+                        <div className='faqTitle'>How does the license work?</div>
+                        <div className='faqDescription'>
+                            <p>The Figma history license is per Figma account. <br/>
+                            You may need a license for each Figma account you want to activate it on.</p>
+                            <p>The team license will enable you to activate it for as many Figma accounts as you need.</p>
+                        </div>
+                    </div>
+                    <div className='rowAuto faqItem'>
+                        <div className='faqTitle'>Why is this in Beta?</div>
+                        <div className='faqDescription'>
+                            <p>We're currently on open Beta, trying to understand better the different flows Figma history can help with, and stress testing a bit the platform.</p>
+                            <p>Figma history is fully functional. Some glitches are still expected, though 😉.</p>
+                        </div>
+                    </div>
+                    <div className='rowAuto faqItem'>
+                        <div className='faqTitle'>How can Figma history access my files?</div>
+                        <div className='faqDescription'>
+                            <p>Well, it can't unless... you let it in 😅. To be able to present the comparison, a Figma popup will appear for you to log in to Figma, and to ask for permission to access your file.</p>
+                            <p>You may have seen this pattern before, as it's the same as Zeroheight, MS Teams, Slack, Principle - just to name some - do.</p>
+                        </div>
+                    </div>
+                    <div className='rowAuto faqItem'>
+                        <div className='faqTitle'>Are my files safe?</div>
+                        <div className='faqDescription'>
+                            <p>We use the Figma REST API to access your files and display what has changed between versions. <span className='highlight'>We can only read files</span>, meaning we can't edit anything in them. If you feel curious, you may find more detail here about <a href="https://www.figma.com/developers/api#authentication-scopes">Figma authentication scopes</a>.</p>
+                            <p>Access to designs is only used for comparison rendering. We do not (and will never) store, analyze, or share your designs. We do not track analytics.</p>
+                            <p>Your designs are (and will continue to be) just for your eyes.</p>
+                        </div>
+                    </div>
+                </div>
+
                 {/* <div className="rowAuto">
                     <div className='verticalLayout'>
 
