@@ -78,11 +78,6 @@
         @include alignHorizontalCenter;
     }
 
-
-    .alignFullCenter {
-        bottom: 60px;
-    }
-
     .hero {
         padding-top: 80px;
         width: 800px;
@@ -225,17 +220,40 @@
         }
 
         .blockDescription {
-            width:480px;
+            width: 480px;
             @include webSecondaryText;
 
             p {
                 margin-bottom: 16px;
             }
 
-            .highlight{
+            .highlight {
                 @include webPrimaryText;
                 font-family: Inter-Bold, sans-serif;
             }
+        }
+
+        .blockComparer {
+            width: 280px;
+            height: 590px;
+            margin-bottom: 24px;
+        }
+
+        .blockImage {
+            width: 100%;
+            height: 590px;
+            @include flex;
+            margin-bottom: 24px;
+
+            img {
+                @include alignHorizontalCenter;
+                max-width: 100%;
+                height: 100%;
+            }
+        }
+
+        .optionButton {
+            margin-right: 8px;
         }
 
     }

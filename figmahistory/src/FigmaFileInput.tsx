@@ -17,6 +17,9 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
     const [clipPath, setClipPath] = useState<string | undefined>(/* initial clip-path */);
     const [localValidationMessage, setLocalValidationMessage] = useState<string>("");
 
+
+    const [viewComparer_showOverlay, setViewComparer_showOverlay] = useState<boolean>(true);
+
     useEffect(() => {
         if (props.validationMessage) setLocalValidationMessage(props.validationMessage);
     }, [props.validationMessage]);
@@ -71,6 +74,10 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
         setClipPath(calculatedClipPath);
     }
 
+    function chooseView(option: number): void {
+        setViewComparer_showOverlay(option == 0);
+    }
+
     return (
 
         <div className={`${props.className}  mainSite scrollable`}>
@@ -116,10 +123,10 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                         <div className='content'>
                             <ReactCompareSlider ref={reactCompareSliderRef} transition="0.75s ease-in-out" position={50} boundsPadding={20} onlyHandleDraggable
                                 itemOne={
-                                    <ReactCompareSliderImage src="./images/comparisonNew.png" alt="Image one" />
+                                    <ReactCompareSliderImage src="./images/comparisonNew.png" alt="Newer version showing differences with previous one" />
                                 }
                                 itemTwo={
-                                    <ReactCompareSliderImage src="./images/comparisonOld.png" alt="Image one" />
+                                    <ReactCompareSliderImage src="./images/comparisonOld.png" alt="Older version showing differences with the new one" />
                                 }
                             />
                         </div>
@@ -130,9 +137,9 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                 </div>
 
                 <div className='rowAuto leftContentBlock'>
-                    <div className='left verticalLayout'>
+                    <div className='left '>
                         <div className='rowAuto blockTitle'>
-                            <h1>Overlay and <br/>side by side views</h1>
+                            <h1>Overlay and <br />side by side views</h1>
                         </div>
                         <div className='rowAuto blockDescription'>
                             <p><span className='highlight'>Overlaying</span> both versions is super handy to easily spot or show what changed to stakeholders.</p>
@@ -140,6 +147,27 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                             <p>But... when it's about A/B-ing or going for detail <span className='highlight'>Side by side</span> is definitely a winner.</p>
 
                             <p>Oh my! Can't pick just one! 🤩</p>
+                        </div>
+                    </div>
+                    <div className={`right verticalLayout`}>
+                        <div className={`rowAuto blockComparer alignHorizontalCenter ${viewComparer_showOverlay ? '' : 'notDisplayed'}`}>
+                            <ReactCompareSlider ref={reactCompareSliderRef} transition="0.75s ease-in-out" position={50} onlyHandleDraggable
+                                itemOne={
+                                    <ReactCompareSliderImage src="./images/views_Overlay_New.png" alt="Newer version showing differences with previous one" />
+                                }
+                                itemTwo={
+                                    <ReactCompareSliderImage src="./images/views_Overlay_Old.png" alt="Older version showing differences with the new one" />
+                                }
+                            />
+                        </div>
+                        <div className={`rowAuto blockImage ${!viewComparer_showOverlay ? '' : 'notDisplayed'}`}>
+                            <img src="./images/views_Sidebyside.png" alt="Newer version showing differences with previous one" />
+                        </div>
+                        <div className='rowAuto '>
+                            <div className='horizontalLayout alignFullCenter'>
+                                <button className={`btnSecondary ${viewComparer_showOverlay ? 'checked' : ''} optionButton`} onClick={() => chooseView(0)} >Overlay</button>
+                                <button className={`btnSecondary ${!viewComparer_showOverlay ? 'checked' : ''}`} onClick={() => chooseView(1)}>Side by side</button>
+                            </div>
                         </div>
                     </div>
                 </div>

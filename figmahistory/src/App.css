@@ -1233,9 +1233,6 @@ h6 {
   max-width: 1280px;
   margin: 0 auto;
 }
-.mainSite .alignFullCenter {
-  bottom: 60px;
-}
 .mainSite .hero {
   padding-top: 80px;
   width: 800px;
@@ -1435,6 +1432,25 @@ h6 {
   .mainSite .leftContentBlock .blockDescription .highlight {
     color: #ffffff;
   }
+}
+.mainSite .leftContentBlock .blockComparer {
+  width: 280px;
+  height: 590px;
+  margin-bottom: 24px;
+}
+.mainSite .leftContentBlock .blockImage {
+  width: 100%;
+  height: 590px;
+  display: flex;
+  margin-bottom: 24px;
+}
+.mainSite .leftContentBlock .blockImage img {
+  margin: 0 auto;
+  max-width: 100%;
+  height: 100%;
+}
+.mainSite .leftContentBlock .optionButton {
+  margin-right: 8px;
 }
 
 .licenseOverlay {
