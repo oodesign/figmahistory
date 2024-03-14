@@ -1435,9 +1435,19 @@ h6 {
   }
 }
 .mainSite .leftContentBlock .blockDescription .iconButton {
-  margin-top: 48px;
+  margin-top: 16px;
   width: 36px;
   margin-right: 8px;
+}
+@media (prefers-color-scheme: light) {
+  .mainSite .leftContentBlock .blockDescription .iconButton path {
+    fill: #323232;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .mainSite .leftContentBlock .blockDescription .iconButton path {
+    fill: #ffffff;
+  }
 }
 .mainSite .leftContentBlock .blockComparer {
   width: 280px;

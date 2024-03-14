@@ -246,7 +246,8 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                             <h1>Pick which elements you want to show changes for</h1>
                         </div>
                         <div className='rowAuto blockDescription'>
-                            <div>Designs change a lot from version to version. From entire frames to tiny tweaks in texts. And sometimes showing all changes... well, just gets in the way.</div>
+                            <p>Designs change a lot from version to version. From entire frames to tiny tweaks in texts. And sometimes showing all changes... well, may be a bit overwhelming.</p>
+                            <p>So feel free to pick just the ones you care about.</p>
                             <div className="horizontalLayout rightElements">
                                 <button className={`colAuto btnSecondary iconButton ${showSections ? 'checked' : ''}`} onClick={() => onDiffChange('sections')} data-tooltip-id="showDiffSectionsTooltip">
                                     <ReactSVG src={globalState.urlPaths + "/images/sectionIcon.svg"} />

@@ -233,10 +233,20 @@
                 font-family: Inter-Bold, sans-serif;
             }
 
-            .iconButton{
-                margin-top: 48px;
+            .iconButton {
+                margin-top: 16px;
                 width: 36px;
                 margin-right: 8px;
+
+                path {
+                    @include for-theme(light) {
+                        fill: $light_primaryColor;
+                    }
+
+                    @include for-theme(dark) {
+                        fill: $dark_primaryColor;
+                    }
+                }
             }
         }
 
@@ -259,10 +269,10 @@
                 height: 100%;
             }
 
-            &.typeOverlay{
+            &.typeOverlay {
                 position: absolute;
-                top:0;
-                left:0;
+                top: 0;
+                left: 0;
             }
         }
 
