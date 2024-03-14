@@ -326,7 +326,7 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                     </div>
                 </div>
 
-                <div className='rowAuto fullWidthBlock'>
+                <div className='rowAuto fullWidthBlock faqItems'>
                     <div className='rowAuto title'>
                         <h1>Frequently asked questions</h1>
                     </div>
@@ -356,7 +356,7 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                     <div className='rowAuto faqItem'>
                         <div className='faqTitle'>How can Figma history access my files?</div>
                         <div className='faqDescription'>
-                            <p>Well, it can't unless... you let it in 😅. To be able to present the comparison, a Figma popup will appear for you to log in to Figma, and to ask for permission to access your file.</p>
+                            <p>Well, it can't, unless you let it in 😅. When trying to access a file a Figma popup will appear for you to log in to Figma, and to ask for permission to access your file and be able to present the comparison.</p>
                             <p>You may have seen this pattern before, as it's the same as Zeroheight, MS Teams, Slack, Principle - just to name some - do.</p>
                         </div>
                     </div>

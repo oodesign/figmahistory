@@ -1631,57 +1631,63 @@ h6 {
     box-shadow: 0px 28px 37px 14px rgba(255, 255, 255, 0.03);
   }
 }
-.mainSite .faqItem {
+.mainSite .faqItems .faqItem {
   padding: 48px 64px;
   max-width: 1000px;
   margin: 0 auto;
 }
 @media (prefers-color-scheme: light) {
-  .mainSite .faqItem {
-    border-bottom: 1px solid red;
+  .mainSite .faqItems .faqItem {
+    border-bottom: 1px solid transparent;
+    -o-border-image: linear-gradient(0.25turn, transparent, #e5e5e9, #e5e5e9, transparent);
+       border-image: linear-gradient(0.25turn, transparent, #e5e5e9, #e5e5e9, transparent);
+    border-image-slice: 1;
   }
 }
 @media (prefers-color-scheme: dark) {
-  .mainSite .faqItem {
-    border-bottom: 1px solid #28282a;
+  .mainSite .faqItems .faqItem {
+    border-bottom: 1px solid transparent;
+    -o-border-image: linear-gradient(0.25turn, transparent, #323236, #323236, transparent);
+       border-image: linear-gradient(0.25turn, transparent, #323236, #323236, transparent);
+    border-image-slice: 1;
   }
 }
-.mainSite .faqItem .faqTitle {
+.mainSite .faqItems .faqItem .faqTitle {
   text-align: center;
   font-family: Inter-Medium, sans-serif;
   font-size: 16px;
   line-height: 150%;
   font-family: Inter-SemiBold, sans-serif;
   font-size: 20px;
-  margin-bottom: 8px;
+  margin-bottom: 24px;
 }
 @media (prefers-color-scheme: light) {
-  .mainSite .faqItem .faqTitle {
+  .mainSite .faqItems .faqItem .faqTitle {
     color: #323232;
   }
 }
 @media (prefers-color-scheme: dark) {
-  .mainSite .faqItem .faqTitle {
+  .mainSite .faqItems .faqItem .faqTitle {
     color: #ffffff;
   }
 }
-.mainSite .faqItem .faqDescription {
+.mainSite .faqItems .faqItem .faqDescription {
   text-align: center;
   font-family: Inter-Medium, sans-serif;
   font-size: 16px;
   line-height: 150%;
 }
 @media (prefers-color-scheme: light) {
-  .mainSite .faqItem .faqDescription {
+  .mainSite .faqItems .faqItem .faqDescription {
     color: #868688;
   }
 }
 @media (prefers-color-scheme: dark) {
-  .mainSite .faqItem .faqDescription {
+  .mainSite .faqItems .faqItem .faqDescription {
     color: #a9a9B4;
   }
 }
-.mainSite .faqItem .faqDescription .highlight {
+.mainSite .faqItems .faqItem .faqDescription .highlight {
   font-family: Inter-Medium, sans-serif;
   font-size: 16px;
   line-height: 150%;
@@ -1689,21 +1695,21 @@ h6 {
   font-family: Inter-Bold, sans-serif;
 }
 @media (prefers-color-scheme: light) {
-  .mainSite .faqItem .faqDescription .highlight {
+  .mainSite .faqItems .faqItem .faqDescription .highlight {
     color: #323232;
   }
 }
 @media (prefers-color-scheme: dark) {
-  .mainSite .faqItem .faqDescription .highlight {
+  .mainSite .faqItems .faqItem .faqDescription .highlight {
     color: #ffffff;
   }
 }
-.mainSite .faqItem p {
+.mainSite .faqItems .faqItem p {
   margin: 0 auto;
   margin-bottom: 32px;
   max-width: 600px;
 }
-.mainSite .faqItem p:last-of-type {
+.mainSite .faqItems .faqItem p:last-of-type {
   margin-bottom: 0;
 }
 

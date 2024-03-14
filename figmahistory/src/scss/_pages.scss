@@ -377,46 +377,54 @@
         }
     }
 
-    .faqItem {
-        padding: 48px 64px;
-        max-width: 1000px;
-        @include alignHorizontalCenter;
-
-        @include for-theme(light) {
-            border-bottom: 1px solid red;
-        }
-
-        @include for-theme(dark) {
-            border-bottom: 1px solid #28282a;
-        }
-
-        .faqTitle {
-            text-align: center;
-            @include webPrimaryText;
-            font-family: Inter-SemiBold, sans-serif;
-            font-size: 20px;
-            margin-bottom: 8px;
-        }
-
-        .faqDescription {
-            text-align: center;
-            @include webSecondaryText;
+    .faqItems {
 
 
-            .highlight {
-                @include webPrimaryText;
-                text-decoration: underline;
-                font-family: Inter-Bold, sans-serif;
-            }
-        }
-
-        p {
+        .faqItem {
+            padding: 48px 64px;
+            max-width: 1000px;
             @include alignHorizontalCenter;
-            margin-bottom: 32px;
-            max-width: 600px;
 
-            &:last-of-type {
-                margin-bottom: 0;
+            @include for-theme(light) {
+                border-bottom: 1px solid transparent;
+                border-image: linear-gradient(0.25turn, transparent, $light_backgroundColor5, $light_backgroundColor5, transparent);
+                border-image-slice: 1;
+            }
+
+            @include for-theme(dark) {
+                border-bottom: 1px solid transparent;
+                border-image: linear-gradient(0.25turn, transparent, $dark_backgroundColor5, $dark_backgroundColor5, transparent);
+                border-image-slice: 1;
+            }
+
+            .faqTitle {
+                text-align: center;
+                @include webPrimaryText;
+                font-family: Inter-SemiBold, sans-serif;
+                font-size: 20px;
+                margin-bottom: 24px;
+            }
+
+            .faqDescription {
+                text-align: center;
+                @include webSecondaryText;
+
+
+                .highlight {
+                    @include webPrimaryText;
+                    text-decoration: underline;
+                    font-family: Inter-Bold, sans-serif;
+                }
+            }
+
+            p {
+                @include alignHorizontalCenter;
+                margin-bottom: 32px;
+                max-width: 600px;
+
+                &:last-of-type {
+                    margin-bottom: 0;
+                }
             }
         }
     }
