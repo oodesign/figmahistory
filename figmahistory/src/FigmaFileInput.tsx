@@ -35,8 +35,8 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
         if (props.validationMessage) setLocalValidationMessage(props.validationMessage);
     }, [props.validationMessage]);
 
-    const getFigmaDocumentInfo = () => {
-        const inputElement = document.getElementById("figmaFileURL") as HTMLInputElement;
+    const getFigmaDocumentInfo = (fieldId:string) => {
+        const inputElement = document.getElementById(fieldId) as HTMLInputElement;
         const inputURL = inputElement.value;
 
         const regex = /^((http|https):\/\/)?(www\.)?figma\.com\/file\/([a-zA-Z0-9]{22})(?:\/branch\/([a-zA-Z0-9]+))?(?:.*node-id=([0-9]+%3A[0-9]+))?/;
@@ -62,33 +62,10 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
         }
     }
 
-    // useEffect(() => {
-    //     const fireTransition = async () => {
-    //         await new Promise(resolve => setTimeout(() => {
-    //             reactCompareSliderRef.current.setPosition(50);
-    //             resolve(true);
-    //         }, 100));
-    //         await new Promise(resolve => setTimeout(() => {
-    //             reactCompareSliderRef.current.setPosition(75);
-    //             resolve(true);
-    //         }, 750));
-    //         await new Promise(resolve => setTimeout(() => {
-    //             setIsLogoAnimated(false);
-    //             resolve(true);
-    //         }, 850));
-    //     };
-    //     fireTransition();
-    // }, [reactCompareSliderRef]);
-
-    function onSliderPositionChange(position: number): void {
-        const calculatedClipPath = `polygon(0% 0%, ${position}% 0%, ${position}% 100%, 0% 100%)`;
-        setClipPath(calculatedClipPath);
-    }
 
     function chooseView(option: number): void {
         setViewComparer_showOverlay(option == 0);
     }
-
 
 
     function onDiffChange(type: string): void {
@@ -149,12 +126,15 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                                     />
                                 </div>
                                 <div className="colAuto">
-                                    <button className='btnPrimary' onClick={getFigmaDocumentInfo}>Compare</button>
+                                    <button className='btnPrimary' onClick={() => getFigmaDocumentInfo('figmaFileURL')}>Compare</button>
                                 </div>
                             </div>
                         </div>
                         <div className="rowAuto errorText">
                             {localValidationMessage}
+                        </div>
+                        <div className="rowAuto startHere">
+                            <img src="./images/startHere.png" alt="Indication to paste the Figma file link in the field above to get started" />
                         </div>
                     </div>
                 </div>
@@ -219,25 +199,25 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                         </div>
 
                         <div className={`rowAuto blockImage animatedDiv fast typeOverlay ${showSections ? 'fadeIn' : 'fadeOut'}`}>
-                            <img src="./images/types_Sections.png" alt="Two frames of a design" />
+                            <img src="./images/types_Sections.png" alt="Shows sections that have differences" />
                         </div>
                         <div className={`rowAuto blockImage animatedDiv fast typeOverlay ${showFrames ? 'fadeIn' : 'fadeOut'}`}>
-                            <img src="./images/types_Frames.png" alt="Two frames of a design" />
+                            <img src="./images/types_Frames.png" alt="Shows frames that have differences" />
                         </div>
                         <div className={`rowAuto blockImage animatedDiv fast typeOverlay ${showComponents ? 'fadeIn' : 'fadeOut'}`}>
-                            <img src="./images/types_Components.png" alt="Two frames of a design" />
+                            <img src="./images/types_Components.png" alt="Shows components that have differences" />
                         </div>
                         <div className={`rowAuto blockImage animatedDiv fast typeOverlay ${showInstances ? 'fadeIn' : 'fadeOut'}`}>
-                            <img src="./images/types_Instances.png" alt="Two frames of a design" />
+                            <img src="./images/types_Instances.png" alt="Shows instances that have differences" />
                         </div>
                         <div className={`rowAuto blockImage animatedDiv fast typeOverlay ${showGroups ? 'fadeIn' : 'fadeOut'}`}>
-                            <img src="./images/types_Groups.png" alt="Two frames of a design" />
+                            <img src="./images/types_Groups.png" alt="Shows groups that have differences" />
                         </div>
                         <div className={`rowAuto blockImage animatedDiv fast typeOverlay ${showText ? 'fadeIn' : 'fadeOut'}`}>
-                            <img src="./images/types_Texts.png" alt="Two frames of a design" />
+                            <img src="./images/types_Texts.png" alt="Shows texts that have differences" />
                         </div>
                         <div className={`rowAuto blockImage animatedDiv fast typeOverlay ${showShapes ? 'fadeIn' : 'fadeOut'}`}>
-                            <img src="./images/types_Shapes.png" alt="Two frames of a design" />
+                            <img src="./images/types_Shapes.png" alt="Shows shapes that have differences" />
                         </div>
 
                     </div>
@@ -296,7 +276,7 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                         </div>
                     </div>
                     <div className="right verticalLayout mediumImage">
-                        <img src="./images/filesSafe.png" alt="Both versions presented side by side and showing differences between both" />
+                        <img src="./images/filesSafe.png" alt="Screenshot of Figma authentication screen to grant Figma history access to the designs" />
                     </div>
                 </div>
 
@@ -313,7 +293,7 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                     <div className='pricing twoColumns'>
                         <div className='columnLeft pricingBlock left verticalLayout'>
                             <div className='rowAuto'>
-                                <img src="./images/pricing_Single.png" alt="Two frames of a design" />
+                                <img src="./images/pricing_Single.png" alt="Single license icon" />
                             </div>
                             <div className='rowAuto title'>
                                 <h2>Single license</h2>
@@ -328,7 +308,7 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                         </div>
                         <div className='columnRight pricingBlock right verticalLayout'>
                             <div className='rowAuto'>
-                                <img src="./images/pricing_Team.png" alt="Two frames of a design" />
+                                <img src="./images/pricing_Team.png" alt="Team license icon" />
                             </div>
                             <div className='rowAuto title'>
                                 <h2>Team license</h2>
@@ -353,7 +333,7 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                                 <div className="horizontalLayout">
                                     <div className="colAvailable inputField">
                                         <input
-                                            id="figmaFileURL"
+                                            id="figmaFileURL_Trial1"
                                             type="text"
                                             autoFocus
                                             placeholder="In Figma, click 'Share' and 'Copy link', and paste the link here"
@@ -361,7 +341,7 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                                         />
                                     </div>
                                     <div className="colAuto">
-                                        <button className='btnPrimary' onClick={getFigmaDocumentInfo}>Compare</button>
+                                        <button className='btnPrimary' onClick={() => getFigmaDocumentInfo('figmaFileURL_Trial1')}>Compare</button>
                                     </div>
                                 </div>
                             </div>
@@ -421,7 +401,7 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                             <div className="horizontalLayout">
                                 <div className="colAvailable inputField">
                                     <input
-                                        id="figmaFileURL"
+                                        id="figmaFileURL_Trial2"
                                         type="text"
                                         autoFocus
                                         placeholder="In Figma, click 'Share' and 'Copy link', and paste the link here"
@@ -429,7 +409,7 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                                     />
                                 </div>
                                 <div className="colAuto">
-                                    <button className='btnPrimary' onClick={getFigmaDocumentInfo}>Compare</button>
+                                    <button className='btnPrimary' onClick={() => getFigmaDocumentInfo('figmaFileURL_Trial2')}>Compare</button>
                                 </div>
                             </div>
                         </div>

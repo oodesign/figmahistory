@@ -1278,7 +1278,7 @@ h6 {
   padding: 80px 40px 0 40px;
   max-width: 860px;
   margin: 0 auto;
-  margin-bottom: 96px;
+  margin-bottom: 64px;
 }
 .mainSite .logoCircle {
   width: 96px;
@@ -1378,15 +1378,22 @@ h6 {
   font-size: 16px;
   font-family: Inter-SemiBold, sans-serif;
 }
+.mainSite .startHere {
+  width: 320px;
+  margin-top: 8px;
+  margin-left: 48px;
+}
+.mainSite .startHere img {
+  width: 100%;
+}
 .mainSite .comparer {
-  width: 1000px;
+  padding: 80px 40px 0 40px;
   margin: 0 auto;
-  margin-bottom: 160px;
+  margin-bottom: 120px;
 }
 .mainSite .comparer .screen {
   border-radius: 36px;
   margin-bottom: 8px;
-  height: 640px;
   padding: 24px;
 }
 @media (prefers-color-scheme: light) {
@@ -2181,6 +2188,7 @@ h6 {
   }
 }
 .comparer .bottomBar .btnSecondary {
+  width: 100px;
   height: 36px;
 }
 .comparer .bottomBar .btnSecondary.viewOption {

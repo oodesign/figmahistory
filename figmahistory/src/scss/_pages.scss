@@ -82,7 +82,7 @@
         padding: 80px 40px 0 40px;
         max-width: 860px;
         @include alignHorizontalCenter;
-        margin-bottom: 96px;
+        margin-bottom: 64px;
     }
 
     .logoCircle {
@@ -165,16 +165,24 @@
         }
     }
 
+    .startHere{
+        width: 320px;
+        margin-top: 8px;
+        margin-left: 48px;
+        img{
+            width: 100%;;
+        }
+    }
+
     .comparer {
 
-        width: 1000px;
+        padding: 80px 40px 0 40px;
         @include alignHorizontalCenter;
-        margin-bottom: 160px;
+        margin-bottom: 120px;
 
         .screen {
             border-radius: 36px;
             margin-bottom: 8px;
-            height: 640px;
 
             @include for-theme(light) {
                 background-color: #0f0f0f;
@@ -920,6 +928,7 @@
         grid-template-columns: 2fr 1fr 2fr;
 
         .btnSecondary {
+            width:100px;
             height: 36px;
 
             &.viewOption {
