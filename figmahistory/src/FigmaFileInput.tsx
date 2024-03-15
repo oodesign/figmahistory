@@ -283,6 +283,24 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                 </div>
 
 
+
+                <div className='rowAuto leftContentBlock'>
+                    <div className='left '>
+                        <div className='rowAuto blockTitle'>
+                            <h1>Are my files safe?</h1>
+                        </div>
+                        <div className='rowAuto blockDescription'>
+                            <p>We use the Figma REST API to access your files and present the comparison. <span className='highlight'>We can only read files</span>, meaning we can't edit anything in them. If you feel curious, you may find more detail here about <a href="https://www.figma.com/developers/api#authentication-scopes">Figma authentication scopes</a>.</p>
+                            <p>Access to designs is only used for comparison rendering. <span className='highlight'>We do not (and will never) store, analyze, or share your designs</span>. We do not track analytics at all.</p>
+                            <p>Your designs are (and will continue to be) just for your eyes.</p>
+                        </div>
+                    </div>
+                    <div className="right verticalLayout mediumImage">
+                        <img src="./images/filesSafe.png" alt="Both versions presented side by side and showing differences between both" />
+                    </div>
+                </div>
+
+
                 <div className='rowAuto fullWidthBlock'>
                     <div className='rowAuto title'>
                         <h1>This is saving us a lot of time.<br />Hope it will for you too.</h1>
@@ -324,6 +342,34 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                             <button className='btnPrimary'>Get a license for my team</button>
                         </div>
                     </div>
+
+                    <div className='rowAuto startTrial'>
+                        <div className='verticalLayout'>
+                            <div className='rowAuto subtitle'>
+                                <h3>Or actually... you could give it a try now, and decide later on</h3>
+                            </div>
+
+                            <div className='rowAuto alignHorizontalCenter linkUrlInput'>
+                                <div className="horizontalLayout">
+                                    <div className="colAvailable inputField">
+                                        <input
+                                            id="figmaFileURL"
+                                            type="text"
+                                            autoFocus
+                                            placeholder="In Figma, click 'Share' and 'Copy link', and paste the link here"
+                                            className=' displayFlex'
+                                        />
+                                    </div>
+                                    <div className="colAuto">
+                                        <button className='btnPrimary' onClick={getFigmaDocumentInfo}>Compare</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="rowAuto errorText">
+                                {localValidationMessage}
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div className='rowAuto fullWidthBlock faqItems'>
@@ -334,15 +380,15 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                     <div className='rowAuto faqItem'>
                         <div className='faqTitle'>May I try it out before getting it?</div>
                         <div className='faqDescription'>
-                            <p>Sure! Figma history has a completely functional 7-day free trial.<br/>
-                            Copy your file link, click Compare, and your trial will automatically begin. </p>
+                            <p>Sure! Figma history has a completely functional 7-day free trial.<br />
+                                Paste your file link in the field above, click Compare, and your trial will automatically begin. </p>
                         </div>
                     </div>
                     <div className='rowAuto faqItem'>
                         <div className='faqTitle'>How does the license work?</div>
                         <div className='faqDescription'>
-                            <p>The Figma history license is per Figma account. <br/>
-                            You may need a license for each Figma account you want to activate it on.</p>
+                            <p>The Figma history license is per Figma account. <br />
+                                You may need a license for each Figma account you want to activate it on.</p>
                             <p>The team license will enable you to activate it for as many Figma accounts as you need.</p>
                         </div>
                     </div>
@@ -350,7 +396,7 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                         <div className='faqTitle'>Why is this in Beta?</div>
                         <div className='faqDescription'>
                             <p>We're currently on open Beta, trying to understand better the different flows Figma history can help with, and stress testing a bit the platform.</p>
-                            <p>Figma history is fully functional. Some glitches are still expected, though 😉.</p>
+                            <p>Figma history is fully functional. Some glitches are still expected here and there, though 😉.</p>
                         </div>
                     </div>
                     <div className='rowAuto faqItem'>
@@ -360,28 +406,43 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                             <p>You may have seen this pattern before, as it's the same as Zeroheight, MS Teams, Slack, Principle - just to name some - do.</p>
                         </div>
                     </div>
-                    <div className='rowAuto faqItem'>
-                        <div className='faqTitle'>Are my files safe?</div>
-                        <div className='faqDescription'>
-                            <p>We use the Figma REST API to access your files and display what has changed between versions. <span className='highlight'>We can only read files</span>, meaning we can't edit anything in them. If you feel curious, you may find more detail here about <a href="https://www.figma.com/developers/api#authentication-scopes">Figma authentication scopes</a>.</p>
-                            <p>Access to designs is only used for comparison rendering. We do not (and will never) store, analyze, or share your designs. We do not track analytics.</p>
-                            <p>Your designs are (and will continue to be) just for your eyes.</p>
-                        </div>
-                    </div>
                 </div>
 
-                {/* <div className="rowAuto">
-                    <div className='verticalLayout'>
+                <div className='rowAuto fullWidthBlock footer'>
+                    <div className='rowAuto title'>
+                        <h1>Start comparing now</h1>
+                    </div>
+                    <div className='rowAuto subtitle'>
+                        <h3>And never miss a change again</h3>
+                    </div>
 
-
-                     
-                        <div className="rowAuto secondaryText spaced">
-                            Access to designs is only used for comparison rendering.<br />
-                            We do not (and will never) store, analyze, or share your designs. We do not track analytics. <br />
-                            Your designs are (and will continue to be) just for your eyes.
+                    <div className='rowAuto startTrial'>
+                        <div className='rowAuto alignHorizontalCenter linkUrlInput'>
+                            <div className="horizontalLayout">
+                                <div className="colAvailable inputField">
+                                    <input
+                                        id="figmaFileURL"
+                                        type="text"
+                                        autoFocus
+                                        placeholder="In Figma, click 'Share' and 'Copy link', and paste the link here"
+                                        className=' displayFlex'
+                                    />
+                                </div>
+                                <div className="colAuto">
+                                    <button className='btnPrimary' onClick={getFigmaDocumentInfo}>Compare</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="rowAuto errorText">
+                            {localValidationMessage}
                         </div>
                     </div>
-                </div> */}
+
+
+                    <div className='rowAuto webSecondaryText'>
+                        <div>oodesign - All rights reserved</div>
+                    </div>
+                </div>
             </div>
         </div>
     );

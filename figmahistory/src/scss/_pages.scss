@@ -208,6 +208,10 @@
         grid-template-columns: 1fr 1fr;
         margin-bottom: 160px;
 
+        .btnSecondary{
+            width:120px;
+        }
+
         .left {
             grid-column: 1;
         }
@@ -256,6 +260,11 @@
             margin-bottom: 24px;
         }
 
+        .mediumImage{
+            max-width: 520px;
+            @include alignHorizontalCenter;
+        }
+
         .blockImage {
             width: 100%;
             height: 590px;
@@ -300,11 +309,50 @@
         .pricing {
             max-width: 1000px;
             @include alignHorizontalCenter;
+            margin-bottom: 80px;
         }
 
         .twoColumns {
             display: grid;
             grid-template-columns: 1fr 1fr;
+        }
+
+        .startTrial{
+
+            max-width: 800px;
+            @include alignHorizontalCenter;
+
+            .subtitle {
+                margin-bottom: 48px;
+            }
+        }
+
+        &.footer{
+
+            max-width: 1000px;
+            @include alignHorizontalCenter;
+            h1 {
+                margin-bottom: 16px;
+            }
+
+            .title {
+                margin-bottom: 16px;
+            }
+
+            .subtitle {
+                margin-bottom: 64px;
+            }
+
+            .startTrial{
+                margin-bottom: 96px;
+            }
+
+            .webSecondaryText{
+                font-size: 14px;
+                text-align: center;
+                @include alignHorizontalCenter;
+                margin-bottom: 240px;
+            }
         }
 
         .pricingBlock {
@@ -395,6 +443,10 @@
                 border-bottom: 1px solid transparent;
                 border-image: linear-gradient(0.25turn, transparent, $dark_backgroundColor5, $dark_backgroundColor5, transparent);
                 border-image-slice: 1;
+            }
+
+            &:last-of-type{
+                border:none;
             }
 
             .faqTitle {

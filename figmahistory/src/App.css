@@ -1431,6 +1431,9 @@ h6 {
   grid-template-columns: 1fr 1fr;
   margin-bottom: 160px;
 }
+.mainSite .leftContentBlock .btnSecondary {
+  width: 120px;
+}
 .mainSite .leftContentBlock .left {
   grid-column: 1;
 }
@@ -1495,6 +1498,10 @@ h6 {
   height: 590px;
   margin-bottom: 24px;
 }
+.mainSite .leftContentBlock .mediumImage {
+  max-width: 520px;
+  margin: 0 auto;
+}
 .mainSite .leftContentBlock .blockImage {
   width: 100%;
   height: 590px;
@@ -1530,10 +1537,40 @@ h6 {
 .mainSite .fullWidthBlock .pricing {
   max-width: 1000px;
   margin: 0 auto;
+  margin-bottom: 80px;
 }
 .mainSite .fullWidthBlock .twoColumns {
   display: grid;
   grid-template-columns: 1fr 1fr;
+}
+.mainSite .fullWidthBlock .startTrial {
+  max-width: 800px;
+  margin: 0 auto;
+}
+.mainSite .fullWidthBlock .startTrial .subtitle {
+  margin-bottom: 48px;
+}
+.mainSite .fullWidthBlock.footer {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+.mainSite .fullWidthBlock.footer h1 {
+  margin-bottom: 16px;
+}
+.mainSite .fullWidthBlock.footer .title {
+  margin-bottom: 16px;
+}
+.mainSite .fullWidthBlock.footer .subtitle {
+  margin-bottom: 64px;
+}
+.mainSite .fullWidthBlock.footer .startTrial {
+  margin-bottom: 96px;
+}
+.mainSite .fullWidthBlock.footer .webSecondaryText {
+  font-size: 14px;
+  text-align: center;
+  margin: 0 auto;
+  margin-bottom: 240px;
 }
 .mainSite .fullWidthBlock .pricingBlock {
   border-radius: 40px;
@@ -1651,6 +1688,9 @@ h6 {
        border-image: linear-gradient(0.25turn, transparent, #323236, #323236, transparent);
     border-image-slice: 1;
   }
+}
+.mainSite .faqItems .faqItem:last-of-type {
+  border: none;
 }
 .mainSite .faqItems .faqItem .faqTitle {
   text-align: center;
