@@ -157,7 +157,7 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                     </div>
                 </div>
 
-                <div className='rowAuto leftContentBlock'>
+                <div className='rowAuto twoColumnsContentBlock leftContent'>
                     <div className='left '>
                         <div className='rowAuto blockTitle'>
                             <h1>Overlay and <br />side by side views</h1>
@@ -192,7 +192,7 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                         </div>
                     </div>
                 </div>
-                <div className='rowAuto leftContentBlock'>
+                <div className='rowAuto twoColumnsContentBlock rightContent'>
                     <div className='left '>
                         <div className={`rowAuto blockImage`}>
                             <img src="./images/types_Base.png" alt="Two frames of a design" />
@@ -262,9 +262,7 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                     </div>
                 </div>
 
-
-
-                <div className='rowAuto leftContentBlock'>
+                <div className='rowAuto twoColumnsContentBlock leftContent'>
                     <div className='left '>
                         <div className='rowAuto blockTitle'>
                             <h1>Are my files safe?</h1>

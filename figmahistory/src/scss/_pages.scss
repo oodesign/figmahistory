@@ -165,12 +165,14 @@
         }
     }
 
-    .startHere{
+    .startHere {
         width: 320px;
         margin-top: 8px;
         margin-left: 48px;
-        img{
-            width: 100%;;
+
+        img {
+            width: 100%;
+            ;
         }
     }
 
@@ -208,33 +210,81 @@
         }
     }
 
-    .leftContentBlock {
-        width: $smallDesktopBreak;
+    .twoColumnsContentBlock {
+        max-width: $smallDesktopBreak;
         @include alignHorizontalCenter;
         @include alignVerticalCenter;
         display: grid;
         grid-template-columns: 1fr 1fr;
         margin-bottom: 160px;
+        padding-left: 40px;
+        padding-right: 40px;
 
-        .btnSecondary{
-            width:120px;
+        @include smallScreen {
+            grid-template-columns: 1fr;
         }
 
-        .left {
-            grid-column: 1;
+        .btnSecondary {
+            width: 120px;
         }
 
-        .right {
-            grid-column: 2;
+        &.leftContent {
+
+            .left {
+                grid-column: 1;
+
+                @include smallScreen {
+                    margin-bottom: 40px;
+                    order: 1;
+                }
+            }
+
+            .right {
+                grid-column: 2;
+
+                @include smallScreen {
+                    grid-column: 1;
+                    order: 2;
+                }
+            }
+        }
+
+        &.rightContent {
+
+            .left {
+                grid-column: 1;
+
+                @include smallScreen {
+                    order: 2;
+                }
+            }
+
+            .right {
+                grid-column: 2;
+
+                @include smallScreen {
+                    grid-column: 1;
+                    order: 1;
+                    margin-bottom: 40px;
+                }
+            }
         }
 
         .blockTitle {
             margin-bottom: 32px;
+
+            @include smallScreen {
+                width: 100%;
+            }
         }
 
         .blockDescription {
             width: 480px;
             @include webSecondaryText;
+
+            @include smallScreen {
+                width: 100%;
+            }
 
             p {
                 margin-bottom: 16px;
@@ -268,7 +318,7 @@
             margin-bottom: 24px;
         }
 
-        .mediumImage{
+        .mediumImage {
             max-width: 520px;
             @include alignHorizontalCenter;
         }
@@ -325,7 +375,7 @@
             grid-template-columns: 1fr 1fr;
         }
 
-        .startTrial{
+        .startTrial {
 
             max-width: 800px;
             @include alignHorizontalCenter;
@@ -335,10 +385,11 @@
             }
         }
 
-        &.footer{
+        &.footer {
 
             max-width: 1000px;
             @include alignHorizontalCenter;
+
             h1 {
                 margin-bottom: 16px;
             }
@@ -351,11 +402,11 @@
                 margin-bottom: 64px;
             }
 
-            .startTrial{
+            .startTrial {
                 margin-bottom: 96px;
             }
 
-            .webSecondaryText{
+            .webSecondaryText {
                 font-size: 14px;
                 text-align: center;
                 @include alignHorizontalCenter;
@@ -453,8 +504,8 @@
                 border-image-slice: 1;
             }
 
-            &:last-of-type{
-                border:none;
+            &:last-of-type {
+                border: none;
             }
 
             .faqTitle {
@@ -928,7 +979,7 @@
         grid-template-columns: 2fr 1fr 2fr;
 
         .btnSecondary {
-            width:100px;
+            width: 100px;
             height: 36px;
 
             &.viewOption {

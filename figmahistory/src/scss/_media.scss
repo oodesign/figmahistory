@@ -1,3 +1,4 @@
+$smallScreenBreak: 860px;
 $smallDesktopBreak: 1280px;
 $largeDesktopBreak: 2400px;
 
@@ -12,6 +13,12 @@ $largeDesktopBreak: 2400px;
     @media (prefers-color-scheme: dark) {
       @content;
     }
+  }
+}
+
+@mixin smallScreen {
+  @media (max-width: $smallScreenBreak) {
+    @content;
   }
 }
 
