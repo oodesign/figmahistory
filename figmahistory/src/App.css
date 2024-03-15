@@ -1207,9 +1207,6 @@ h6 {
 }
 
 .app .logo {
-  position: absolute;
-  top: 16px;
-  left: 24px;
   width: 140px;
 }
 .app .logo svg {
@@ -2145,7 +2142,7 @@ h6 {
 .comparer .sidePanel {
   width: 240px;
   transition: all 0.3s ease-out;
-  padding-top: 72px;
+  padding-top: 24px;
   padding-bottom: 64px;
 }
 @media (prefers-color-scheme: light) {
@@ -2161,6 +2158,11 @@ h6 {
 .comparer .sidePanel.collapsed {
   width: 0;
   opacity: 0;
+}
+.comparer .sidePanel .logo {
+  padding-left: 24px;
+  width: 160px;
+  margin-bottom: 32px;
 }
 .comparer .sidePanel .title {
   font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;

@@ -1,9 +1,6 @@
 .app {
     .logo {
 
-        position: absolute;
-        top: 16px;
-        left: 24px;
         width: 140px;
 
         svg {
@@ -645,7 +642,7 @@
         }
     }
 
-    .btnSecondary{
+    .btnSecondary {
         min-width: 100px;
     }
 
@@ -918,13 +915,19 @@
             background-color: $dark_backgroundColor2;
         }
 
-        padding-top:72px;
+        padding-top:24px;
         padding-bottom:64px;
 
 
         &.collapsed {
             width: 0;
             opacity: 0;
+        }
+
+        .logo {
+            padding-left: 24px;
+            width: 160px;
+            margin-bottom: 32px;
         }
 
         .title {

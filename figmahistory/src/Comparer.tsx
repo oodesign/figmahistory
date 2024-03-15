@@ -1098,6 +1098,9 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
         <div className={`comparer rowAvailable horizontalLayout ${props.className}`}>
             <div className={`colAuto sidePanel ${pagesListVersionLeft && pagesListVersionRight ? '' : 'collapsed'}`}>
                 <div className="verticalLayout sidePanelContent">
+                    <div className="logo">
+                        <ReactSVG src={globalState.urlPaths + '/images/logo.svg'} renumerateIRIElements={false} />
+                    </div>
                     <div className={`rowAuto title ${globalState.parentDocumentName ? 'hasSubtitle' : ''}`}>
                         {globalState.parentDocumentName ? globalState.parentDocumentName : globalState.documentName}
                     </div>
