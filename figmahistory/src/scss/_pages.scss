@@ -79,8 +79,8 @@
     }
 
     .hero {
-        padding-top: 80px;
-        width: 800px;
+        padding: 80px 40px 0 40px;
+        max-width: 860px;
         @include alignHorizontalCenter;
         margin-bottom: 96px;
     }
