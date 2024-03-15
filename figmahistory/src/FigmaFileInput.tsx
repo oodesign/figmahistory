@@ -333,7 +333,6 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                                         <input
                                             id="figmaFileURL_Trial1"
                                             type="text"
-                                            autoFocus
                                             placeholder="In Figma, click 'Share' and 'Copy link', and paste the link here"
                                             className=' displayFlex'
                                         />
@@ -401,7 +400,6 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                                     <input
                                         id="figmaFileURL_Trial2"
                                         type="text"
-                                        autoFocus
                                         placeholder="In Figma, click 'Share' and 'Copy link', and paste the link here"
                                         className=' displayFlex'
                                     />
