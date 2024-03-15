@@ -350,6 +350,8 @@
     }
 
     .fullWidthBlock {
+        padding-left: 40px;
+        padding-right: 40px;
         margin-bottom: 160px;
 
         h1 {
@@ -373,6 +375,10 @@
         .twoColumns {
             display: grid;
             grid-template-columns: 1fr 1fr;
+
+            @include smallScreen {
+                grid-template-columns: 1fr;
+            }
         }
 
         .startTrial {
@@ -418,6 +424,12 @@
             &.left {
                 height: 500px;
                 grid-column: 1;
+
+                @include smallScreen {
+                    grid-column: 1;
+                    order: 1;
+                    margin-bottom: 40px;
+                }
             }
 
             &.right {
@@ -425,6 +437,13 @@
                 margin-left: -32px;
                 margin-top: -32px;
                 grid-column: 2;
+
+                @include smallScreen {
+                    grid-column: 1;
+                    order: 2;
+                    margin-left: 0;
+                    margin-top: 0;
+                }
 
                 .price {
                     margin-bottom: 64px;

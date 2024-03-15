@@ -1577,6 +1577,8 @@ h6 {
   margin-right: 8px;
 }
 .mainSite .fullWidthBlock {
+  padding-left: 40px;
+  padding-right: 40px;
   margin-bottom: 160px;
 }
 .mainSite .fullWidthBlock h1 {
@@ -1596,6 +1598,11 @@ h6 {
 .mainSite .fullWidthBlock .twoColumns {
   display: grid;
   grid-template-columns: 1fr 1fr;
+}
+@media (max-width: 860px) {
+  .mainSite .fullWidthBlock .twoColumns {
+    grid-template-columns: 1fr;
+  }
 }
 .mainSite .fullWidthBlock .startTrial {
   max-width: 800px;
@@ -1634,11 +1641,26 @@ h6 {
   height: 500px;
   grid-column: 1;
 }
+@media (max-width: 860px) {
+  .mainSite .fullWidthBlock .pricingBlock.left {
+    grid-column: 1;
+    order: 1;
+    margin-bottom: 40px;
+  }
+}
 .mainSite .fullWidthBlock .pricingBlock.right {
   height: 568px;
   margin-left: -32px;
   margin-top: -32px;
   grid-column: 2;
+}
+@media (max-width: 860px) {
+  .mainSite .fullWidthBlock .pricingBlock.right {
+    grid-column: 1;
+    order: 2;
+    margin-left: 0;
+    margin-top: 0;
+  }
 }
 .mainSite .fullWidthBlock .pricingBlock.right .price {
   margin-bottom: 64px;
