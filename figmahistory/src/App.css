@@ -1907,6 +1907,9 @@ h6 {
   margin-right: 8px;
   width: 200px;
 }
+.licenseOverlay .btnSecondary {
+  min-width: 100px;
+}
 .licenseOverlay .label {
   width: 50%;
   text-align: left;
