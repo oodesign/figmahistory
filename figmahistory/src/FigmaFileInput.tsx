@@ -322,19 +322,13 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                             </div>
 
                             <div className='rowAuto alignHorizontalCenter linkUrlInput'>
-                                <div className="horizontalLayout">
-                                    <div className="colAvailable inputField">
-                                        <input
-                                            id="figmaFileURL_Trial1"
-                                            type="text"
-                                            placeholder="In Figma, click 'Share' and 'Copy link', and paste the link here"
-                                            className=' displayFlex'
-                                        />
-                                    </div>
-                                    <div className="colAuto">
-                                        <button className='btnPrimary' onClick={() => getFigmaDocumentInfo('figmaFileURL_Trial1')}>Compare</button>
-                                    </div>
-                                </div>
+                                <input
+                                    id="figmaFileURL_Trial1"
+                                    type="text"
+                                    placeholder="Paste your Figma file link here"
+                                    className=' inputField'
+                                />
+                                <button className='btnPrimary' onClick={() => getFigmaDocumentInfo('figmaFileURL_Trial1')}>Compare</button>
                             </div>
                             <div className="rowAuto errorText">
                                 {localValidationMessage}
@@ -389,19 +383,13 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
 
                     <div className='rowAuto startTrial'>
                         <div className='rowAuto alignHorizontalCenter linkUrlInput'>
-                            <div className="horizontalLayout">
-                                <div className="colAvailable inputField">
-                                    <input
-                                        id="figmaFileURL_Trial2"
-                                        type="text"
-                                        placeholder="In Figma, click 'Share' and 'Copy link', and paste the link here"
-                                        className=' displayFlex'
-                                    />
-                                </div>
-                                <div className="colAuto">
-                                    <button className='btnPrimary' onClick={() => getFigmaDocumentInfo('figmaFileURL_Trial2')}>Compare</button>
-                                </div>
-                            </div>
+                            <input
+                                id="figmaFileURL_Trial2"
+                                type="text"
+                                placeholder="Paste your Figma file link here"
+                                className=' inputField'
+                            />
+                            <button className='btnPrimary' onClick={() => getFigmaDocumentInfo('figmaFileURL_Trial2')}>Compare</button>
                         </div>
                         <div className="rowAuto errorText">
                             {localValidationMessage}

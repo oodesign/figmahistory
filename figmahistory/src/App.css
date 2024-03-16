@@ -1509,6 +1509,7 @@ h6 {
 @media (max-width: 860px) {
   .mainSite .twoColumnsContentBlock {
     grid-template-columns: 1fr;
+    margin-bottom: 120px;
   }
 }
 .mainSite .twoColumnsContentBlock .btnSecondary {
@@ -1667,6 +1668,11 @@ h6 {
   padding-right: 40px;
   margin-bottom: 160px;
 }
+@media (max-width: 860px) {
+  .mainSite .fullWidthBlock {
+    margin-bottom: 120px;
+  }
+}
 .mainSite .fullWidthBlock h1 {
   margin-bottom: 48px;
 }
@@ -1736,7 +1742,6 @@ h6 {
 }
 .mainSite .fullWidthBlock .pricingBlock.left {
   grid-column: 1;
-  max-height: 500px;
 }
 @media (max-width: 860px) {
   .mainSite .fullWidthBlock .pricingBlock.left {
@@ -1774,7 +1779,8 @@ h6 {
 .mainSite .fullWidthBlock .pricingBlock img {
   display: flex;
   margin: 0 auto;
-  height: 160px;
+  width: 100%;
+  max-width: 280px;
   margin-bottom: 32px;
   text-align: center;
 }
@@ -1838,19 +1844,24 @@ h6 {
 @media (prefers-color-scheme: light) {
   .mainSite .fullWidthBlock .pricingBlock {
     background-color: #ffffff;
-    box-shadow: 0px 28px 37px 7px rgba(0, 0, 0, 0.05);
+    box-shadow: 0px 12px 17px 1px rgba(0, 0, 0, 0.1);
   }
 }
 @media (prefers-color-scheme: dark) {
   .mainSite .fullWidthBlock .pricingBlock {
     background-color: #26262a;
-    box-shadow: 0px 28px 37px 14px rgba(255, 255, 255, 0.03);
+    box-shadow: 0px 12px 17px 1px rgba(0, 0, 0, 0.1);
   }
 }
 .mainSite .faqItems .faqItem {
   padding: 48px 64px;
   max-width: 1000px;
   margin: 0 auto;
+}
+@media (max-width: 860px) {
+  .mainSite .faqItems .faqItem {
+    padding: 32px 16px;
+  }
 }
 @media (prefers-color-scheme: light) {
   .mainSite .faqItems .faqItem {

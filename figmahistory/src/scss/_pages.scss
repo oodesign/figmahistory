@@ -254,6 +254,7 @@
 
         @include smallScreen {
             grid-template-columns: 1fr;
+            margin-bottom: 120px;
         }
 
         .btnSecondary {
@@ -404,6 +405,10 @@
         padding-right: 40px;
         margin-bottom: 160px;
 
+        @include smallScreen {
+            margin-bottom: 120px;
+        }
+
         h1 {
             margin-bottom: 48px;
         }
@@ -484,8 +489,6 @@
 
             &.left {
                 grid-column: 1;
-                max-height: 500px;
-
 
                 @include smallScreen {
                     max-height: none;
@@ -524,7 +527,8 @@
             img {
                 @include flex;
                 @include alignHorizontalCenter;
-                height: 160px;
+                width:100%;
+                max-width: 280px;
                 margin-bottom: 32px;
                 text-align: center;
             }
@@ -558,12 +562,12 @@
 
             @include for-theme(light) {
                 background-color: #ffffff;
-                box-shadow: 0px 28px 37px 7px rgba(0, 0, 0, 0.05);
+                box-shadow: 0px 12px 17px 1px rgba(0, 0, 0, 0.1);
             }
 
             @include for-theme(dark) {
                 background-color: #26262a;
-                box-shadow: 0px 28px 37px 14px rgba(255, 255, 255, 0.03);
+                box-shadow: 0px 12px 17px 1px rgba(0, 0, 0, 0.1);
             }
 
         }
@@ -576,6 +580,10 @@
             padding: 48px 64px;
             max-width: 1000px;
             @include alignHorizontalCenter;
+
+            @include smallScreen {
+                padding: 32px 16px;
+            }
 
             @include for-theme(light) {
                 border-bottom: 1px solid transparent;
