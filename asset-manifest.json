@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/static/css/main.1fc6ad53.css",
-    "main.js": "/static/js/main.cc150fa9.js",
+    "main.css": "/static/css/main.0079428f.css",
+    "main.js": "/static/js/main.ba1a8041.js",
     "static/media/bgDark.png": "/static/media/bgDark.56347278cde7f70b21bb.png",
     "static/media/bgLight.png": "/static/media/bgLight.8f860122897bdbfb1da4.png",
     "static/media/Inter-Bold.ttf": "/static/media/Inter-Bold.0eaf807b1cf0eceabe0f.ttf",
@@ -11,11 +11,11 @@
     "static/media/AvenirNextLTPro-Bold.ttf": "/static/media/AvenirNextLTPro-Bold.3c6bf152ce9d23ec3657.ttf",
     "static/media/AvenirNextLTPro-Demi.ttf": "/static/media/AvenirNextLTPro-Demi.fb429fb77c296de90537.ttf",
     "index.html": "/index.html",
-    "main.1fc6ad53.css.map": "/static/css/main.1fc6ad53.css.map",
-    "main.cc150fa9.js.map": "/static/js/main.cc150fa9.js.map"
+    "main.0079428f.css.map": "/static/css/main.0079428f.css.map",
+    "main.ba1a8041.js.map": "/static/js/main.ba1a8041.js.map"
   },
   "entrypoints": [
-    "static/css/main.1fc6ad53.css",
-    "static/js/main.cc150fa9.js"
+    "static/css/main.0079428f.css",
+    "static/js/main.ba1a8041.js"
   ]
 }
