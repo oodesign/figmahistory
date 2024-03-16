@@ -1,3 +1,4 @@
+$mobileBreak: 460px;
 $smallScreenBreak: 860px;
 $smallDesktopBreak: 1280px;
 $largeDesktopBreak: 2400px;
@@ -13,6 +14,12 @@ $largeDesktopBreak: 2400px;
     @media (prefers-color-scheme: dark) {
       @content;
     }
+  }
+}
+
+@mixin mobileScreen {
+  @media (max-width: $mobileBreak) {
+    @content;
   }
 }
 

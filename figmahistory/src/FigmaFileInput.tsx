@@ -35,7 +35,7 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
         if (props.validationMessage) setLocalValidationMessage(props.validationMessage);
     }, [props.validationMessage]);
 
-    const getFigmaDocumentInfo = (fieldId:string) => {
+    const getFigmaDocumentInfo = (fieldId: string) => {
         const inputElement = document.getElementById(fieldId) as HTMLInputElement;
         const inputURL = inputElement.value;
 
@@ -115,20 +115,14 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                             <h6>Easily see and compare different versions of a Figma file</h6>
                         </div>
                         <div className='rowAuto alignHorizontalCenter linkUrlInput'>
-                            <div className="horizontalLayout">
-                                <div className="colAvailable inputField">
-                                    <input
-                                        id="figmaFileURL"
-                                        type="text"
-                                        autoFocus
-                                        placeholder="In Figma, click 'Share' and 'Copy link', and paste the link here"
-                                        className=' displayFlex'
-                                    />
-                                </div>
-                                <div className="colAuto">
-                                    <button className='btnPrimary' onClick={() => getFigmaDocumentInfo('figmaFileURL')}>Compare</button>
-                                </div>
-                            </div>
+                            <input
+                                id="figmaFileURL"
+                                type="text"
+                                autoFocus
+                                placeholder="Paste your Figma file link here"
+                                className=' inputField'
+                            />
+                            <button className='btnPrimary' onClick={() => getFigmaDocumentInfo('figmaFileURL')}>Compare</button>
                         </div>
                         <div className="rowAuto errorText">
                             {localValidationMessage}
@@ -181,7 +175,7 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                                 }
                             />
                         </div>
-                        <div className={`rowAuto blockImage ${!viewComparer_showOverlay ? '' : 'notDisplayed'}`}>
+                        <div className={`rowAuto blockImage alignHorizontalCenter ${!viewComparer_showOverlay ? '' : 'notDisplayed'}`}>
                             <img src="./images/views_Sidebyside.png" alt="Both versions presented side by side and showing differences between both" />
                         </div>
                         <div className='rowAuto '>

@@ -155,16 +155,28 @@
 h1 {
     font-family: Inter-Bold, sans-serif;
     font-size: 48px;
+
+    @include smallScreen {
+        line-height: 120%;
+    }
 }
 
 h2 {
     font-family: Inter-Bold, sans-serif;
     font-size: 32px;
+
+    @include smallScreen {
+        line-height: 120%;
+    }
 }
 
 h3 {
     font-family: Inter-SemiBold, sans-serif;
     font-size: 24px;
+
+    @include smallScreen {
+        line-height: 120%;
+    }
 }
 
 h6 {
