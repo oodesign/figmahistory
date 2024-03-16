@@ -1840,6 +1840,7 @@ h6 {
   height: 56px;
   border-radius: 12px;
   font-size: 16px;
+  width: 100%;
 }
 @media (prefers-color-scheme: light) {
   .mainSite .fullWidthBlock .pricingBlock {

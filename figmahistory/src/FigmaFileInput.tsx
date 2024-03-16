@@ -296,7 +296,9 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                             <div className='rowAuto price'>
                                 <h6>for $5/year</h6>
                             </div>
-                            <button className='btnPrimary'>I want a single license</button>
+                            <a href="https://oodesign.gumroad.com/l/figmahistory?option=x8JwFOfp2eKY-GgXKSg2aA%3D%3D&_gl=1*1xpb5kb*_ga*MTUwNTk1MDE5OS4xNjc4MTAzNjAz*_ga_6LJN6D94N6*MTcwODMyNDE5OC44NC4wLjE3MDgzMjQyMDIuMC4wLjA." target="_blank">
+                                <button className='btnPrimary'>I want a single license</button>
+                            </a>
                         </div>
                         <div className='columnRight pricingBlock right verticalLayout'>
                             <div className='rowAuto'>
@@ -311,7 +313,9 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                             <div className='rowAuto price'>
                                 <h6>for $45/year</h6>
                             </div>
-                            <button className='btnPrimary'>Get a license for my team</button>
+                            <a href="https://oodesign.gumroad.com/l/figmahistory?option=R67uvQjSzl_CPgpdXWJplg%3D%3D&_gl=1*184pbn5*_ga*MTUwNTk1MDE5OS4xNjc4MTAzNjAz*_ga_6LJN6D94N6*MTcwODMyNDE5OC44NC4wLjE3MDgzMjQyMDIuMC4wLjA." target="_blank">
+                                <button className='btnPrimary'>Get a license for my team</button>
+                            </a>
                         </div>
                     </div>
 
