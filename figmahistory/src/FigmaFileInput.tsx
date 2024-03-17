@@ -350,7 +350,7 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                     <div className='rowAuto faqItem'>
                         <div className='faqTitle'>May I try it out before getting it?</div>
                         <div className='faqDescription'>
-                            <p>Sure! Figma history has a completely functional 7-day free trial.<br />
+                            <p>Sure! Figma history has a completely functional <span className='webPrimaryText'>7-day free trial</span>.<br />
                                 Paste your file link in the field above, click Compare, and your trial will automatically begin. </p>
                         </div>
                     </div>
@@ -372,8 +372,14 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                     <div className='rowAuto faqItem'>
                         <div className='faqTitle'>How can Figma history access my files?</div>
                         <div className='faqDescription'>
-                            <p>Well, it can't, unless you let it in 😅. When trying to access a file a Figma popup will appear for you to log in to Figma, and to ask for permission to access your file and be able to present the comparison.</p>
+                            <p>Well, it can't, unless you let it in 😅. When trying to access a file, a Figma popup will appear for you to log in to Figma, and to ask for permission to access your file and be able to present the comparison.</p>
                             <p>You may have seen this pattern before, as it's the same as Zeroheight, MS Teams, Slack, Principle - just to name some - do.</p>
+                        </div>
+                    </div>
+                    <div className='rowAuto faqItem'>
+                        <div className='faqTitle'>Are there any discounts for students, beginners, or so?</div>
+                        <div className='faqDescription'>
+                            <p>Absolutely! Just <a href="mailto:hello@oodesign.me">drop us an email</a> and tell us your case 😊. </p>
                         </div>
                     </div>
                 </div>
