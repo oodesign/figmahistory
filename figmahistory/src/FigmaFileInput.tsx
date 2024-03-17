@@ -112,7 +112,7 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                             <h1><span>What has </span><span className='decorated'>changed</span><span> in the design since the last time </span><span className='decorated'>you saw it</span><span> ?</span></h1>
                         </div>
                         <div className='rowAuto alignHorizontalCenter subtitle'>
-                            <h6>Easily see and compare different versions of a Figma file</h6>
+                            <h6>Easily compare versions of a Figma file, and never miss a change again</h6>
                         </div>
                         <div className='rowAuto alignHorizontalCenter linkUrlInput'>
                             <input
@@ -134,6 +134,7 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                 </div>
 
                 <div className='rowAuto comparer'>
+                        
                     <div className='screen'>
                         <div className='content'>
                             <ReactCompareSlider ref={reactCompareSliderRef} transition="0.75s ease-in-out" position={50} boundsPadding={20} onlyHandleDraggable

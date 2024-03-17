@@ -1539,6 +1539,7 @@ h6 {
 @media (max-width: 860px) {
   .mainSite .twoColumnsContentBlock.rightContent .left {
     order: 2;
+    margin: 0 auto;
   }
 }
 .mainSite .twoColumnsContentBlock.rightContent .right {
