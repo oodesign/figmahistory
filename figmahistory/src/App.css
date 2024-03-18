@@ -2465,6 +2465,19 @@ h6 {
   }
 }
 
+.productHuntBadge {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  width: 250px;
+  height: 54px;
+}
+@media (max-width: 860px) {
+  .productHuntBadge {
+    display: none;
+  }
+}
+
 @font-face {
   font-family: AvenirNextLTPro-Medium;
   src: url(./fonts/AvenirNextLTPro-Medium.ttf) format("truetype");

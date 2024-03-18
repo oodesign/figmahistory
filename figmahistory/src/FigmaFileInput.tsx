@@ -134,7 +134,7 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                 </div>
 
                 <div className='rowAuto comparer'>
-                        
+
                     <div className='screen'>
                         <div className='content'>
                             <ReactCompareSlider ref={reactCompareSliderRef} transition="0.75s ease-in-out" position={50} boundsPadding={20} onlyHandleDraggable
@@ -412,6 +412,9 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                         <div>oodesign - All rights reserved</div>
                     </div>
                 </div>
+            </div>
+            <div className='productHuntBadge'>
+                <a href="https://www.producthunt.com/posts/figma-history?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-figma&#0045;history" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=445174&theme=light" alt="Figma&#0032;history - Easily&#0032;compare&#0032;Figma&#0032;file&#0032;versions&#0044;&#0032;and&#0032;never&#0032;miss&#0032;a&#0032;change | Product Hunt" /></a>
             </div>
         </div>
     );
