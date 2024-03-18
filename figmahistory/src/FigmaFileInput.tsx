@@ -105,8 +105,9 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                         <div className='rowAuto alignHorizontalCenter logoCircle'>
                             <ReactSVG src={globalState.urlPaths + "/images/logoCircle.svg"} renumerateIRIElements={false} />
                         </div>
-                        <div className='rowAuto alignHorizontalCenter productName'>
+                        <div className='rowAuto alignFullCenter productName '>
                             <h3>Figma history</h3>
+                            <span className="beta">Beta</span>
                         </div>
                         <div className='rowAuto alignHorizontalCenter title'>
                             <h1><span>What has </span><span className='decorated'>changed</span><span> in the design since the last time </span><span className='decorated'>you saw it</span><span> ?</span></h1>
@@ -367,6 +368,7 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                         <div className='faqDescription'>
                             <p>We're currently on open Beta, trying to understand better the different flows Figma history can help with, and stress testing a bit the platform.</p>
                             <p>Figma history is fully functional. Some glitches are still expected here and there, though 😉.</p>
+                            <p>If you hit any issue, please <a href="mailto:support@oodesign.me">drop us an email</a> and we'll make our best to address it.</p>
                         </div>
                     </div>
                     <div className='rowAuto faqItem'>

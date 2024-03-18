@@ -91,6 +91,19 @@
     .productName {
         text-align: center;
         margin-bottom: 40px;
+
+        .beta {
+            height: 24px;
+            padding: 4px 8px;
+            margin-left: 8px;
+            border-radius: 4px;
+            font-family: Inter-Bold, sans-serif;
+            font-size: 12px;
+            @include alignFullCenter;
+            text-transform: uppercase;
+            background-color: $accentColor;
+            color: $accentColorNegativeText;
+        }
     }
 
     .title {
