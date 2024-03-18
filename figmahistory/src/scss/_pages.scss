@@ -788,6 +788,29 @@
 }
 
 .comparer {
+
+    .bigFilesDisclaimer{
+        position: absolute;
+        bottom:12px;
+        left:50%;
+        @include secondaryText;
+        padding: 8px 12px;
+        border-radius: 6px;
+        transform: translate(-50%,0);
+        text-align: center;
+        backdrop-filter: blur(20px);
+
+        @include for-theme(light) {
+            background-color: rgba($light_backgroundColor2,0.85);
+            border: 1px solid $light_backgroundColor5;
+        }
+
+        @include for-theme(dark) {
+            background-color: rgba($dark_backgroundColor2,0.85);
+            border: 1px solid $dark_backgroundColor5;
+        }
+    }
+
     .canvasVersionOverlay {
         @include flex;
 
@@ -802,7 +825,7 @@
 
     .reactselect__control {
         border-radius: $cornerRadiusDefault;
-        backdrop-filter: blur(20px);
+        backdrop-filter: blur(10px);
 
         @include for-theme(light) {
             background-color: rgba($light_componentSecondaryColor, 0.8);

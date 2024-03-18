@@ -44,6 +44,10 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
     const [isLoadingRightImages, setIsLoadingRightImages] = useState<boolean>(true);
 
 
+    const [isTakingLongTime, setIsTakingLongTime] = useState<boolean>(false);
+
+
+
     // #region canvas drawing state variables 
 
     const [selectVersionLeftSelectedOption, setSelectVersionLeftSelectedOption] = useState<Version>();
@@ -606,7 +610,13 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
             versionId = globalState.documentRightId;
         }
 
+        const timeoutId = setTimeout(() => {
+            setIsTakingLongTime(true);
+        }, 5000);
+
         await fetchPage(versionId, pageId, side);
+
+        clearTimeout(timeoutId);
 
         if (globalState.selectedPageId == pageId) {
 
@@ -1245,6 +1255,9 @@ const Comparer: React.ForwardRefRenderFunction<ComparerRef, ComparerProps> = (pr
                             </TransformWrapper>
                         }
                     />
+                    <div className={`bigFilesDisclaimer animatedDiv ${isTakingLongTime ? 'fadeIn' : 'fadeOut'}`}>
+                        Pages with a lot of elements my take a while to load and render properly.<br />We're on it, but we apologize if this feels a bit sluggish these days 🙏.
+                    </div>
                 </div>
                 <div className='rowAuto bottomBar'>
 

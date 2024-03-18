@@ -2080,6 +2080,44 @@ h6 {
   margin-bottom: 16px;
 }
 
+.comparer .bigFilesDisclaimer {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  font-family: AvenirNextLTPro-Medium, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transform: translate(-50%, 0);
+  text-align: center;
+  -webkit-backdrop-filter: blur(20px);
+          backdrop-filter: blur(20px);
+}
+.comparer .bigFilesDisclaimer.spaced {
+  line-height: 20px;
+}
+@media (prefers-color-scheme: light) {
+  .comparer .bigFilesDisclaimer {
+    color: #868688;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .comparer .bigFilesDisclaimer {
+    color: #848494;
+  }
+}
+@media (prefers-color-scheme: light) {
+  .comparer .bigFilesDisclaimer {
+    background-color: rgba(255, 255, 255, 0.85);
+    border: 1px solid #e5e5e9;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .comparer .bigFilesDisclaimer {
+    background-color: rgba(36, 36, 40, 0.85);
+    border: 1px solid #323236;
+  }
+}
 .comparer .canvasVersionOverlay {
   display: flex;
   width: 300px;
@@ -2089,8 +2127,8 @@ h6 {
 }
 .comparer .reactselect__control {
   border-radius: 6px;
-  -webkit-backdrop-filter: blur(20px);
-          backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(10px);
+          backdrop-filter: blur(10px);
 }
 @media (prefers-color-scheme: light) {
   .comparer .reactselect__control {
