@@ -379,6 +379,13 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
                         </div>
                     </div>
                     <div className='rowAuto faqItem'>
+                        <div className='faqTitle'>Can I revoke access?</div>
+                        <div className='faqDescription'>
+                            <p>Absolutely. In Figma go to your Profile and click on Settings. Scroll down until you see a section called "Connected apps".</p>
+                            <p>If you don't fancy Figma history (or others) anymore, feel free to click on "Revoke access" to remove them.</p>
+                        </div>
+                    </div>
+                    <div className='rowAuto faqItem'>
                         <div className='faqTitle'>Are there any discounts for students, beginners, or so?</div>
                         <div className='faqDescription'>
                             <p>Absolutely! Just <a href="mailto:hello@oodesign.me">drop us an email</a> and tell us your case 😊. </p>
