@@ -39,7 +39,7 @@ const FigmaFileInput: React.ForwardRefRenderFunction<HTMLDivElement, FigmaFileIn
         const inputElement = document.getElementById(fieldId) as HTMLInputElement;
         const inputURL = inputElement.value;
 
-        const regex = /^((http|https):\/\/)?(www\.)?figma\.com\/file\/([a-zA-Z0-9]{22})(?:\/branch\/([a-zA-Z0-9]+))?(?:.*node-id=([0-9]+%3A[0-9]+))?/;
+        const regex = /^((http|https):\/\/)?(www\.)?figma.com\/([\w-]+)\/([a-zA-Z0-9]{22,128})(?:\/branch\/([a-zA-Z0-9]+))?(?:.*node-id=([0-9]+%3A[0-9]+))?/;
         const matches = inputURL.match(regex);
 
         if (!matches) {
