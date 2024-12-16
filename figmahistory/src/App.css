@@ -1283,6 +1283,11 @@ h6 {
   border: none;
 }
 
+.mainSite .placeholderMessage {
+  width: 480px;
+  text-align: center;
+  line-height: 24px;
+}
 .mainSite .alignVCenter {
   margin-left: 10%;
   margin-bottom: 90px;
